@@ -1,5 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
+// @ts-ignore
+import mascotImageUrl from '../content/girl_mnostva.png';
 
 const MascotContact: React.FC = () => {
   const [showBubble, setShowBubble] = useState(false);
@@ -7,8 +9,6 @@ const MascotContact: React.FC = () => {
   const [isTriggered, setIsTriggered] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 
-  // Используем относительный путь к вашему локальному файлу маскота
-  const mascotImageUrl = "./girl_mnostva.png";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,10 +36,7 @@ const MascotContact: React.FC = () => {
   }, [isTriggered, isDismissed]);
 
   const handleContactClick = () => {
-    const section = document.getElementById('benefits');
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    }
+    window.location.href = '/#about';
   };
 
   const handleDismiss = (e: React.MouseEvent) => {
@@ -48,17 +45,15 @@ const MascotContact: React.FC = () => {
   };
 
   return (
-    <div 
-      className={`fixed bottom-0 right-4 md:right-10 z-[100] flex flex-col items-center pointer-events-none select-none transition-all duration-1000 ease-out transform ${
-        isTriggered && !isDismissed ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 scale-90'
-      }`}
+    <div
+      className={`fixed bottom-0 right-4 md:right-10 z-[100] flex flex-col items-center pointer-events-none select-none transition-all duration-1000 ease-out transform scale-75 origin-bottom-right ${isTriggered && !isDismissed ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        }`}
     >
       {/* Contact Bubble */}
-      <div 
+      <div
         onClick={handleContactClick}
-        className={`mb-[-25px] transition-all duration-700 transform pointer-events-auto cursor-pointer group relative ${
-          showBubble ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-50 translate-y-10'
-        }`}
+        className={`mb-[-25px] transition-all duration-700 transform pointer-events-auto cursor-pointer group relative ${showBubble ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-50 translate-y-10'
+          }`}
       >
         <div className="relative">
           {/* Close Button - Appears on hover */}
@@ -82,18 +77,16 @@ const MascotContact: React.FC = () => {
       </div>
 
       {/* Mascot Image */}
-      <div 
+      <div
         onClick={handleContactClick}
-        className={`relative pointer-events-auto cursor-pointer w-52 h-52 md:w-80 md:h-80 transition-all duration-500 transform ${
-          isWaving ? 'rotate-2 scale-105' : 'rotate-0 scale-100'
-        } hover:-translate-y-3 hover:scale-105 active:scale-90`}
+        className="relative pointer-events-auto cursor-pointer w-52 h-52 md:w-80 md:h-80"
       >
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-40 h-8 bg-black/10 blur-xl rounded-full"></div>
 
         <div className="relative w-full h-full">
-          <img 
+          <img
             src={mascotImageUrl}
-            alt="Mnostva Art Mascot" 
+            alt="Mnostva Art Mascot"
             className="w-full h-full object-contain object-bottom"
           />
         </div>

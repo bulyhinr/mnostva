@@ -23,13 +23,13 @@ const Hero: React.FC<HeroProps> = ({ onExplore, onWorkWithUs }) => {
             Mnostva Art creates vibrant, stylized 3D cartoon rooms and levels that bring stories to life. Interact with our work.
           </p>
           <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-            <button 
+            <button
               onClick={onExplore}
               className="bg-purple-600 text-white px-8 py-4 rounded-2xl text-xl font-bold kidcore-shadow hover:translate-y-[-4px] transition-all"
             >
               Explore Assets
             </button>
-            <button 
+            <button
               onClick={onWorkWithUs}
               className="bg-white text-purple-600 border-2 border-purple-600 px-8 py-4 rounded-2xl text-xl font-bold hover:bg-purple-50 transition-all"
             >
@@ -38,10 +38,10 @@ const Hero: React.FC<HeroProps> = ({ onExplore, onWorkWithUs }) => {
           </div>
         </div>
 
-        <div className="flex-1 relative w-full h-[450px] lg:h-[650px]">
+        <div className="relative w-full lg:flex-1 lg:!h-[650px]" style={{ height: '550px', minHeight: '550px' }}>
           <div className="relative z-10 w-full h-full">
             <ModelViewer />
-            
+
             <div className="absolute bottom-10 right-0 lg:-right-10 bg-white/50 backdrop-blur-md text-purple-600 px-4 py-2 rounded-2xl border border-white/40 shadow-sm pointer-events-none animate-float hidden sm:block">
               <span className="text-sm font-bold flex items-center gap-2">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,7 +51,7 @@ const Hero: React.FC<HeroProps> = ({ onExplore, onWorkWithUs }) => {
               </span>
             </div>
           </div>
-          
+
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100%] bg-purple-200/20 rounded-full blur-[100px] -z-10"></div>
           <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-pink-200/30 rounded-full blur-3xl -z-10 animate-pulse"></div>
         </div>
