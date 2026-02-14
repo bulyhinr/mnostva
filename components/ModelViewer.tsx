@@ -34,7 +34,7 @@ const ModelViewer: React.FC = () => {
   return (
     <div className="w-full h-full cursor-grab active:cursor-grabbing">
       {/* Set gl={{ alpha: true }} to ensure background is transparent */}
-      <Canvas shadows camera={{ position: [8, 8, 8], fov: 35 }} gl={{ alpha: true, antialias: true }}>
+      <Canvas shadows camera={{ position: [4, 4, 4], fov: 35 }} gl={{ alpha: true, antialias: true }}>
         {/* Removed the solid background color to allow page gradient to show through */}
         <Fog attach="fog" args={['#fdf2f8', 12, 30]} />
 
@@ -50,7 +50,7 @@ const ModelViewer: React.FC = () => {
 
         <OrbitControls
           enablePan={false}
-          minDistance={5}
+          minDistance={2}
           maxDistance={15}
           maxPolarAngle={Math.PI / 2.1}
           makeDefault

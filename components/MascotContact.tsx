@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 // @ts-ignore
 import mascotImageUrl from '../content/girl_mnostva.png';
 
@@ -35,8 +36,11 @@ const MascotContact: React.FC = () => {
     }
   }, [isTriggered, isDismissed]);
 
+  const navigate = useNavigate();
+
   const handleContactClick = () => {
-    window.location.href = '/#about';
+    setIsDismissed(true);
+    navigate('/about');
   };
 
   const handleDismiss = (e: React.MouseEvent) => {

@@ -29,7 +29,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
           setLoading(false);
           return;
         }
-        await register(name, email);
+        await register(name, email, password);
         onSuccess();
       } else {
         const success = await login(email, password);
@@ -49,7 +49,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-gradient-to-br from-[#8a7db3]/10 to-pink-50">
       <ScrollReveal className="w-full max-w-md">
-        <button 
+        <button
           onClick={onBack}
           className="mb-6 flex items-center gap-2 text-[#8a7db3] font-black uppercase tracking-widest hover:translate-x-[-4px] transition-transform"
         >
@@ -71,7 +71,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
             {isSignup && (
               <div className="text-left animate-in fade-in slide-in-from-top-2">
                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4">Full Name</label>
-                <input 
+                <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -81,10 +81,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
                 />
               </div>
             )}
-            
+
             <div className="text-left">
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4">Email Address</label>
-              <input 
+              <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -93,10 +93,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
                 className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all text-[#8a7db3] placeholder-[#8a7db3]/30"
               />
             </div>
-            
+
             <div className="text-left">
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4">Password</label>
-              <input 
+              <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -112,7 +112,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
               </p>
             )}
 
-            <button 
+            <button
               type="submit"
               disabled={loading}
               className="w-full bg-[#8a7db3] text-white py-5 rounded-2xl font-black text-lg shadow-xl hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest mt-4 disabled:opacity-50"
@@ -124,7 +124,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
           <div className="mt-8 pt-8 border-t-2 border-gray-50">
             <p className="text-gray-400 font-bold text-xs">
               {isSignup ? 'Already have an account?' : "Don't have an account?"} {' '}
-              <button 
+              <button
                 onClick={() => { setIsSignup(!isSignup); setError(''); }}
                 className="text-pink-500 hover:underline cursor-pointer font-black"
               >

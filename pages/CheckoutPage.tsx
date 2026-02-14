@@ -4,6 +4,9 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/ScrollReveal';
 import { Order } from '../types';
+import { orderService } from '../services/orderService';
+import { authService } from '../services/authService';
+import ImageWithFallback from '../components/ImageWithFallback';
 
 interface CheckoutPageProps {
   onSuccess: () => void;
@@ -15,14 +18,15 @@ interface CheckoutPageProps {
 const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNavigateToProfile, onNavigateToLogin }) => {
   const { cart, totalPrice, clearCart } = useCart();
   const { user, register, addOrder } = useAuth();
-  
+
   const [step, setStep] = useState<1 | 2 | 3 | 4>(user ? 2 : 1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
-  
+
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
+    password: '',
     createAccount: false,
     cardNumber: '',
     expiry: '',
@@ -40,15 +44,30 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
     setStep(nextStep);
   };
 
-  const handleIdentitySubmit = (e: React.FormEvent) => {
+  const handleIdentitySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user && form.createAccount) {
+      if (!form.password) {
+        alert("Please enter a password to create an account.");
+        return;
+      }
+      try {
+        await register(form.name, form.email, form.password);
+      } catch (error) {
+        console.error("Registration during checkout failed:", error);
+        alert("Registration failed. Please check your details or login.");
+        return;
+      }
+    }
+
     goToStep(2);
   };
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length > 16) value = value.slice(0, 16);
-    
+
     // Format with spaces for the input field: 0000 0000 0000 0000
     const formatted = value.replace(/(.{4})/g, '$1 ').trim();
     setForm({ ...form, cardNumber: formatted });
@@ -57,18 +76,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length > 4) value = value.slice(0, 4);
-    
+
     // Add leading zero if first digit is > 1
     if (value.length === 1 && parseInt(value) > 1) {
       value = '0' + value;
     }
-    
+
     // Add slash
     let formatted = value;
     if (value.length > 2) {
       formatted = `${value.slice(0, 2)}/${value.slice(2)}`;
     }
-    
+
     setForm({ ...form, expiry: formatted });
   };
 
@@ -80,25 +99,25 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    
-    setTimeout(async () => {
-      if (!user && form.createAccount) {
-        await register(form.name, form.email);
-      }
 
-      const newOrder: Order = {
-        id: Math.random().toString(36).substr(2, 9).toUpperCase(),
-        date: new Date().toISOString(),
-        items: [...cart],
-        total: totalPrice,
-        status: 'completed'
-      };
+    try {
+      // 1. Get token
+      const token = authService.getAccessToken();
 
-      addOrder(newOrder);
-      setIsProcessing(false);
-      goToStep(4);
+      // 2. Send order to backend
+      const order = await orderService.createOrder(cart, totalPrice, token || '', user?.id);
+
+      // 3. Update local context
+      addOrder(order);
       clearCart();
-    }, 2000);
+      goToStep(4);
+
+    } catch (error: any) {
+      console.error('Checkout failed:', error);
+      const message = error.response?.data?.message || error.message || 'Unknown error occurred';
+      alert(`Checkout failed: ${message}`);
+    }
+    setIsProcessing(false);
   };
 
   const steps = [
@@ -108,8 +127,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
     { num: 4, label: 'Success' }
   ];
 
-  const animationClass = direction === 'forward' 
-    ? "animate-in fade-in slide-in-from-right-8 duration-500 ease-out" 
+  const animationClass = direction === 'forward'
+    ? "animate-in fade-in slide-in-from-right-8 duration-500 ease-out"
     : "animate-in fade-in slide-in-from-left-8 duration-500 ease-out";
 
   return (
@@ -118,7 +137,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl -z-10"></div>
 
       <ScrollReveal className="max-w-6xl mx-auto">
-        <button 
+        <button
           onClick={onBack}
           className="mb-8 flex items-center gap-2 text-[#8a7db3] font-black uppercase tracking-widest hover:translate-x-[-4px] transition-transform"
         >
@@ -129,14 +148,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
           <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-100 -translate-y-1/2 -z-10"></div>
           {steps.map((s) => (
             <div key={s.num} className="flex flex-col items-center gap-2">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-all border-4 ${
-                step >= s.num ? 'bg-[#8a7db3] text-white border-[#8a7db3] scale-110 shadow-lg' : 'bg-white text-gray-300 border-gray-100'
-              }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-all border-4 ${step >= s.num ? 'bg-[#8a7db3] text-white border-[#8a7db3] scale-110 shadow-lg' : 'bg-white text-gray-300 border-gray-100'
+                }`}>
                 {step > s.num ? '✓' : s.num}
               </div>
-              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${
-                step >= s.num ? 'text-[#8a7db3]' : 'text-gray-300'
-              }`}>
+              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${step >= s.num ? 'text-[#8a7db3]' : 'text-gray-300'
+                }`}>
                 {s.label}
               </span>
             </div>
@@ -146,12 +163,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
         <div className="bg-white rounded-[3.5rem] shadow-[0_30px_60px_-15px_rgba(138,125,179,0.25)] border-b-8 border-black/10 relative transition-all duration-500 h-auto min-h-[400px]">
           {isProcessing && (
             <div className="absolute inset-0 z-50 bg-white/90 backdrop-blur-md flex flex-col items-center justify-center rounded-[3.5rem] animate-in fade-in duration-300">
-               <div className="relative">
-                  <div className="w-24 h-24 border-8 border-gray-100 border-t-[#8a7db3] rounded-full animate-spin"></div>
-                  <div className="absolute inset-0 flex items-center justify-center text-4xl animate-bounce">✨</div>
-               </div>
-               <p className="mt-8 text-2xl font-black text-[#8a7db3] uppercase tracking-widest animate-pulse">Processing Magic...</p>
-               <p className="mt-2 text-gray-600 font-bold">Please don't close this window</p>
+              <div className="relative">
+                <div className="w-24 h-24 border-8 border-gray-100 border-t-[#8a7db3] rounded-full animate-spin"></div>
+                <div className="absolute inset-0 flex items-center justify-center text-4xl animate-bounce">✨</div>
+              </div>
+              <p className="mt-8 text-2xl font-black text-[#8a7db3] uppercase tracking-widest animate-pulse">Processing Magic...</p>
+              <p className="mt-2 text-gray-600 font-bold">Please don't close this window</p>
             </div>
           )}
 
@@ -165,38 +182,54 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                 <div className="max-w-md mx-auto space-y-6">
                   <div>
                     <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Full Name</label>
-                    <input 
+                    <input
                       required
                       type="text"
                       value={form.name}
-                      onChange={e => setForm({...form, name: e.target.value})}
+                      onChange={e => setForm({ ...form, name: e.target.value })}
                       placeholder="Jane Doe"
                       className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-[1.5rem] px-8 py-5 font-bold outline-none transition-all text-gray-900 shadow-inner"
                     />
                   </div>
                   <div>
                     <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Email Address</label>
-                    <input 
+                    <input
                       required
                       type="email"
                       value={form.email}
-                      onChange={e => setForm({...form, email: e.target.value})}
+                      onChange={e => setForm({ ...form, email: e.target.value })}
                       placeholder="jane@example.com"
                       className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-[1.5rem] px-8 py-5 font-bold outline-none transition-all text-gray-900 shadow-inner"
                     />
                   </div>
-                  <label className="flex items-center gap-4 cursor-pointer group p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors">
-                    <input 
+                  <label className="flex items-center gap-4 cursor-pointer group p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors mb-6">
+                    <input
                       type="checkbox"
                       checked={form.createAccount}
-                      onChange={e => setForm({...form, createAccount: e.target.checked})}
+                      onChange={e => setForm({ ...form, createAccount: e.target.checked })}
                       className="w-6 h-6 rounded-lg border-2 border-gray-300 text-[#8a7db3] focus:ring-purple-500 transition-all cursor-pointer"
                     />
                     <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors">
                       Create an account to save this purchase! ✨
                     </span>
                   </label>
-                  <button 
+
+                  {form.createAccount && (
+                    <div className="animate-in fade-in slide-in-from-top-2 mb-6">
+                      <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Password</label>
+                      <input
+                        required={form.createAccount}
+                        type="password"
+                        value={form.password}
+                        onChange={e => setForm({ ...form, password: e.target.value })}
+                        placeholder="••••••••"
+                        minLength={6}
+                        className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-[1.5rem] px-8 py-5 font-bold outline-none transition-all text-gray-900 shadow-inner"
+                      />
+                    </div>
+                  )}
+
+                  <button
                     type="submit"
                     className="w-full bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest mt-6 border-b-8 border-purple-800/30"
                   >
@@ -204,7 +237,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   </button>
                   <div className="mt-10 pt-8 border-t-2 border-gray-100 flex flex-col items-center">
                     <p className="text-gray-400 font-black text-[10px] uppercase tracking-widest mb-4">Already have an account?</p>
-                    <button 
+                    <button
                       type="button"
                       onClick={onNavigateToLogin}
                       className="w-full bg-white text-[#8a7db3] border-4 border-[#8a7db3] py-4 rounded-[1.5rem] font-black text-sm shadow-sm hover:bg-[#8a7db3] hover:text-white transition-all uppercase tracking-widest"
@@ -226,7 +259,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   {cart.map(item => (
                     <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-[2.5rem] border-2 border-white shadow-sm group hover:border-pink-100 transition-all relative">
                       <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md relative">
-                        <img src={item.imageUrl} className="w-full h-full object-cover" />
+                        <ImageWithFallback src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                         {item.quantity > 1 && (
                           <div className="absolute top-1 right-1 bg-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg border border-white">
                             x{item.quantity}
@@ -245,9 +278,20 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                         )}
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="font-black text-pink-500 text-sm">
-                           ${(item.price * item.quantity).toFixed(2)}
-                        </p>
+                        {item.discount && item.discount.isActive ? (
+                          <>
+                            <p className="text-[10px] font-bold text-gray-400 line-through">
+                              ${(item.price * item.quantity).toFixed(2)}
+                            </p>
+                            <p className="font-black text-pink-500 text-sm">
+                              ${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="font-black text-pink-500 text-sm">
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </p>
+                        )}
                         {item.quantity > 1 && (
                           <span className="text-[10px] font-black text-gray-300 block">x{item.quantity}</span>
                         )}
@@ -262,14 +306,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   </div>
                   <div className="flex gap-4">
                     {(step !== 2 || !user) && (
-                      <button 
+                      <button
                         onClick={() => goToStep(1)}
                         className="flex-1 bg-gray-100 text-gray-600 py-6 rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-gray-200 transition-all"
                       >
                         Back
                       </button>
                     )}
-                    <button 
+                    <button
                       onClick={() => goToStep(3)}
                       className="flex-[2] bg-pink-500 text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest border-b-8 border-pink-700/30"
                     >
@@ -288,21 +332,21 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                     <div className="absolute top-[-20px] right-[-20px] w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000"></div>
                     <div className="relative z-10">
                       <div className="flex justify-between items-start mb-14">
-                         <div className="w-14 h-10 bg-white/20 rounded-xl border border-white/30 backdrop-blur-md"></div>
-                         <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-80">Mnostva Pay</span>
+                        <div className="w-14 h-10 bg-white/20 rounded-xl border border-white/30 backdrop-blur-md"></div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-80">Mnostva Pay</span>
                       </div>
                       <div className="text-2xl font-mono tracking-[0.25em] mb-10 drop-shadow-lg text-white font-bold">
                         {form.cardNumber || '•••• •••• •••• ••••'}
                       </div>
                       <div className="flex justify-between items-end">
-                         <div>
-                           <p className="text-[9px] font-black uppercase opacity-60 mb-1">Card Holder</p>
-                           <p className="text-sm font-black uppercase truncate max-w-[160px]">{form.name || 'Your Name'}</p>
-                         </div>
-                         <div className="text-right">
-                           <p className="text-[9px] font-black uppercase opacity-60 mb-1">Expires</p>
-                           <p className="text-sm font-black">{form.expiry || 'MM/YY'}</p>
-                         </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase opacity-60 mb-1">Card Holder</p>
+                          <p className="text-sm font-black uppercase truncate max-w-[160px]">{form.name || 'Your Name'}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[9px] font-black uppercase opacity-60 mb-1">Expires</p>
+                          <p className="text-sm font-black">{form.expiry || 'MM/YY'}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -310,8 +354,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   <div className="hidden lg:block bg-gray-50 p-8 rounded-[2.5rem] border-2 border-white shadow-inner">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Total to Pay</p>
                     <div className="flex items-baseline gap-2">
-                       <span className="text-6xl font-black text-gray-900">${totalPrice.toFixed(2)}</span>
-                       <span className="text-pink-500 font-black text-xs uppercase animate-pulse">Ready to ship! 🚀</span>
+                      <span className="text-6xl font-black text-gray-900">${totalPrice.toFixed(2)}</span>
+                      <span className="text-pink-500 font-black text-xs uppercase animate-pulse">Ready to ship! 🚀</span>
                     </div>
                   </div>
                 </div>
@@ -321,7 +365,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   <div className="space-y-5">
                     <div>
                       <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Card Number</label>
-                      <input 
+                      <input
                         required
                         type="text"
                         value={form.cardNumber}
@@ -333,7 +377,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                     <div className="grid grid-cols-2 gap-6">
                       <div>
                         <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Expiry</label>
-                        <input 
+                        <input
                           required
                           type="text"
                           value={form.expiry}
@@ -344,7 +388,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                       </div>
                       <div>
                         <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">CVC</label>
-                        <input 
+                        <input
                           required
                           type="text"
                           maxLength={3}
@@ -363,14 +407,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                    <button 
+                    <button
                       type="button"
                       onClick={() => goToStep(2)}
                       className="flex-1 bg-gray-100 text-gray-600 py-6 rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-gray-200 transition-all shadow-sm order-2 sm:order-1"
                     >
                       Back
                     </button>
-                    <button 
+                    <button
                       type="submit"
                       className="flex-[2] bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest border-b-8 border-purple-800/30 order-1 sm:order-2"
                     >

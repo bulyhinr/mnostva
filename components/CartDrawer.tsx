@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import ImageWithFallback from './ImageWithFallback';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -26,6 +26,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
     }, 300);
   };
 
+
   const handleCheckoutClick = () => {
     onClose();
     // In App.tsx we listen to hash changes, but we'll use the callback provided by Navbar
@@ -35,7 +36,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
 
   return (
     <div className="fixed inset-0 z-[110] flex justify-end">
-      <div 
+      <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       ></div>
@@ -55,7 +56,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
             <div className="text-center py-20">
               <div className="text-6xl mb-6">🧺</div>
               <p className="text-gray-400 font-bold text-xl">Your basket is empty!</p>
-              <button 
+              <button
                 onClick={onClose}
                 className="mt-6 text-[#8a7db3] font-black uppercase tracking-widest text-sm hover:underline"
               >
@@ -66,20 +67,19 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
             cart.map((item) => {
               const isRemoving = removingIds.has(item.id);
               return (
-                <div 
-                  key={item.id} 
-                  className={`flex gap-4 group transition-all duration-300 ${
-                    isRemoving ? 'animate-slide-out-right opacity-0' : 'opacity-100'
-                  }`}
+                <div
+                  key={item.id}
+                  className={`flex gap-4 group transition-all duration-300 ${isRemoving ? 'animate-slide-out-right opacity-0' : 'opacity-100'
+                    }`}
                   style={{ maxHeight: isRemoving ? '0' : '500px', marginBottom: isRemoving ? '0' : '1.5rem', overflow: 'hidden' }}
                 >
                   <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0 shadow-sm border border-gray-50">
-                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                    <ImageWithFallback src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-grow">
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-black text-gray-800 leading-tight text-sm">{item.name}</h4>
-                      <button 
+                      <button
                         onClick={() => handleRemove(item.id)}
                         className="text-gray-300 hover:text-red-500 transition-all transform hover:scale-125 active:scale-90"
                       >
@@ -88,20 +88,29 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
                         </svg>
                       </button>
                     </div>
-                    
+
                     <div className="flex items-center justify-between mt-2">
-                       <div className="flex items-center bg-gray-50 rounded-full px-2 py-0.5 border border-gray-100">
-                         <button 
+                      <div className="flex items-center bg-gray-50 rounded-full px-2 py-0.5 border border-gray-100">
+                        <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           className="w-6 h-6 flex items-center justify-center font-black text-gray-400 hover:text-[#8a7db3]"
-                         >–</button>
-                         <span className="w-6 text-center text-xs font-black text-gray-700">{item.quantity}</span>
-                         <button 
+                        >–</button>
+                        <span className="w-6 text-center text-xs font-black text-gray-700">{item.quantity}</span>
+                        <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           className="w-6 h-6 flex items-center justify-center font-black text-gray-400 hover:text-[#8a7db3]"
-                         >+</button>
-                       </div>
-                       <div className="text-pink-500 font-black">${(item.price * item.quantity).toFixed(2)}</div>
+                        >+</button>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        {item.discount && item.discount.isActive ? (
+                          <>
+                            <span className="text-gray-400 line-through text-[10px] font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                            <span className="text-pink-500 font-black">${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}</span>
+                          </>
+                        ) : (
+                          <div className="text-pink-500 font-black">${(item.price * item.quantity).toFixed(2)}</div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -116,7 +125,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
               <span className="text-gray-400">Total</span>
               <span className="text-gray-900">${totalPrice.toFixed(2)}</span>
             </div>
-            <button 
+            <button
               onClick={handleCheckoutClick}
               className="w-full bg-[#8a7db3] text-white py-5 rounded-2xl font-black text-lg shadow-xl hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest"
             >

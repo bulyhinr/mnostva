@@ -1,11 +1,18 @@
 
+export interface Discount {
+  id: string;
+  name: string;
+  percentage: number;
+  isActive: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
   imageUrl: string;
-  category: 'Room' | 'Level' | 'Prop' | 'Full Pack';
+  category: 'Room' | 'Level' | 'Prop' | 'Full Pack' | 'Weapons';
   externalLinks: {
     unity?: string;
     fab?: string;
@@ -22,6 +29,10 @@ export interface Product {
     rigged?: boolean;
     animated?: boolean;
   };
+  discount?: Discount;
+  fileKey?: string;
+  previewImageKey?: string;
+  galleryImages?: string[];
 }
 
 export interface CartItem extends Product {
@@ -47,6 +58,7 @@ export interface User {
   avatar?: string;
   bio?: string;
   joinedAt: string;
+  isAdmin?: boolean;
 }
 
 export interface Order {
@@ -64,4 +76,4 @@ export interface ActivityLog {
   timestamp: string;
 }
 
-export type PageType = 'home' | 'marketplace' | 'license' | 'product-detail' | 'about' | 'login' | 'profile' | 'checkout';
+export type PageType = 'home' | 'marketplace' | 'license' | 'product-detail' | 'about' | 'login' | 'profile' | 'checkout' | 'admin';
