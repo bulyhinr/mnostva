@@ -47,11 +47,42 @@ export const orderService = {
         return mapOrderToFrontend(response.data);
     },
 
+    // New method for secure checkout
+    async createCheckoutSession(productIds: string[], token: string) {
+        const response = await axios.post<{ clientSecret: string, orderId: string }>(`${API_URL}/orders/checkout`, {
+            productIds
+        }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
     async getMyOrders(token: string) {
         const response = await axios.get<any[]>(`${API_URL}/orders/my-orders`, {
             headers: { Authorization: `Bearer ${token}` }
         });
 
         return response.data.map(mapOrderToFrontend);
+    },
+
+    async getPaymentDetails(orderId: string, token: string) {
+        const response = await axios.get<{ clientSecret: string }>(`${API_URL}/orders/${orderId}/payment`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    async cancelOrder(orderId: string, token: string) {
+        const response = await axios.post(`${API_URL}/orders/${orderId}/cancel`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    async verifyPayment(orderId: string, token: string) {
+        const response = await axios.post(`${API_URL}/orders/${orderId}/verify`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return mapOrderToFrontend(response.data);
     }
 };

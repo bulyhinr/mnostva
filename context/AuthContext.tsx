@@ -15,6 +15,7 @@ interface AuthContextType {
   updateProfile: (data: Partial<User> & { password?: string }) => Promise<void>;
   addOrder: (order: Order) => void;
   addLog: (type: ActivityLog['type'], description: string) => void;
+  fetchOrders: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -156,28 +157,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         addLog('login', 'New account created successfully');
       } catch (apiError) {
-        // Fallback to mock registration
-        console.warn('API registration failed, using mock:', apiError);
-        const newUser: User = {
-          id: Math.random().toString(36).substr(2, 9),
-          email,
-          name,
-          avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`,
-          bio: 'New explorer of stylized worlds!',
-          joinedAt: new Date().toISOString(),
-          isAdmin: false
-        };
-
-        setUser(newUser);
-        saveToStorage('mnostva_user', newUser);
-
-        // Clear old data for new user
-        setOrders([]);
-        setLogs([]);
-        localStorage.removeItem('mnostva_orders');
-        localStorage.removeItem('mnostva_logs');
-
-        addLog('login', 'New account created successfully (mock)');
+        console.error('Registration error:', apiError);
+        setLoading(false);
+        throw apiError;
       }
 
       setLoading(false);
@@ -240,6 +222,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     saveToStorage('mnostva_logs', updatedLogs);
   };
 
+  const fetchOrders = React.useCallback(async () => {
+    try {
+      if (authService.isAuthenticated()) {
+        const token = authService.getAccessToken();
+        if (token) {
+          const apiOrders = await orderService.getMyOrders(token);
+          setOrders(apiOrders);
+          saveToStorage('mnostva_orders', apiOrders);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to sync orders:', error);
+    }
+  }, []);
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -251,7 +248,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout,
       updateProfile,
       addOrder,
-      addLog
+      addLog,
+      fetchOrders
     }}>
       {children}
     </AuthContext.Provider>

@@ -45,6 +45,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
             className={className}
             onClick={onClick}
             onError={handleError}
+            loading={props.loading || 'lazy'}
             {...props}
         />
     );

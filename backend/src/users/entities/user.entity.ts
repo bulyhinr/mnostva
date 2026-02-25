@@ -38,4 +38,10 @@ export class User {
 
     @OneToMany(() => DownloadLog, (log) => log.user)
     downloadLogs: DownloadLog[];
+
+    @OneToMany('Review', (review: any) => review.user) // Use string to avoid circular dependency or import
+    reviews: any[];
+
+    @OneToMany('WishlistItem', (item: any) => item.user)
+    wishlistItems: any[];
 }

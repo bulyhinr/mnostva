@@ -17,6 +17,12 @@ import { DownloadLog } from './downloads/entities/download-log.entity';
 import { DiscountsModule } from './discounts/discounts.module';
 import { Discount } from './discounts/entities/discount.entity';
 import { StorageModule } from './storage/storage.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { Review } from './reviews/entities/review.entity';
+import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { EmailModule } from './email/email.module';
+import { SitemapController } from './sitemap.controller';
 
 @Module({
   imports: [
@@ -39,8 +45,9 @@ import { StorageModule } from './storage/storage.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get('DATABASE_URL'),
-        entities: [User, Product, Order, OrderItem, DownloadLog, Discount],
+        entities: [User, Product, Order, OrderItem, DownloadLog, Discount, Review, WishlistItem],
         synchronize: configService.get('NODE_ENV') !== 'production', // Auto-sync only in dev
+
         logging: configService.get('NODE_ENV') !== 'production',
       }),
     }),
@@ -54,6 +61,10 @@ import { StorageModule } from './storage/storage.module';
     DownloadsModule,
     PaymentsModule,
     StorageModule,
+    ReviewsModule,
+    WishlistModule,
+    EmailModule,
   ],
+  controllers: [SitemapController],
 })
 export class AppModule { }

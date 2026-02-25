@@ -17,8 +17,11 @@ export class Order {
     @Column({ name: 'stripe_payment_intent_id', nullable: true })
     stripePaymentIntentId: string;
 
+    @Column({ name: 'receipt_url', nullable: true })
+    receiptUrl: string;
+
     @Column({ default: 'pending' })
-    status: 'pending' | 'paid' | 'failed' | 'fulfilled';
+    status: 'pending' | 'paid' | 'failed' | 'fulfilled' | 'cancelled';
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

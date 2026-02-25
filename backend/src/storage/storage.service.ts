@@ -1,6 +1,6 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
@@ -35,6 +35,17 @@ export class StorageService {
 
     async generateDownloadUrl(key: string, expiresInSeconds = 600): Promise<string> {
         try {
+            // Check if file exists
+            try {
+                await this.s3Client.send(new HeadObjectCommand({
+                    Bucket: this.bucketName,
+                    Key: key,
+                }));
+            } catch (error) {
+                this.logger.warn(`File not found: ${key}`);
+                throw new NotFoundException('File not found in storage');
+            }
+
             const command = new GetObjectCommand({
                 Bucket: this.bucketName,
                 Key: key,
@@ -45,6 +56,7 @@ export class StorageService {
             return await getSignedUrl(this.s3Client, command, { expiresIn: expiresInSeconds });
 
         } catch (error) {
+            if (error instanceof NotFoundException) throw error;
             this.logger.error(`Failed to generate download URL for key: ${key}`, error);
             throw new InternalServerErrorException('Could not generate download link');
         }

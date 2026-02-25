@@ -39,8 +39,15 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
           setError('Invalid email or password. Try 123@123.com / 123123');
         }
       }
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
+    } catch (err: any) {
+      console.error(err);
+      if (err.response && err.response.data && err.response.data.message) {
+        // Handle NestJS standard error response (message can be string or array)
+        const msg = err.response.data.message;
+        setError(Array.isArray(msg) ? msg.join(', ') : msg);
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

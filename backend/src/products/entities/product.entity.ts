@@ -64,4 +64,10 @@ export class Product {
 
     @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
     orderItems: OrderItem[];
+
+    @OneToMany('Review', (review: any) => review.product)
+    reviews: any[];
+
+    @OneToMany('WishlistItem', (item: any) => item.product)
+    wishlistItems: any[];
 }

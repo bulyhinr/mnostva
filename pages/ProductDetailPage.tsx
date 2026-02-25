@@ -3,12 +3,18 @@ import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import ScrollReveal from '../components/ScrollReveal';
 import ImageWithFallback from '../components/ImageWithFallback';
+import { reviewsService } from '../services/reviewsService';
+import { wishlistService } from '../services/wishlistService';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
+import { Helmet } from 'react-helmet-async';
 
 interface ProductDetailPageProps {
   product: Product;
   onBack: () => void;
   onNavigateToLicense: () => void;
 }
+
 
 const StoreIcons = {
   unity: (
@@ -35,6 +41,48 @@ const StoreIcons = {
 
 const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, onNavigateToLicense }) => {
   const { addToCart, cart } = useCart();
+  const { user } = useAuth();
+
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [stats, setStats] = useState({ average: 0, count: 0 });
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  useEffect(() => {
+    reviewsService.getByProduct(product.id).then(setReviews).catch(console.error);
+    reviewsService.getStats(product.id).then(setStats).catch(console.error);
+
+    if (user) {
+      wishlistService.checkStatus(product.id, localStorage.getItem('accessToken') || '')
+        .then(res => setIsWishlisted(res.inWishlist)).catch(console.error);
+    }
+  }, [product.id, user]);
+
+  const handleToggleWishlist = async () => {
+    if (!user) {
+      toast.error('Please login to create a wishlist!', {
+        style: { borderRadius: '1rem', background: '#333', color: '#fff' }
+      });
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('accessToken') || '';
+      const res = await wishlistService.toggle(product.id, token);
+      if (res.status === 'added') {
+        setIsWishlisted(true);
+        toast.success('Added to wishlist ❤️', {
+          style: { borderRadius: '1rem', background: '#333', color: '#fff' }
+        });
+      } else {
+        setIsWishlisted(false);
+        toast.success('Removed from wishlist 💔', {
+          style: { borderRadius: '1rem', background: '#333', color: '#fff' }
+        });
+      }
+    } catch (e) {
+      toast.error('Failed to update wishlist');
+    }
+  };
 
   const getStorageUrl = (key?: string) => key ? `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/public/${key}` : '';
   const mainImageUrl = product.previewImageKey ? getStorageUrl(product.previewImageKey) : product.imageUrl;
@@ -43,6 +91,17 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
   const [activeImage, setActiveImage] = useState<string>(mainImageUrl);
   const [quantity, setQuantity] = useState(1);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  // Reset zoom when changing images
+  useEffect(() => {
+    setZoomLevel(1);
+  }, [activeImage]);
+
+  const toggleZoom = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoomLevel(prev => prev === 1 ? 2.5 : 1);
+  };
 
   useEffect(() => {
     setActiveImage(mainImageUrl);
@@ -75,6 +134,42 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
 
   return (
     <div className="min-h-screen pt-10 pb-20 px-4">
+      <Helmet>
+        <title>{product.name} | Mnostva Art</title>
+        <meta name="description" content={product.description.substring(0, 160)} />
+        <meta property="og:title" content={`${product.name} | Mnostva Art`} />
+        <meta property="og:description" content={product.description.substring(0, 160)} />
+        <meta property="og:image" content={mainImageUrl} />
+        <meta property="og:type" content="product" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": product.name,
+            "image": galleryImages,
+            "description": product.description,
+            "sku": product.id,
+            "offers": {
+              "@type": "Offer",
+              "url": window.location.href,
+              "priceCurrency": "USD",
+              "price": product.discount && product.discount.isActive
+                ? product.price * (1 - product.discount.percentage / 100)
+                : product.price,
+              "itemCondition": "https://schema.org/NewCondition",
+              "availability": "https://schema.org/InStock"
+            },
+            ...(stats.count > 0 && {
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": stats.average,
+                "reviewCount": stats.count
+              }
+            })
+          })}
+        </script>
+      </Helmet>
       <ScrollReveal className="max-w-7xl mx-auto">
         <button
           onClick={onBack}
@@ -166,7 +261,27 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
 
             <div className="lg:w-2/5 p-8 lg:p-12 bg-gray-50/50 lg:border-l border-gray-100 flex flex-col">
               <div className="mb-8">
-                <h1 className="text-5xl font-black text-gray-900 mb-4 leading-tight">{product.name}</h1>
+                <div className="flex justify-between items-start gap-4">
+                  <h1 className="text-5xl font-black text-gray-900 mb-4 leading-tight flex-grow">{product.name}</h1>
+                  <button
+                    onClick={handleToggleWishlist}
+                    className={`p-3 rounded-full transition-transform hover:scale-110 active:scale-95 shadow-sm border-2 ${isWishlisted ? 'text-red-500 bg-red-50 border-red-100' : 'text-gray-300 bg-white border-gray-100 hover:text-red-300'}`}
+                  >
+                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex text-yellow-400 text-lg">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <span key={star}>{star <= Math.round(stats.average) ? '★' : '☆'}</span>
+                    ))}
+                  </div>
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                    {stats.count} Review{stats.count !== 1 ? 's' : ''}
+                  </span>
+                </div>
                 <div className="flex items-center gap-4 mb-6">
                   <span className="text-4xl font-black text-pink-500">
                     ${(product.discount && product.discount.isActive
@@ -320,6 +435,43 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                   </p>
                 </div>
               </div>
+
+              {/* Reviews Section */}
+              <div className="mt-10 pt-10 border-t border-gray-200">
+                <h4 className="text-xl font-black text-gray-900 mb-6 uppercase tracking-tight">Reviews ({stats.count})</h4>
+
+                {reviews.length === 0 ? (
+                  <p className="text-gray-500 italic text-sm">No reviews yet. Be the first!</p>
+                ) : (
+                  <div className="space-y-6">
+                    {reviews.slice(0, 3).map((review) => (
+                      <div key={review.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center font-bold text-xs">
+                              {review.user?.name?.charAt(0) || '?'}
+                            </div>
+                            <span className="font-bold text-sm text-gray-900">{review.user?.name || 'Anonymous'}</span>
+                          </div>
+                          <div className="flex text-yellow-400 text-xs">
+                            {[1, 2, 3, 4, 5].map(star => (
+                              <span key={star}>{star <= review.rating ? '★' : '☆'}</span>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-gray-600 text-sm font-medium leading-relaxed">
+                          "{review.comment}"
+                        </p>
+                      </div>
+                    ))}
+                    {reviews.length > 3 && (
+                      <button className="text-xs font-black text-[#8a7db3] uppercase tracking-widest hover:underline mt-2">
+                        View all {reviews.length} reviews
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -331,7 +483,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
           onClick={() => setIsLightboxOpen(false)}
         >
           <button
-            className="absolute top-8 right-8 text-white/40 hover:text-white transition-all p-4 hover:bg-white/10 rounded-full"
+            className="absolute top-8 right-8 z-[210] text-white/40 hover:text-white transition-all p-4 hover:bg-white/10 rounded-full"
             onClick={(e) => { e.stopPropagation(); setIsLightboxOpen(false); }}
           >
             <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -339,16 +491,53 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
             </svg>
           </button>
 
-          <div className="relative max-w-7xl w-full h-full flex items-center justify-center">
+          {/* Previous Button */}
+          {galleryImages.length > 1 && (
+            <button
+              className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-[210] text-white/40 hover:text-white transition-all p-3 md:p-6 hover:bg-white/10 rounded-full group outline-none focus:ring-2 focus:ring-white/50"
+              onClick={(e) => {
+                e.stopPropagation();
+                const currentIndex = galleryImages.findIndex(img => img === activeImage);
+                const prevIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+                setActiveImage(galleryImages[prevIndex]);
+              }}
+            >
+              <svg className="w-10 h-10 md:w-16 md:h-16 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+
+          {/* Next Button */}
+          {galleryImages.length > 1 && (
+            <button
+              className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-[210] text-white/40 hover:text-white transition-all p-3 md:p-6 hover:bg-white/10 rounded-full group outline-none focus:ring-2 focus:ring-white/50"
+              onClick={(e) => {
+                e.stopPropagation();
+                const currentIndex = galleryImages.findIndex(img => img === activeImage);
+                const nextIndex = (currentIndex + 1) % galleryImages.length;
+                setActiveImage(galleryImages[nextIndex]);
+              }}
+            >
+              <svg className="w-10 h-10 md:w-16 md:h-16 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+
+          <div className={`relative max-w-7xl w-full h-full flex items-center justify-center p-4 sm:p-12 md:p-20 transition-all duration-300 ${zoomLevel > 1 ? 'overflow-auto cursor-zoom-out' : 'cursor-zoom-in'}`}>
             <img
+              key={activeImage}
               src={activeImage}
               alt="Full resolution view"
-              className="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_100px_rgba(138,125,179,0.3)] animate-in slide-in-from-bottom-12 duration-700"
-              onClick={(e) => e.stopPropagation()}
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_100px_rgba(138,125,179,0.3)] animate-in slide-in-from-bottom-12 duration-500 transition-transform duration-300 origin-center"
+              style={{ transform: `scale(${zoomLevel})` }}
+              onClick={toggleZoom}
               onError={handleImageError}
             />
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-2xl px-10 py-4 rounded-full text-white/90 font-black text-xs uppercase tracking-[0.4em] border border-white/20 shadow-2xl animate-in fade-in duration-1000">
-              HD PREVIEW: {product.name}
+
+            <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-2xl px-6 md:px-10 py-3 md:py-4 rounded-full text-white/90 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.4em] border border-white/20 shadow-2xl animate-in fade-in duration-1000 whitespace-nowrap">
+              {galleryImages.findIndex(img => img === activeImage) + 1} / {galleryImages.length} — PREVIEW
             </div>
           </div>
         </div>

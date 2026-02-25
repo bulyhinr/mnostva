@@ -111,7 +111,7 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
         </div>
 
         {/* Optimized Filter Bar */}
-        <div className="bg-white/90 backdrop-blur-2xl rounded-[2rem] md:rounded-[3rem] p-3 md:p-6 mb-8 md:mb-12 shadow-2xl border-4 border-white flex flex-col lg:flex-row gap-3 md:gap-6 items-center relative z-50">
+        <aside className="bg-white/90 backdrop-blur-2xl rounded-[2rem] md:rounded-[3rem] p-3 md:p-6 mb-8 md:mb-12 shadow-2xl border-4 border-white flex flex-col lg:flex-row gap-3 md:gap-6 items-center relative z-50">
 
           {/* Search Input */}
           <div className="relative w-full lg:w-[320px] shrink-0">
@@ -187,10 +187,10 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
               </div>
             </div>
           </div>
-        </div>
+        </aside>
 
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
             {filteredProducts.map((product, index) => (
               <ScrollReveal key={product.id} delay={index * 50}>
                 <ProductCard
@@ -199,7 +199,7 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
                 />
               </ScrollReveal>
             ))}
-          </div>
+          </section>
         ) : (
           <div className="text-center py-20 md:py-32 bg-white/30 rounded-[3rem] md:rounded-[4rem] border-4 border-dashed border-gray-200 mx-2">
             <div className="text-6xl md:text-8xl mb-6 text-gray-300">🔍</div>
@@ -211,8 +211,9 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
               Clear all filters
             </button>
           </div>
-        )}
-      </ScrollReveal>
+        )
+        }
+      </ScrollReveal >
 
       <style>{`
         .scrollbar-hide::-webkit-scrollbar {
@@ -223,7 +224,7 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
           scrollbar-width: none;
         }
       `}</style>
-    </div>
+    </div >
   );
 };
 

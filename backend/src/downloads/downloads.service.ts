@@ -44,7 +44,7 @@ export class DownloadsService {
             });
 
             // Generate signed URL
-            return getSignedUrl(this.r2Client, command, { expiresIn: expiresInSeconds });
+            return await getSignedUrl(this.r2Client, command, { expiresIn: expiresInSeconds });
         } catch (error) {
             console.error('Error generating signed URL:', error);
             throw new NotFoundException('Could not generate download link');

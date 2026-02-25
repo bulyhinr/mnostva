@@ -1,8 +1,13 @@
-
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/ScrollReveal';
 import { Toaster, toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { orderService } from '../services/orderService';
+import { wishlistService } from '../services/wishlistService';
+import { useCart } from '../context/CartContext';
+import ConfirmationModal from '../components/ConfirmationModal';
+import ReviewModal from '../components/ReviewModal';
 
 interface ProfilePageProps {
   onBack: () => void;
@@ -10,11 +15,48 @@ interface ProfilePageProps {
 }
 
 const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) => {
-  const { user, orders, logs, updateProfile, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'purchases' | 'settings' | 'logs'>('dashboard');
+  const navigate = useNavigate();
+  const { user, orders, logs, updateProfile, logout, fetchOrders } = useAuth();
+  const { addToCart } = useCart();
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'purchases' | 'settings' | 'logs' | 'wishlist'>('dashboard');
+  const [wishlistItems, setWishlistItems] = useState<any[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Review Modal State
+  const [reviewModal, setReviewModal] = useState<{ isOpen: boolean; productId: string | null; productName: string }>({
+    isOpen: false,
+    productId: null,
+    productName: ''
+  });
+
+  // Cancellation Modal State
+  const [cancelModal, setCancelModal] = useState<{ isOpen: boolean; orderId: string | null }>({
+    isOpen: false,
+    orderId: null
+  });
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  const handleConfirmCancel = async () => {
+    if (!cancelModal.orderId) return;
+
+    setIsCancelling(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      await orderService.cancelOrder(cancelModal.orderId, token);
+      await fetchOrders(); // Refresh orders
+      toast.success('Order cancelled successfully');
+      setCancelModal({ isOpen: false, orderId: null });
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to cancel order');
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   // Settings form state
   const [formData, setFormData] = useState({
@@ -26,6 +68,20 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      fetchOrders();
+    }
+
+    if (user && activeTab === 'wishlist') {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        wishlistService.getWishlist(token)
+          .then(setWishlistItems).catch(console.error);
+      }
+    }
+  }, [user, fetchOrders, activeTab]);
 
   if (!user) return null;
 
@@ -119,6 +175,33 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
   return (
     <div className="min-h-screen pt-10 pb-20 px-4">
       <Toaster position="top-center" reverseOrder={false} />
+
+      {/* Review Modal */}
+      {reviewModal.isOpen && reviewModal.productId && (
+        <ReviewModal
+          productId={reviewModal.productId}
+          productName={reviewModal.productName}
+          onClose={() => setReviewModal({ isOpen: false, productId: null, productName: '' })}
+          onSuccess={() => {
+            toast.success('Thanks for your review! 🌟', {
+              style: { borderRadius: '1rem', background: '#333', color: '#fff' }
+            });
+          }}
+        />
+      )}
+
+      {/* Cancellation Modal */}
+      <ConfirmationModal
+        isOpen={cancelModal.isOpen}
+        title="Cancel Order?"
+        message="Are you sure you want to cancel this order? This action cannot be undone."
+        confirmText="Yes, Cancel Order"
+        cancelText="No, Keep Order"
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setCancelModal({ isOpen: false, orderId: null })}
+        isProcessing={isCancelling}
+      />
+
       <ScrollReveal className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
           <button
@@ -164,6 +247,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
               {[
                 { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
                 { id: 'purchases', label: 'My Assets', icon: '📦' },
+                { id: 'wishlist', label: 'Saved', icon: '❤️' },
                 { id: 'settings', label: 'Settings', icon: '⚙️' },
                 { id: 'logs', label: 'Activity', icon: '📜' }
               ].map(tab => (
@@ -244,13 +328,18 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-black text-[#a2c367] uppercase tracking-[0.2em] bg-[#a2c367]/10 px-3 py-1 rounded-full border border-[#a2c367]/20">
+                                <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${order.status === 'pending'
+                                  ? 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'
+                                  : (order.status === 'cancelled' || order.status === 'failed')
+                                    ? 'text-gray-400 bg-gray-100 border-gray-200'
+                                    : 'text-[#a2c367] bg-[#a2c367]/10 border-[#a2c367]/20'
+                                  }`}>
                                   {order.status}
                                 </span>
                               </div>
                             </div>
 
-                            <div className="p-8 flex flex-col md:flex-row md:items-center gap-8">
+                            <div className={`p-8 flex flex-col md:flex-row md:items-center gap-8 ${(order.status === 'cancelled' || order.status === 'failed') ? 'opacity-50 grayscale-[0.8]' : ''} overflow-hidden max-w-full`}>
                               <div className="flex -space-x-4 overflow-hidden shrink-0">
                                 {items.slice(0, 4).map((item, idx) => (
                                   <div key={idx} className="inline-block h-16 w-16 rounded-2xl ring-4 ring-white shadow-lg overflow-hidden relative group-hover:scale-110 transition-transform">
@@ -264,40 +353,90 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                 ))}
                               </div>
 
-                              <div className="flex-grow">
-                                <h4 className="font-black text-xl text-gray-900 mb-2">
+                              <div className="flex-grow min-w-0 flex flex-col justify-center">
+                                <h4 className="font-black text-lg md:text-xl text-gray-900 mb-3 leading-tight">
                                   {items.length === 1 ? items[0].name : `${items.length} Asset Pack Bundle`}
                                 </h4>
-                                <div className="text-xs text-gray-500 font-medium space-y-1">
-                                  {items.slice(0, 4).map((i, idx) => (
-                                    <div key={idx} className="flex justify-between w-full max-w-xs border-b border-gray-50 pb-1 last:border-0">
-                                      <span className="truncate pr-4">{i.name}</span>
-                                      <span className="font-bold text-gray-900 shrink-0">${(i.price).toFixed(2)}</span>
-                                    </div>
-                                  ))}
-                                  {items.length > 4 && (
-                                    <p className="text-[10px] text-gray-400 pt-1 italic">...and {items.length - 4} more items</p>
-                                  )}
+                                <div className="bg-gray-50/50 rounded-xl p-3 border border-gray-100">
+                                  <div className="text-xs text-gray-600 font-medium space-y-2">
+                                    {items.slice(0, 4).map((i, idx) => (
+                                      <div key={idx} className="flex items-center justify-between w-full border-b border-dashed border-gray-200 last:border-0 pb-1.5 last:pb-0 gap-4">
+                                        <span className="truncate font-bold text-gray-700">{i.name}</span>
+                                        <span className="font-black text-gray-900 shrink-0 bg-white px-2 py-0.5 rounded-md shadow-sm border border-gray-100 text-[10px]">${(i.price).toFixed(2)}</span>
+                                      </div>
+                                    ))}
+                                    {items.length > 4 && (
+                                      <p className="text-[10px] text-gray-400 pt-1 italic text-center">...and {items.length - 4} more items</p>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
 
-                              <div className="flex flex-col items-end shrink-0 gap-3">
-                                <div className="text-right">
+                              <div className="flex flex-col md:items-end shrink-0 gap-3 w-full md:w-auto">
+                                <div className="text-right flex items-center justify-between md:block w-full">
                                   <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Order Total</span>
                                   <span className="text-3xl font-black text-gray-900">${(order.total || 0).toFixed(2)}</span>
                                 </div>
-                                <div className="flex gap-2">
-                                  <button className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">
-                                    Receipt 📥
+                              </div>
+                            </div>
+
+                            {/* Action Buttons Row */}
+                            <div className="px-8 pb-8 pt-0 flex flex-wrap gap-3 justify-end border-t border-gray-50 mt-4 pt-6">
+                              {order.status === 'pending' && (
+                                <>
+                                  <button
+                                    onClick={() => setCancelModal({ isOpen: true, orderId: order.id })}
+                                    className="bg-gray-100 hover:bg-gray-200 text-gray-500 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+                                  >
+                                    Cancel Order ✕
                                   </button>
                                   <button
-                                    onClick={() => setActiveTab('purchases')}
-                                    className="bg-gray-900 hover:bg-[#8a7db3] text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg"
+                                    onClick={async () => {
+                                      try {
+                                        const token = localStorage.getItem('accessToken');
+                                        if (!token) return;
+
+                                        const loadToast = toast.loading('Fetching payment...');
+                                        const { clientSecret } = await orderService.getPaymentDetails(order.id, token);
+                                        toast.dismiss(loadToast);
+
+                                        navigate(`/checkout?orderId=${order.id}`, {
+                                          state: {
+                                            clientSecret,
+                                            orderId: order.id,
+                                            totalAmount: order.total
+                                          }
+                                        });
+                                      } catch (e) {
+                                        console.error(e);
+                                        toast.dismiss();
+                                        toast.error('Failed to initiate payment');
+                                      }
+                                    }}
+                                    className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg animate-pulse hover:shadow-xl hover:translate-y-[-2px]"
                                   >
-                                    Library
+                                    Pay Now 💳
                                   </button>
-                                </div>
-                              </div>
+                                </>
+                              )}
+                              {(order.status === 'paid' || order.status === 'fulfilled' || order.status === 'completed') && (
+                                <>
+                                  {order.receiptUrl && (
+                                    <button
+                                      onClick={() => window.open(order.receiptUrl, '_blank')}
+                                      className="bg-gray-50 hover:bg-gray-100 text-gray-600 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all border border-gray-100"
+                                    >
+                                      Download Receipt 📥
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => setActiveTab('purchases')}
+                                    className="bg-gray-900 hover:bg-[#8a7db3] text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg hover:shadow-xl hover:translate-y-[-2px]"
+                                  >
+                                    Access Library 📦
+                                  </button>
+                                </>
+                              )}
                             </div>
                           </div>
                         );
@@ -322,89 +461,112 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <h2 className="text-3xl font-black text-gray-900 mb-10 uppercase tracking-tight">Your Stylized <span className="text-pink-500 underline decoration-wavy decoration-pink-200 underline-offset-8">Collection</span></h2>
 
-                {orders.length > 0 ? (
+                {orders.some(o => o.status === 'paid' || o.status === 'fulfilled' || o.status === 'completed') ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {orders.flatMap(order => order.items || []).map((item: any, i) => {
-                      const isDeleted = item.isDeleted;
-                      const imageUrl = item.imageUrl;
-                      const name = item.name;
-                      const description = item.description;
-                      const category = item.category;
+                    {Array.from(new Map(
+                      orders
+                        .filter(order => order.status === 'paid' || order.status === 'fulfilled' || order.status === 'completed')
+                        .flatMap(order => order.items || [])
+                        .map(item => [(item as any).productId || (item as any).product?.id || item.name, item]) // Prefer productId, fallback to local identifier
+                    ).values())
+                      .map((item: any, i) => {
+                        const isDeleted = item.isDeleted;
+                        const imageUrl = item.imageUrl;
+                        const name = item.name;
+                        const description = item.description;
+                        const category = item.category;
 
-                      return (
-                        <div key={i} className={`flex gap-5 p-5 bg-gray-50 rounded-[2.5rem] border-2 border-white shadow-sm hover:shadow-xl transition-all group ${isDeleted ? 'opacity-70 grayscale' : ''}`}>
-                          <div className="w-28 h-28 rounded-3xl overflow-hidden bg-gray-200 shrink-0 border-4 border-white shadow-lg group-hover:scale-105 transition-transform">
-                            <img src={imageUrl} className="w-full h-full object-cover" onError={handleImageError} alt={name} />
-                          </div>
-                          <div className="flex flex-col justify-center flex-grow">
-                            <h4 className="font-black text-gray-900 text-lg leading-tight group-hover:text-[#8a7db3] transition-colors">{name}</h4>
-
-                            {isDeleted ? (
-                              <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mt-1 mb-2">Discontinued Asset</p>
-                            ) : (
-                              <span className="text-[10px] font-black text-[#8a7db3] uppercase tracking-widest mt-1 mb-2 block">{category}</span>
-                            )}
-
-                            <p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
-                              {isDeleted ? 'This item is no longer available in the store.' : (description || 'Unlock your creative potential with this unique asset pack. Includes high-quality files ready for your projects.')}
-                            </p>
-
-                            <div className="flex items-center gap-3 mb-4">
-                              <span className="font-black text-pink-500 text-lg">${(item.price).toFixed(2)}</span>
-                              <span className="text-[9px] bg-pink-50 text-pink-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold border border-pink-100">Purchased</span>
+                        return (
+                          <div key={i} className={`flex gap-5 p-5 bg-gray-50 rounded-[2.5rem] border-2 border-white shadow-sm hover:shadow-xl transition-all group ${isDeleted ? 'opacity-70 grayscale' : ''}`}>
+                            <div className="w-28 h-28 rounded-3xl overflow-hidden bg-gray-200 shrink-0 border-4 border-white shadow-lg group-hover:scale-105 transition-transform">
+                              <img src={imageUrl} className="w-full h-full object-cover" onError={handleImageError} alt={name} />
                             </div>
+                            <div className="flex flex-col justify-center flex-grow">
+                              <h4 className="font-black text-gray-900 text-lg leading-tight group-hover:text-[#8a7db3] transition-colors">{name}</h4>
 
-                            <button
-                              onClick={async () => {
-                                const productId = item.productId || item.product?.id;
+                              {isDeleted ? (
+                                <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mt-1 mb-2">Discontinued Asset</p>
+                              ) : (
+                                <span className="text-[10px] font-black text-[#8a7db3] uppercase tracking-widest mt-1 mb-2 block">{category}</span>
+                              )}
 
-                                if (isDeleted || !productId) {
-                                  toast.error('This asset has been removed from our servers. Please contact support.', {
-                                    style: { borderRadius: '1rem', background: '#333', color: '#fff', fontSize: '12px' }
-                                  });
-                                  return;
-                                }
+                              <p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
+                                {isDeleted ? 'This item is no longer available in the store.' : (description || 'Unlock your creative potential with this unique asset pack. Includes high-quality files ready for your projects.')}
+                              </p>
 
-                                try {
-                                  const loadingToast = toast.loading('Securely preparing download...', {
-                                    style: { borderRadius: '1rem', fontSize: '12px' }
-                                  });
-                                  const token = localStorage.getItem('accessToken');
-                                  const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-download`, {
-                                    method: 'POST',
-                                    headers: {
-                                      'Content-Type': 'application/json',
-                                      'Authorization': `Bearer ${token}`
-                                    },
-                                    body: JSON.stringify({ productId })
-                                  });
+                              <div className="flex items-center gap-3 mb-4">
+                                <span className="font-black text-pink-500 text-lg">${(item.price).toFixed(2)}</span>
+                                <span className="text-[9px] bg-pink-50 text-pink-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold border border-pink-100">Purchased</span>
+                              </div>
 
-                                  if (!response.ok) {
-                                    toast.dismiss(loadingToast);
-                                    toast.error('Download permission denied. Contact support.', { duration: 4000 });
-                                    return;
-                                  }
+                              <div className="flex flex-wrap gap-2">
+                                <button
+                                  onClick={async () => {
+                                    const productId = item.productId || item.product?.id;
 
-                                  const data = await response.json();
-                                  toast.dismiss(loadingToast);
-                                  toast.success('Download starting! 🚀', { duration: 3000 });
-                                  window.open(data.downloadUrl, '_blank');
-                                } catch (e) {
-                                  console.error(e);
-                                  toast.dismiss();
-                                  toast.error('Network error during download.');
-                                }
-                              }}
-                              className={`bg-white text-gray-800 border-2 border-gray-100 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted
-                                ? 'cursor-not-allowed opacity-50 hover:bg-gray-100'
-                                : 'hover:bg-[#8a7db3] hover:text-white hover:border-[#8a7db3]'
-                                }`}>
-                              {isDeleted ? 'Unavailable 🚫' : 'Download Files'}
-                            </button>
+                                    if (isDeleted || !productId) {
+                                      toast.error('This asset has been removed from our servers. Please contact support.', {
+                                        style: { borderRadius: '1rem', background: '#333', color: '#fff', fontSize: '12px' }
+                                      });
+                                      return;
+                                    }
+
+                                    try {
+                                      const loadingToast = toast.loading('Securely preparing download...', {
+                                        style: { borderRadius: '1rem', fontSize: '12px' }
+                                      });
+                                      const token = localStorage.getItem('accessToken');
+                                      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-download`, {
+                                        method: 'POST',
+                                        headers: {
+                                          'Content-Type': 'application/json',
+                                          'Authorization': `Bearer ${token}`
+                                        },
+                                        body: JSON.stringify({ productId })
+                                      });
+
+                                      if (!response.ok) {
+                                        toast.dismiss(loadingToast);
+                                        if (response.status === 404) {
+                                          toast.error('File not found. Something went wrong.', { duration: 4000 });
+                                        } else if (response.status === 403) {
+                                          toast.error('Access denied. Please contact support.', { duration: 4000 });
+                                        } else {
+                                          toast.error('Something went wrong. Please try again later.', { duration: 4000 });
+                                        }
+                                        return;
+                                      }
+
+                                      const data = await response.json();
+                                      toast.dismiss(loadingToast);
+                                      toast.success('Download starting! 🚀', { duration: 3000 });
+                                      window.open(data.downloadUrl, '_blank');
+                                    } catch (e) {
+                                      console.error(e);
+                                      toast.dismiss();
+                                      toast.error('Network error during download.');
+                                    }
+                                  }}
+                                  className={`bg-white text-gray-800 border-2 border-gray-100 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted
+                                    ? 'cursor-not-allowed opacity-50 hover:bg-gray-100'
+                                    : 'hover:bg-[#8a7db3] hover:text-white hover:border-[#8a7db3]'
+                                    }`}>
+                                  {isDeleted ? 'Unavailable 🚫' : 'Download Files'}
+                                </button>
+
+                                {!isDeleted && (
+                                  <button
+                                    onClick={() => setReviewModal({ isOpen: true, productId: item.productId || item.product?.id, productName: name })}
+                                    className="bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white border-2 border-purple-100 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-2"
+                                  >
+                                    <span>★</span> Review
+                                  </button>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                   </div>
                 ) : (
                   <div className="text-center py-24 bg-gray-50/50 rounded-[4rem] border-4 border-dashed border-gray-100">
@@ -415,6 +577,93 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                       className="bg-[#8a7db3] text-white px-12 py-5 rounded-[2rem] font-black uppercase tracking-widest shadow-2xl hover:translate-y-[-4px] transition-all"
                     >
                       Explore the Shop 🪄
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+
+            {activeTab === 'wishlist' && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <h2 className="text-3xl font-black text-gray-900 mb-10 uppercase tracking-tight">Saved <span className="text-pink-500">Favorites</span></h2>
+
+                {wishlistItems.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {wishlistItems.map((item) => {
+                      const product = item.product;
+                      const imageUrl = product.previewImageKey
+                        ? `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/public/${product.previewImageKey}`
+                        : product.imageUrl;
+
+                      return (
+                        <div key={item.id} className="flex gap-5 p-5 bg-white rounded-[2.5rem] border-2 border-gray-100 shadow-sm hover:shadow-xl transition-all group">
+                          <div className="w-28 h-28 rounded-3xl overflow-hidden bg-gray-200 shrink-0 border-4 border-white shadow-lg group-hover:scale-105 transition-transform">
+                            <img
+                              src={imageUrl}
+                              className="w-full h-full object-cover"
+                              onError={handleImageError}
+                              alt={product.title}
+                            />
+                          </div>
+                          <div className="flex flex-col justify-center flex-grow">
+                            <h4 className="font-black text-gray-900 text-lg leading-tight group-hover:text-[#8a7db3] transition-colors">{product.title}</h4>
+                            <span className="text-[10px] font-black text-[#8a7db3] uppercase tracking-widest mt-1 mb-2 block">{product.category}</span>
+
+                            <div className="flex items-center gap-3 mb-4">
+                              <span className="font-black text-pink-500 text-lg">${(product.price / 100).toFixed(2)}</span>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                onClick={() => {
+                                  addToCart({
+                                    ...product,
+                                    price: product.price / 100,
+                                    name: product.title,
+                                    imageUrl: imageUrl,
+                                    tags: [],
+                                    externalLinks: product.externalLinks || {}
+                                  }, 1);
+                                  toast.success('Added to basket! 🛒', {
+                                    style: { borderRadius: '1rem', background: '#333', color: '#fff' }
+                                  });
+                                }}
+                                className="bg-[#8a7db3] text-white px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm hover:translate-y-[-2px]"
+                              >
+                                Add to Cart 🛒
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    const token = localStorage.getItem('accessToken');
+                                    if (!token) return;
+                                    await wishlistService.toggle(product.id, token);
+                                    setWishlistItems(prev => prev.filter(i => i.id !== item.id));
+                                    toast.success('Removed from wishlist');
+                                  } catch (e) {
+                                    toast.error('Failed to remove');
+                                  }
+                                }}
+                                className="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-24 bg-gray-50/50 rounded-[4rem] border-4 border-dashed border-gray-100">
+                    <div className="text-6xl mb-6">❤️</div>
+                    <p className="text-gray-500 font-black text-2xl mb-8">Your wishlist is empty!</p>
+                    <button
+                      onClick={onNavigateToShop}
+                      className="bg-[#8a7db3] text-white px-12 py-5 rounded-[2rem] font-black uppercase tracking-widest shadow-2xl hover:translate-y-[-4px] transition-all"
+                    >
+                      Find Favorites 🪄
                     </button>
                   </div>
                 )}

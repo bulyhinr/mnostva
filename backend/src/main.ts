@@ -10,7 +10,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true });
   const configService = app.get(ConfigService);
 
   // Global Validation Pipe
@@ -22,7 +22,20 @@ async function bootstrap() {
 
   // CORS Configuration
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN', 'http://localhost:3000'),
+    origin: (origin: string, callback: (err: Error | null, origin?: boolean) => void) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      // Allow any localhost origin
+      if (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+        return callback(null, true);
+      }
+      // Check against configured origin
+      const allowedOrigin = configService.get<string>('CORS_ORIGIN');
+      if (allowedOrigin && origin === allowedOrigin) {
+        return callback(null, true);
+      }
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   });
 

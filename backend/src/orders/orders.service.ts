@@ -1,13 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Order } from './entities/order.entity';
+import { ProductsService } from '../products/products.service';
+import { PaymentsService } from '../payments/payments.service';
+import { OrderItem } from './entities/order-item.entity';
+import Stripe from 'stripe';
+
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class OrdersService {
     constructor(
         @InjectRepository(Order)
         private ordersRepository: Repository<Order>,
+        private productsService: ProductsService,
+        @Inject(forwardRef(() => PaymentsService))
+        private paymentsService: PaymentsService,
+        private emailService: EmailService,
     ) { }
 
     async create(orderData: Partial<Order>): Promise<Order> {
@@ -15,15 +25,164 @@ export class OrdersService {
         return this.ordersRepository.save(order);
     }
 
+    async createOrder(userId: string, productIds: string[]) {
+        if (!productIds || productIds.length === 0) {
+            throw new Error('No products in order');
+        }
+
+        // 1. Fetch products to get current prices
+        const products = await this.productsService.findAllProducts(); // We might want a findByIds method
+        const orderItems: OrderItem[] = [];
+        let totalAmount = 0;
+
+        for (const productId of productIds) {
+            const product = products.find(p => p.id === productId);
+            if (!product) {
+                throw new NotFoundException(`Product ${productId} not found`);
+            }
+
+            const item = new OrderItem();
+            item.product = product;
+
+            // Calculate price based on discount (stored in cents)
+            let finalPrice = product.price;
+
+            if (product.discount && product.discount.isActive) {
+                const discountAmount = Math.round(product.price * (product.discount.percentage / 100));
+                finalPrice = product.price - discountAmount;
+            }
+
+            item.price = finalPrice;
+            item.quantity = 1;
+
+            orderItems.push(item);
+            totalAmount += finalPrice;
+        }
+
+        // 2. Create Order
+        const order = new Order();
+        order.user = { id: userId } as any;
+        order.items = orderItems;
+        order.totalAmount = totalAmount;
+        order.status = 'pending';
+
+        const savedOrder = await this.ordersRepository.save(order);
+
+        // 3. Create Payment Intent
+        const paymentIntent = await this.paymentsService.createPaymentIntent(totalAmount, 'usd', {
+            orderId: savedOrder.id,
+            userId,
+        });
+
+        // 4. Save Payment Intent ID to Order (for webhook matching)
+        savedOrder.stripePaymentIntentId = paymentIntent.id;
+        await this.ordersRepository.save(savedOrder);
+
+        return {
+            clientSecret: paymentIntent.client_secret,
+            orderId: savedOrder.id
+        };
+    }
+
+    async updateStatus(id: string, status: 'pending' | 'paid' | 'failed' | 'fulfilled' | 'cancelled') {
+        const order = await this.findOne(id);
+        if (!order) {
+            throw new NotFoundException(`Order ${id} not found`);
+        }
+        order.status = status;
+        return this.ordersRepository.save(order);
+    }
+
+    async cancelOrder(orderId: string, userId: string): Promise<Order> {
+        const order = await this.findOne(orderId);
+        if (!order) {
+            throw new NotFoundException(`Order ${orderId} not found`);
+        }
+        if (!order.user || order.user.id !== userId) {
+            throw new NotFoundException('Order not found or access denied');
+        }
+        if (order.status !== 'pending') {
+            throw new Error('Only pending orders can be cancelled');
+        }
+
+        order.status = 'cancelled';
+        return this.ordersRepository.save(order);
+    }
+
     async findOne(id: string): Promise<Order | null> {
-        return this.ordersRepository.findOne({ where: { id }, relations: ['items', 'items.product'] });
+        return this.ordersRepository.findOne({ where: { id }, relations: ['items', 'items.product', 'user'] });
     }
 
     async findByUser(userId: string): Promise<Order[]> {
         return this.ordersRepository.find({
             where: { user: { id: userId } },
-            relations: ['items', 'items.product'],
+            relations: ['items', 'items.product', 'user'],
             order: { createdAt: 'DESC' }
         });
+    }
+
+    async getPaymentDetails(orderId: string, userId: string): Promise<{ clientSecret: string }> {
+        const order = await this.findOne(orderId);
+        if (!order) throw new NotFoundException('Order not found');
+
+        // Ensure user relation is loaded and matches
+        if (!order.user || order.user.id !== userId) {
+            throw new NotFoundException('Order not found or access denied');
+        }
+
+        if (order.status === 'paid') {
+            // Just return whatever, but ideally frontend shouldn't call this
+            // returning empty or error depending on flow
+            throw new Error('Order is already paid');
+        }
+
+        if (!order.stripePaymentIntentId) {
+            // Ideally we'd create a new one here if missing
+            throw new Error('Payment Intent ID missing on order');
+        }
+
+        const paymentIntent = await this.paymentsService.retrievePaymentIntent(order.stripePaymentIntentId as string);
+
+        if (!paymentIntent.client_secret) {
+            throw new Error('Client secret not returned from Stripe');
+        }
+
+        return { clientSecret: paymentIntent.client_secret };
+    }
+
+    async verifyPayment(orderId: string, userId: string): Promise<Order> {
+        const order = await this.findOne(orderId);
+        if (!order) throw new NotFoundException('Order not found');
+
+        if (!order.user || order.user.id !== userId) {
+            throw new NotFoundException('Access denied');
+        }
+
+        if (order.status === 'paid') return order;
+
+        if (!order.stripePaymentIntentId) return order;
+
+        const paymentIntent = await this.paymentsService.retrievePaymentIntent(order.stripePaymentIntentId);
+
+        if (paymentIntent.status === 'succeeded') {
+            order.status = 'paid';
+
+            // Extract receipt URL
+            if (paymentIntent.latest_charge) {
+                const charge = paymentIntent.latest_charge as Stripe.Charge;
+                if (charge.receipt_url) {
+                    order.receiptUrl = charge.receipt_url;
+                }
+            }
+
+            const savedOrder = await this.ordersRepository.save(order);
+
+            // Send confirmation email
+            this.emailService.sendOrderConfirmation(order.user.email, savedOrder);
+
+            return savedOrder;
+        }
+
+        return order;
     }
 }

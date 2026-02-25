@@ -66,7 +66,8 @@ export interface Order {
   date: string;
   items: CartItem[];
   total: number;
-  status: 'completed' | 'pending';
+  status: 'completed' | 'pending' | 'paid' | 'failed' | 'fulfilled' | 'cancelled';
+  receiptUrl?: string;
 }
 
 export interface ActivityLog {

@@ -51,7 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
   };
 
   return (
-    <div className="relative group p-[5px] rounded-[2.8rem] transition-all duration-500 hover:scale-[1.03] active:scale-[1.05] h-full">
+    <article className="relative group p-[5px] rounded-[2.8rem] transition-all duration-500 hover:scale-[1.03] active:scale-[1.05] h-full">
       <div className="absolute inset-0 bg-gradient-to-br from-[#8a7db3] via-pink-400 to-[#a2c367] animate-gradient-slow opacity-30 group-hover:opacity-100 rounded-[2.8rem] transition-all duration-700 blur-[3px] group-hover:blur-[1px] group-hover:animate-border-pulse"></div>
 
       <div className="relative bg-white/90 backdrop-blur-xl rounded-[2.6rem] overflow-hidden flex flex-col h-full border border-white/40 shadow-xl group-hover:bg-white/95 transition-colors duration-500">
@@ -205,7 +205,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
           animation: wiggle 0.2s ease-in-out infinite;
         }
       `}</style>
-    </div>
+    </article>
   );
 };
 

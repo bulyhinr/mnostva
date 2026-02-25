@@ -1,10 +1,17 @@
-import { Controller, Post, Body, UseGuards, Request, Get, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, InternalServerErrorException, Param } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('orders')
 export class OrdersController {
     constructor(private readonly ordersService: OrdersService) { }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('checkout')
+    async createCheckoutSession(@Request() req, @Body() body: { productIds: string[] }) {
+        // Create secure order with payment intent
+        return this.ordersService.createOrder(req.user.userId, body.productIds);
+    }
 
     @UseGuards(AuthGuard('jwt'))
     @Post()
@@ -46,5 +53,23 @@ export class OrdersController {
     @Get('my-orders')
     async findMyOrders(@Request() req) {
         return this.ordersService.findByUser(req.user.userId);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get(':id/payment')
+    async getPaymentDetails(@Param('id') id: string, @Request() req) {
+        return this.ordersService.getPaymentDetails(id, req.user.userId);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post(':id/cancel')
+    async cancelOrder(@Param('id') id: string, @Request() req) {
+        return this.ordersService.cancelOrder(id, req.user.userId);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post(':id/verify')
+    async verifyOrder(@Param('id') id: string, @Request() req) {
+        return this.ordersService.verifyPayment(id, req.user.userId);
     }
 }

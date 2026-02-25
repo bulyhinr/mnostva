@@ -13,13 +13,21 @@ export class ProductsController {
     async findAll(@Query() query: { page?: number; limit?: number; category?: string; sortBy?: string }) {
         const page = query.page || 1;
         const limit = query.limit || 10;
-        const [products, total] = await this.productsService.findAll({
-            page,
-            limit,
-            category: query.category,
-            sortBy: query.sortBy,
-        });
-        return { data: products, total, page, limit };
+        console.log(`Fetching products with page=${page}, limit=${limit}, category=${query.category}`);
+
+        try {
+            const [products, total] = await this.productsService.findAll({
+                page: Number(page),
+                limit: Number(limit),
+                category: query.category,
+                sortBy: query.sortBy,
+            });
+            console.log(`Found ${products.length} products, total=${total}`);
+            return { data: products, total, page, limit };
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            throw error;
+        }
     }
 
     @Get(':id')

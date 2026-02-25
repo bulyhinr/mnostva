@@ -96,4 +96,6 @@ export class CreateProductDto {
     discountId?: string;
 }
 
-export class UpdateProductDto extends CreateProductDto { }
+import { PartialType } from '@nestjs/mapped-types';
+
+export class UpdateProductDto extends PartialType(CreateProductDto) { }
