@@ -45,7 +45,7 @@ describe('OrdersController', () => {
         it('should create an order', async () => {
             const result = await controller.createCheckoutSession({ user: { userId: 'user-1' } }, { productIds: ['prod-1'] });
 
-            expect(service.createOrder).toHaveBeenCalledWith('user-1', ['prod-1']);
+            expect(service.createOrder).toHaveBeenCalledWith('user-1', ['prod-1'], undefined);
             expect(result).toEqual({ id: 'order-1', clientSecret: 'secret_123' });
         });
     });

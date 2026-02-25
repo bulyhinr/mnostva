@@ -7,6 +7,7 @@ import { PaymentsService } from '../payments/payments.service';
 import { NotFoundException } from '@nestjs/common';
 import { EmailService } from '../email/email.service';
 import { OrderItem } from './entities/order-item.entity';
+import { CouponsService } from '../coupons/coupons.service';
 
 describe('OrdersService', () => {
     let service: OrdersService;
@@ -65,6 +66,13 @@ describe('OrdersService', () => {
                     provide: EmailService,
                     useValue: {
                         sendOrderConfirmation: jest.fn(),
+                    },
+                },
+                {
+                    provide: CouponsService,
+                    useValue: {
+                        validate: jest.fn().mockResolvedValue({ valid: true, discountPercentage: 10 }),
+                        incrementUses: jest.fn(),
                     },
                 },
             ],
