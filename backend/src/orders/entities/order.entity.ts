@@ -20,6 +20,12 @@ export class Order {
     @Column({ name: 'receipt_url', nullable: true })
     receiptUrl: string;
 
+    @Column({ name: 'coupon_code', type: 'varchar', nullable: true })
+    couponCode: string | null;
+
+    @Column({ name: 'coupon_discount', type: 'int', nullable: true, comment: 'Discount amount in cents' })
+    couponDiscount: number | null;
+
     @Column({ default: 'pending' })
     status: 'pending' | 'paid' | 'failed' | 'fulfilled' | 'cancelled';
 

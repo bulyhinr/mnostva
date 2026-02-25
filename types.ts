@@ -6,6 +6,16 @@ export interface Discount {
   isActive: boolean;
 }
 
+export interface Coupon {
+  id: string;
+  code: string;
+  discountPercentage: number;
+  isActive: boolean;
+  currentUses: number;
+  maxUses: number | null;
+  createdAt: string;
+}
+
 export interface Product {
   id: string;
   name: string;

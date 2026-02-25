@@ -7,6 +7,7 @@ import ScrollReveal from '../components/ScrollReveal';
 import { Order } from '../types';
 import { orderService } from '../services/orderService';
 import { authService } from '../services/authService';
+import { couponService } from '../services/couponService';
 import ImageWithFallback from '../components/ImageWithFallback';
 // Stripe imports
 import { loadStripe } from '@stripe/stripe-js';
@@ -40,6 +41,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
   // Stripe Session State
   const [clientSecret, setClientSecret] = useState<string>(state?.clientSecret || '');
   const [stripeError, setStripeError] = useState<string>('');
+
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{ discountPercentage: number } | null>(null);
+  const [couponError, setCouponError] = useState('');
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
   const [existingOrderAmount, setExistingOrderAmount] = useState<number | null>(state?.totalAmount || null);
   const [existingOrderItems, setExistingOrderItems] = useState<any[]>([]);
@@ -106,7 +112,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
           } else {
             // Normal flow from cart
             const productIds = cart.flatMap(item => Array(item.quantity).fill(item.id));
-            const data = await orderService.createCheckoutSession(productIds, token);
+            const data = await orderService.createCheckoutSession(productIds, token, appliedCoupon ? couponCode : undefined);
             setClientSecret(data.clientSecret);
 
             // Update URL to include orderId so refresh works
@@ -129,6 +135,23 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
   const goToStep = (nextStep: 1 | 2 | 3 | 4) => {
     setDirection(nextStep > step ? 'forward' : 'backward');
     setStep(nextStep);
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setIsValidatingCoupon(true);
+    setCouponError('');
+    try {
+      const result = await couponService.validateCoupon(couponCode);
+      if (result.valid) {
+        setAppliedCoupon({ discountPercentage: result.discountPercentage });
+      }
+    } catch (e: any) {
+      setAppliedCoupon(null);
+      setCouponError(e.response?.data?.message || 'Invalid coupon code');
+    } finally {
+      setIsValidatingCoupon(false);
+    }
   };
 
   const handleIdentitySubmit = async (e: React.FormEvent) => {
@@ -401,9 +424,32 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   ))}
                 </div>
                 <div className="max-w-md mx-auto pt-10 border-t-4 border-gray-50 w-full mt-auto">
+                  <div className="mb-6 flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Coupon code (e.g. SUMMER20)"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      disabled={!!appliedCoupon}
+                      className="flex-grow bg-gray-50 border-2 border-gray-200 focus:border-[#8a7db3] rounded-xl px-4 py-3 text-sm font-bold outline-none uppercase transition-all"
+                    />
+                    {appliedCoupon ? (
+                      <button onClick={() => { setAppliedCoupon(null); setCouponCode(''); }} className="bg-red-100 text-red-500 px-4 rounded-xl font-bold uppercase text-xs hover:bg-red-200 transition-colors">Remove</button>
+                    ) : (
+                      <button onClick={handleApplyCoupon} disabled={isValidatingCoupon} className="bg-[#8a7db3] text-white px-6 rounded-xl font-black uppercase text-xs hover:bg-[#736696] transition-colors">{isValidatingCoupon ? 'Wait...' : 'Apply'}</button>
+                    )}
+                  </div>
+                  {couponError && <p className="text-red-500 text-xs font-bold mb-4 ml-2">{couponError}</p>}
+                  {appliedCoupon && <p className="text-pink-500 text-xs font-black mb-4 ml-2 animate-pulse">✨ {appliedCoupon.discountPercentage}% off applied!</p>}
+
                   <div className="flex justify-between items-center mb-10">
                     <span className="text-gray-500 uppercase tracking-[0.3em] font-black text-[11px]">Grand Total</span>
-                    <span className="text-gray-900 text-5xl font-black">${totalPrice.toFixed(2)}</span>
+                    <div className="text-right">
+                      {appliedCoupon && <span className="text-gray-400 line-through text-sm mr-2 font-bold">${totalPrice.toFixed(2)}</span>}
+                      <span className="text-gray-900 text-5xl font-black">
+                        ${(totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                   <div className="flex gap-4">
                     {(step !== 2 || !user) && (

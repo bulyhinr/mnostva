@@ -8,6 +8,7 @@ import { OrderItem } from './entities/order-item.entity';
 import Stripe from 'stripe';
 
 import { EmailService } from '../email/email.service';
+import { CouponsService } from '../coupons/coupons.service';
 
 @Injectable()
 export class OrdersService {
@@ -18,6 +19,7 @@ export class OrdersService {
         @Inject(forwardRef(() => PaymentsService))
         private paymentsService: PaymentsService,
         private emailService: EmailService,
+        private couponsService: CouponsService,
     ) { }
 
     async create(orderData: Partial<Order>): Promise<Order> {
@@ -25,7 +27,7 @@ export class OrdersService {
         return this.ordersRepository.save(order);
     }
 
-    async createOrder(userId: string, productIds: string[]) {
+    async createOrder(userId: string, productIds: string[], couponCode?: string) {
         if (!productIds || productIds.length === 0) {
             throw new Error('No products in order');
         }
@@ -59,11 +61,30 @@ export class OrdersService {
             totalAmount += finalPrice;
         }
 
+        // Process coupon if present
+        let couponDiscountAmount = 0;
+        let finalCouponCode: string | null = null;
+        if (couponCode) {
+            try {
+                const validation = await this.couponsService.validate(couponCode);
+                if (validation.valid) {
+                    couponDiscountAmount = Math.round(totalAmount * (validation.discountPercentage / 100));
+                    totalAmount -= couponDiscountAmount;
+                    finalCouponCode = couponCode.toUpperCase().trim();
+                }
+            } catch (e) {
+                // Ignore invalid coupon or throw error if strict
+                throw new Error(e.message || 'Invalid coupon code');
+            }
+        }
+
         // 2. Create Order
         const order = new Order();
         order.user = { id: userId } as any;
         order.items = orderItems;
-        order.totalAmount = totalAmount;
+        order.totalAmount = totalAmount; // This is the final amount to pay
+        order.couponCode = finalCouponCode;
+        order.couponDiscount = couponDiscountAmount;
         order.status = 'pending';
 
         const savedOrder = await this.ordersRepository.save(order);
@@ -166,6 +187,10 @@ export class OrdersService {
 
         if (paymentIntent.status === 'succeeded') {
             order.status = 'paid';
+
+            if (order.couponCode) {
+                await this.couponsService.incrementUses(order.couponCode);
+            }
 
             // Extract receipt URL
             if (paymentIntent.latest_charge) {

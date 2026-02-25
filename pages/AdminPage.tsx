@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { Product, Discount } from '../types';
+import { Product, Discount, Coupon } from '../types';
 import { productService } from '../services/productService';
 import { discountService } from '../services/discountService';
+import { couponService } from '../services/couponService';
 import { authService } from '../services/authService';
 import ScrollReveal from '../components/ScrollReveal';
 import ImageWithFallback from '../components/ImageWithFallback';
@@ -11,8 +12,9 @@ import { Toaster, toast } from 'react-hot-toast';
 const AdminPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [discounts, setDiscounts] = useState<Discount[]>([]);
+    const [coupons, setCoupons] = useState<Coupon[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'products' | 'discounts'>('products');
+    const [activeTab, setActiveTab] = useState<'products' | 'discounts' | 'coupons'>('products');
 
     // Product Editing State
     const [isEditingProduct, setIsEditingProduct] = useState(false);
@@ -36,14 +38,24 @@ const AdminPage: React.FC = () => {
         isActive: true,
     });
 
+    // Coupon Editing State
+    const [isEditingCoupon, setIsEditingCoupon] = useState(false);
+    const [currentCoupon, setCurrentCoupon] = useState<Partial<Coupon>>({
+        code: '',
+        discountPercentage: 0,
+        maxUses: null,
+        isActive: true,
+    });
+
     const categories = ['Room', 'Level', 'Prop', 'Full Pack', 'Weapons'];
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [backendProducts, backendDiscounts] = await Promise.all([
+            const [backendProducts, backendDiscounts, backendCoupons] = await Promise.all([
                 productService.getAllProducts(),
-                discountService.getAllDiscounts(authService.getAccessToken() || '')
+                discountService.getAllDiscounts(authService.getAccessToken() || ''),
+                couponService.getAllCoupons(authService.getAccessToken() || '')
             ]);
 
             const mappedProducts: Product[] = backendProducts.map((p: any) => ({
@@ -67,6 +79,7 @@ const AdminPage: React.FC = () => {
 
             setProducts(mappedProducts);
             setDiscounts(backendDiscounts);
+            setCoupons(backendCoupons);
         } catch (error) {
             console.error('Failed to fetch data:', error);
         } finally {
@@ -294,6 +307,59 @@ const AdminPage: React.FC = () => {
         setIsEditingDiscount(true);
     };
 
+    // --- Coupon Handlers ---
+    const handleToggleCoupon = async (id: string, currentStatus: boolean) => {
+        try {
+            const token = authService.getAccessToken();
+            if (!token) return;
+            await toast.promise(
+                couponService.toggleCouponActive(id, token),
+                {
+                    loading: 'Toggling...',
+                    success: `Coupon is now ${!currentStatus ? 'Active' : 'Inactive'}.`,
+                    error: 'Failed to toggle.'
+                }
+            );
+            fetchData();
+        } catch (error) {
+            console.error('Failed to toggle coupon:', error);
+        }
+    };
+
+    const handleSubmitCoupon = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const token = authService.getAccessToken();
+            if (!token) return;
+
+            const payload = {
+                code: currentCoupon.code || '',
+                discountPercentage: Number(currentCoupon.discountPercentage),
+                maxUses: currentCoupon.maxUses ? Number(currentCoupon.maxUses) : undefined,
+            };
+
+            await toast.promise(
+                couponService.createCoupon(payload, token),
+                {
+                    loading: 'Saving coupon...',
+                    success: 'Coupon created! 🎟️',
+                    error: (err: any) => `Failed to save: ${err.response?.data?.message || err.message}`
+                }
+            );
+
+            setIsEditingCoupon(false);
+            setCurrentCoupon({ code: '', discountPercentage: 0, maxUses: null, isActive: true });
+            fetchData();
+        } catch (error) {
+            console.error('Failed to save coupon:', error);
+        }
+    };
+
+    const openNewCouponForm = () => {
+        setCurrentCoupon({ code: '', discountPercentage: 0, maxUses: null, isActive: true });
+        setIsEditingCoupon(true);
+    };
+
 
     return (
         <div className="min-h-screen pt-10 pb-20 px-4 bg-gray-50">
@@ -319,6 +385,12 @@ const AdminPage: React.FC = () => {
                         className={`px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${activeTab === 'discounts' ? 'bg-[#8a7db3] text-white shadow-lg' : 'text-gray-400 hover:text-gray-600'}`}
                     >
                         Discounts
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('coupons')}
+                        className={`px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${activeTab === 'coupons' ? 'bg-[#8a7db3] text-white shadow-lg' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        Coupons
                     </button>
                 </div>
 
@@ -470,6 +542,59 @@ const AdminPage: React.FC = () => {
                     </>
                 )}
 
+                {/* Coupons View */}
+                {activeTab === 'coupons' && (
+                    <>
+                        <div className="flex justify-end mb-8">
+                            <button
+                                onClick={openNewCouponForm}
+                                className="bg-[#8a7db3] text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:translate-y-[-4px] transition-all"
+                            >
+                                Add New Coupon +
+                            </button>
+                        </div>
+
+                        <div className="bg-white rounded-[3rem] shadow-xl border-4 border-white overflow-hidden">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-50 border-b-2 border-gray-100">
+                                        <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Code</th>
+                                        <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Discount</th>
+                                        <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Uses / Max</th>
+                                        <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
+                                        <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {coupons.map(coupon => (
+                                        <tr key={coupon.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-8 py-6 font-bold text-gray-800 uppercase">{coupon.code}</td>
+                                            <td className="px-8 py-6 font-black text-[#8a7db3]">{coupon.discountPercentage}%</td>
+                                            <td className="px-8 py-6 font-bold text-gray-500">{coupon.currentUses} / {coupon.maxUses === null ? '∞' : coupon.maxUses}</td>
+                                            <td className="px-8 py-6">
+                                                <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${coupon.isActive ? 'bg-[#a2c367]/20 text-[#a2c367]' : 'bg-gray-200 text-gray-500'}`}>
+                                                    {coupon.isActive ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </td>
+                                            <td className="px-8 py-6 text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <button onClick={() => handleToggleCoupon(coupon.id, coupon.isActive)} className="p-2 border-2 border-gray-100 rounded-xl text-gray-400 hover:text-[#8a7db3] transition-colors">
+                                                        {coupon.isActive ? 'Deactivate' : 'Activate'}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {coupons.length === 0 && (
+                                        <tr>
+                                            <td colSpan={5} className="px-8 py-12 text-center text-gray-400 font-bold">No coupons found. Create one!</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
+                )}
 
                 {/* Modals */}
 
@@ -730,6 +855,32 @@ const AdminPage: React.FC = () => {
                                     <label className="font-bold text-gray-700">Active</label>
                                 </div>
                                 <button type="submit" className="w-full bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest mt-4">Save Discount</button>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Coupon Modal */}
+                {isEditingCoupon && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                        <div className="bg-white rounded-[3rem] p-8 md:p-12 max-w-lg w-full shadow-2xl relative animate-in zoom-in-95 duration-300">
+                            <button onClick={() => setIsEditingCoupon(false)} className="absolute top-8 right-8 text-gray-400 hover:text-gray-900 transition-colors">✕</button>
+                            <h2 className="text-3xl font-black text-gray-900 mb-8 uppercase tracking-tighter">New Coupon</h2>
+
+                            <form onSubmit={handleSubmitCoupon} className="space-y-6">
+                                <div>
+                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Coupon Code</label>
+                                    <input required type="text" value={currentCoupon.code} onChange={e => setCurrentCoupon({ ...currentCoupon, code: e.target.value.toUpperCase() })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none uppercase" placeholder="e.g. SUMMER20" />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Discount (%)</label>
+                                    <input required type="number" min="1" max="100" value={currentCoupon.discountPercentage} onChange={e => setCurrentCoupon({ ...currentCoupon, discountPercentage: parseFloat(e.target.value) })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Max Uses (Leave empty for unlimited)</label>
+                                    <input type="number" min="1" value={currentCoupon.maxUses || ''} onChange={e => setCurrentCoupon({ ...currentCoupon, maxUses: e.target.value ? parseInt(e.target.value) : null })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" placeholder="∞" />
+                                </div>
+                                <button type="submit" className="w-full bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest mt-4">Create Coupon 🎫</button>
                             </form>
                         </div>
                     </div>

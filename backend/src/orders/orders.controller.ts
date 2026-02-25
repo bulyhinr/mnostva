@@ -8,9 +8,9 @@ export class OrdersController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('checkout')
-    async createCheckoutSession(@Request() req, @Body() body: { productIds: string[] }) {
+    async createCheckoutSession(@Request() req, @Body() body: { productIds: string[], couponCode?: string }) {
         // Create secure order with payment intent
-        return this.ordersService.createOrder(req.user.userId, body.productIds);
+        return this.ordersService.createOrder(req.user.userId, body.productIds, body.couponCode);
     }
 
     @UseGuards(AuthGuard('jwt'))

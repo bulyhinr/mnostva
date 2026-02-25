@@ -22,6 +22,8 @@ import { Review } from './reviews/entities/review.entity';
 import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { EmailModule } from './email/email.module';
+import { CouponsModule } from './coupons/coupons.module';
+import { Coupon } from './coupons/entities/coupon.entity';
 import { SitemapController } from './sitemap.controller';
 
 @Module({
@@ -45,7 +47,7 @@ import { SitemapController } from './sitemap.controller';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get('DATABASE_URL'),
-        entities: [User, Product, Order, OrderItem, DownloadLog, Discount, Review, WishlistItem],
+        entities: [User, Product, Order, OrderItem, DownloadLog, Discount, Review, WishlistItem, Coupon],
         synchronize: configService.get('NODE_ENV') !== 'production', // Auto-sync only in dev
 
         logging: configService.get('NODE_ENV') !== 'production',
@@ -64,6 +66,7 @@ import { SitemapController } from './sitemap.controller';
     ReviewsModule,
     WishlistModule,
     EmailModule,
+    CouponsModule,
   ],
   controllers: [SitemapController],
 })

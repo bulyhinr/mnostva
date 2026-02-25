@@ -48,9 +48,10 @@ export const orderService = {
     },
 
     // New method for secure checkout
-    async createCheckoutSession(productIds: string[], token: string) {
+    async createCheckoutSession(productIds: string[], token: string, couponCode?: string) {
         const response = await axios.post<{ clientSecret: string, orderId: string }>(`${API_URL}/orders/checkout`, {
-            productIds
+            productIds,
+            couponCode
         }, {
             headers: { Authorization: `Bearer ${token}` }
         });
