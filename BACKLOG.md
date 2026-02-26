@@ -58,12 +58,12 @@ The goal is to implement a cost-effective and reliable email delivery system.
 ## 🛠 Technical Improvements & Refactoring
 
 - [ ] **Fix Order Quantity Bug**:
-    - [ ] *Issue:* Adding multiple quantities of the same item to an existing unpaid order displays as a single item.
-    - [ ] *Fix:* Update cart merging logic in `OrdersService`.
+    - [x] *Issue:* Adding multiple quantities of the same item to an existing unpaid order displays as a single item.
+    - [x] *Fix:* Update cart merging logic in `OrdersService`.
 - [ ] **Database Backup**:
     - [ ] Automate daily backups of the PostgreSQL database.
 - [ ] **Error Monitoring**:
-    - [ ] Integrate **Sentry** (free tier available) to track backend and frontend errors in real-time.
+    - [x] Integrate **Sentry** (free tier available) to track backend and frontend errors in real-time.
 - [x] **SEO Optimization**:
     - [x] Add `react-helmet-async` for dynamic Open Graph tags (Title, Image, Description) for every product page.
     - [x] Generate `sitemap.xml` for Google indexing (added dynamic backend API `/api/sitemap.xml`).
@@ -83,18 +83,28 @@ The goal is to implement a cost-effective and reliable email delivery system.
 - [x] **Discount Codes / Coupons**:
     - [x] Admin can generate status-based coupons (e.g., `SUMMER20`).
     - [x] Input field in Checkout Step 2.
+- [ ] **Payment Gateways Integrations**:
+    - [ ] **PayPal Integration**:
+        - Implement standard PayPal Checkout (Smart Payment Buttons).
+        - Free to integrate, transparent transaction fees.
+        - Add `@paypal/react-paypal-js` for frontend integration and PayPal REST Server SDK on NestJS backend for order capture/verification.
+    - [ ] **Cryptocurrency Integration**:
+        - Implement using **Coinbase Commerce** or **NowPayments**.
+        - Easy to integrate, low fees, standard crypto checkouts without complex custom blockchain logic.
+        - Provide users options to pay with BTC, ETH, USDT, USDC directly at checkout.
 
 ---
 
 ## 🏆 Competitive Marketplace Features (Future Enhancements)
 
-- [ ] **Interactive 3D WebGL Viewer**: 
-    - Allow users to interactively rotate, zoom, and inspect assets directly on the product page. 
-    - Support for PBR material previews, wireframe toggles, and animation playback directly in the browser.
+- [x] **Interactive 3D WebGL Viewer**: 
+    - [x] Allowed users to interactively rotate, zoom, and inspect assets directly on the product page. 
+    - [x] Integrated `model-viewer` for `.glb` / `.gltf` native frontend rendering with zoom limits.
+    - [x] Integrated **Sketchfab** iframe embedding as an alternative for high-end PBR/post-processing renderer support.
 - [ ] **Advanced Multi-Format Delivery**:
     - Support multiple specific formats per product (`.fbx`, `.obj`, `.blend`, `.gltf`, `.uasset`, `.unitypackage`).
     - Let users filter search results by required format and download exactly what they need.
-- [ ] **Advanced Search & Filtering**:
+- [x] **Advanced Search & Filtering**:
     - Filter products by Poly-count (Low, Mid, High poly), Rigging status (Rigged vs Unrigged), Animation count, Texture resolutions (2K, 4K, 8K), and License type.
 - [ ] **Creator Profiles & Multi-Vendor Readiness**:
     - Portfolio pages for artists with customizable URLs.
@@ -113,3 +123,24 @@ The goal is to implement a cost-effective and reliable email delivery system.
     - Allow users to generate referral links. Reward referrers with store credit or cash payouts.
 - [ ] **Subscription Model (Pro Tier)**: 
     - Introduce a monthly subscription ("Mnostva Pass") granting X asset downloads per month or a global 30% discount.
+
+---
+
+## ☁️ Infrastructure & Deployment Plan (Cost-Effective Setup)
+
+To host `mnostva.art` cheaply and efficiently ($5-$15/month):
+
+- [ ] **Domain & DNS**:
+    - [ ] Buy `mnostva.art` on Porkbun or Namecheap.
+    - [ ] Delegate nameservers to **Cloudflare** (Free Tier).
+- [ ] **Frontend Hosting (React/Vite)**:
+    - [ ] Host on **Cloudflare Pages**, **Vercel**, or **Netlify** (Free Tier).
+    - [ ] CI/CD: Auto-deploy direct from GitHub `main` branch.
+- [ ] **Backend Hosting (NestJS)**:
+    - [ ] Host the Node.js API server on **Railway.app** or **Render.com** (via Docker or Node Buildpack).
+    - [ ] Expected cost: Pay-as-you-go, approx ~$5/month based on usage.
+- [ ] **Database Setup (PostgreSQL)**:
+    - [ ] Host PostgreSQL on **Neon.tech** or **Supabase** (generous free tiers with serverless auto-scaling) or via Railway.
+- [ ] **Object Storage**:
+    - [ ] Pre-configured via **Cloudflare R2** for fast, low-cost asset distribution without egress fees.
+

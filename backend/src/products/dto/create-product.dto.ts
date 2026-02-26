@@ -35,6 +35,10 @@ class ExternalLinksDto {
     @IsString()
     @IsOptional()
     artstation?: string;
+
+    @IsString()
+    @IsOptional()
+    sketchfab?: string;
 }
 
 export class CreateProductDto {

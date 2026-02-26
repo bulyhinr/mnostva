@@ -114,14 +114,24 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
 
   const modelViewerUrl = product.previewModelKey ? getStorageUrl(product.previewModelKey) : null;
 
+  const getSketchfabEmbedUrl = (input?: string) => {
+    if (!input) return null;
+    const match = input.match(/([a-fA-F0-9]{32})/);
+    const id = match ? match[1] : input.trim();
+    if (!id || id.length < 5) return null;
+    return `https://sketchfab.com/models/${id}/embed?autostart=1&ui_controls=1&ui_infos=0&ui_watermark=1`;
+  };
+  const sketchfabEmbedUrl = getSketchfabEmbedUrl(product.externalLinks?.sketchfab);
+
   const galleryImages = [
+    sketchfabEmbedUrl,
     modelViewerUrl,
     mainImageUrl,
     ...(product.galleryImages || []).map(key => getStorageUrl(key))
   ].filter(Boolean) as string[];
 
   const [isSparkling, setIsSparkling] = useState(false);
-  const [activeImage, setActiveImage] = useState<string>(modelViewerUrl || mainImageUrl);
+  const [activeImage, setActiveImage] = useState<string>(sketchfabEmbedUrl || modelViewerUrl || mainImageUrl);
   const [quantity, setQuantity] = useState(1);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -137,10 +147,10 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
   };
 
   useEffect(() => {
-    setActiveImage(modelViewerUrl || mainImageUrl);
+    setActiveImage(sketchfabEmbedUrl || modelViewerUrl || mainImageUrl);
     setQuantity(1);
     window.scrollTo(0, 0);
-  }, [product, modelViewerUrl, mainImageUrl]);
+  }, [product, sketchfabEmbedUrl, modelViewerUrl, mainImageUrl]);
 
   const [selectedLicense, setSelectedLicense] = useState<'standard' | 'commercial'>('standard');
 
@@ -216,7 +226,16 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
               <div
                 className="relative rounded-[2.5rem] overflow-hidden shadow-xl aspect-square mb-8 group bg-gray-50 border-4 border-white"
               >
-                {activeImage === modelViewerUrl ? (
+                {activeImage === sketchfabEmbedUrl ? (
+                  <div className="w-full h-full relative group bg-black/5 flex items-center justify-center">
+                    <iframe
+                      title="Sketchfab Viewer"
+                      src={sketchfabEmbedUrl}
+                      className="w-full h-full border-0 absolute top-0 left-0"
+                      allow="autoplay; fullscreen; vr"
+                    ></iframe>
+                  </div>
+                ) : activeImage === modelViewerUrl ? (
                   <div className="w-full h-full relative group">
                     {/* @ts-ignore */}
                     <model-viewer
@@ -281,9 +300,17 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                     className={`aspect-square rounded-2xl overflow-hidden bg-gray-100 border-4 transition-all cursor-pointer group hover:scale-105 active:scale-95 flex items-center justify-center ${activeImage === imgUrl ? 'border-[#8a7db3] shadow-lg shadow-[#8a7db3]/20' : 'border-white hover:border-pink-200'
                       }`}
                   >
-                    {imgUrl === modelViewerUrl ? (
+                    {imgUrl === sketchfabEmbedUrl ? (
+                      <div className={`w-full h-full flex items-center justify-center bg-sky-50 transition-all duration-500 ${activeImage === imgUrl ? 'scale-110' : 'grayscale-[40%] group-hover:grayscale-0'}`}>
+                        <span className="flex items-center justify-center text-sky-500" title="Sketchfab 3D View">
+                          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                          </svg>
+                        </span>
+                      </div>
+                    ) : imgUrl === modelViewerUrl ? (
                       <div className={`w-full h-full flex items-center justify-center bg-purple-50 transition-all duration-500 ${activeImage === imgUrl ? 'scale-110' : 'grayscale-[40%] group-hover:grayscale-0'}`}>
-                        <span className="text-3xl">🧊</span>
+                        <span className="text-3xl" title="WebGL 3D View">🧊</span>
                       </div>
                     ) : (
                       <ImageWithFallback
@@ -616,7 +643,19 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
           )}
 
           <div className="relative max-w-7xl w-full h-full flex items-center justify-center p-4 sm:p-12 md:p-20 transition-all duration-300">
-            {activeImage === modelViewerUrl ? (
+            {activeImage === sketchfabEmbedUrl ? (
+              <div
+                className="w-full h-full max-h-[85vh] rounded-2xl overflow-hidden shadow-[0_0_100px_rgba(138,125,179,0.3)] bg-gray-50/50 backdrop-blur"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <iframe
+                  title="Sketchfab Fullscreen"
+                  src={sketchfabEmbedUrl}
+                  className="w-full h-full border-0"
+                  allow="autoplay; fullscreen; vr"
+                ></iframe>
+              </div>
+            ) : activeImage === modelViewerUrl ? (
               <div
                 className="w-full h-full max-h-[85vh] rounded-2xl overflow-hidden shadow-[0_0_100px_rgba(138,125,179,0.3)] bg-gray-50/50 backdrop-blur"
                 onClick={(e) => e.stopPropagation()}

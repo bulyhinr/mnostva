@@ -818,22 +818,32 @@ const AdminPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-6 pt-4 border-t-2 border-gray-100">
-                                    <h3 className="font-black text-gray-400 uppercase tracking-widest text-xs">External Store Links</h3>
+                                    <h3 className="font-black text-gray-400 uppercase tracking-widest text-xs">External Store Links & Previews</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="md:col-span-2">
+                                            <label className="block text-[10px] font-black text-sky-500 uppercase tracking-widest mb-2 ml-4">Sketchfab Model ID / URL (For 3D Preview)</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. 1234567890abcdef1234567890abcdef or full URL"
+                                                value={currentProduct.externalLinks?.sketchfab || ''}
+                                                onChange={e => setCurrentProduct({ ...currentProduct, externalLinks: { ...currentProduct.externalLinks, sketchfab: e.target.value } })}
+                                                className="w-full bg-sky-50 border-2 border-transparent focus:border-sky-300 rounded-xl px-4 py-3 font-bold outline-none text-sky-700"
+                                            />
+                                        </div>
                                         <div>
                                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-4">Unity Asset Store</label>
                                             <input
                                                 type="text"
-                                                value={currentProduct.externalLinks?.unity}
+                                                value={currentProduct.externalLinks?.unity || ''}
                                                 onChange={e => setCurrentProduct({ ...currentProduct, externalLinks: { ...currentProduct.externalLinks, unity: e.target.value } })}
                                                 className="w-full bg-gray-50 border-2 border-transparent focus:border-[#8a7db3] rounded-xl px-4 py-3 font-bold outline-none"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-4">Fab / Sketchfab</label>
+                                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-4">Fab Store</label>
                                             <input
                                                 type="text"
-                                                value={currentProduct.externalLinks?.fab}
+                                                value={currentProduct.externalLinks?.fab || ''}
                                                 onChange={e => setCurrentProduct({ ...currentProduct, externalLinks: { ...currentProduct.externalLinks, fab: e.target.value } })}
                                                 className="w-full bg-gray-50 border-2 border-transparent focus:border-[#8a7db3] rounded-xl px-4 py-3 font-bold outline-none"
                                             />
@@ -842,7 +852,7 @@ const AdminPage: React.FC = () => {
                                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-4">CGTrader</label>
                                             <input
                                                 type="text"
-                                                value={currentProduct.externalLinks?.cgtrader}
+                                                value={currentProduct.externalLinks?.cgtrader || ''}
                                                 onChange={e => setCurrentProduct({ ...currentProduct, externalLinks: { ...currentProduct.externalLinks, cgtrader: e.target.value } })}
                                                 className="w-full bg-gray-50 border-2 border-transparent focus:border-[#8a7db3] rounded-xl px-4 py-3 font-bold outline-none"
                                             />

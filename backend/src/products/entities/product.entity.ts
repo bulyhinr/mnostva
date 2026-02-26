@@ -57,6 +57,7 @@ export class Product {
         fab?: string;
         cgtrader?: string;
         artstation?: string;
+        sketchfab?: string;
     };
 
     @ManyToOne(() => Discount, (discount) => discount.products, { nullable: true, eager: true, onDelete: 'SET NULL' })

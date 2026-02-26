@@ -29,6 +29,7 @@ export interface Product {
     fab?: string;
     cgtrader?: string;
     artstation?: string;
+    sketchfab?: string;
   };
   tags: string[];
   features?: string[];
