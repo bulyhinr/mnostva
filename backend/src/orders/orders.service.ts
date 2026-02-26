@@ -27,8 +27,8 @@ export class OrdersService {
         return this.ordersRepository.save(order);
     }
 
-    async createOrder(userId: string, productIds: string[], couponCode?: string) {
-        if (!productIds || productIds.length === 0) {
+    async createOrder(userId: string, itemsData: { productId: string, licenseType?: string }[], couponCode?: string) {
+        if (!itemsData || itemsData.length === 0) {
             throw new Error('No products in order');
         }
 
@@ -37,7 +37,9 @@ export class OrdersService {
         const orderItems: OrderItem[] = [];
         let totalAmount = 0;
 
-        for (const productId of productIds) {
+        for (const itemData of itemsData) {
+            const productId = itemData.productId;
+            const licenseType = itemData.licenseType || 'standard';
             const product = products.find(p => p.id === productId);
             if (!product) {
                 throw new NotFoundException(`Product ${productId} not found`);
@@ -45,13 +47,15 @@ export class OrdersService {
 
             const item = new OrderItem();
             item.product = product;
+            item.licenseType = licenseType;
 
-            // Calculate price based on discount (stored in cents)
-            let finalPrice = product.price;
+            // Use commercialPrice if standard vs commercial is provided
+            let basePrice = (licenseType === 'commercial' && product.commercialPrice) ? product.commercialPrice : product.price;
+            let finalPrice = basePrice;
 
             if (product.discount && product.discount.isActive) {
-                const discountAmount = Math.round(product.price * (product.discount.percentage / 100));
-                finalPrice = product.price - discountAmount;
+                const discountAmount = Math.round(basePrice * (product.discount.percentage / 100));
+                finalPrice = basePrice - discountAmount;
             }
 
             item.price = finalPrice;

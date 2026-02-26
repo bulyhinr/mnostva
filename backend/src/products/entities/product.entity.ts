@@ -16,11 +16,17 @@ export class Product {
     @Column({ type: 'int' })
     price: number; // In cents (e.g., 4500 = $45.00)
 
+    @Column({ type: 'int', nullable: true })
+    commercialPrice: number; // Optional commercial license price (in cents)
+
     @Column({ name: 'file_key' })
     fileKey: string; // Cloudflare R2 object key (NOT URL)
 
     @Column({ name: 'preview_image_key', nullable: true })
     previewImageKey: string;
+
+    @Column({ name: 'preview_model_key', nullable: true })
+    previewModelKey: string; // Cloudflare R2 key for the .glb/.gltf model
 
     @Column({ name: 'gallery_images', type: 'simple-array', nullable: true })
     galleryImages: string[];

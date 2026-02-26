@@ -106,7 +106,7 @@ describe('OrdersService', () => {
             };
             productsService.findAllProducts.mockResolvedValue([mockProductWithDiscount]);
 
-            const result = await service.createOrder('user-1', ['prod-2']);
+            const result = await service.createOrder('user-1', [{ productId: 'prod-2' }]);
 
             expect(productsService.findAllProducts).toHaveBeenCalled();
             expect(ordersRepository.save).toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe('OrdersService', () => {
 
         it('should create an order successfully with default product', async () => {
             productsService.findAllProducts.mockResolvedValue([mockProduct]);
-            const result = await service.createOrder('user-1', ['prod-1']);
+            const result = await service.createOrder('user-1', [{ productId: 'prod-1', licenseType: 'standard' }]);
 
             expect(productsService.findAllProducts).toHaveBeenCalled();
             expect(ordersRepository.save).toHaveBeenCalled();
@@ -135,7 +135,22 @@ describe('OrdersService', () => {
         });
 
         it('should throw NotFoundException if product not found', async () => {
-            await expect(service.createOrder('user-1', ['invalid-prod'])).rejects.toThrow(NotFoundException);
+            await expect(service.createOrder('user-1', [{ productId: 'invalid-prod' }])).rejects.toThrow(NotFoundException);
+        });
+
+        it('should create an order successfully with commercial price', async () => {
+            const mockProductCommercial = {
+                id: 'prod-3',
+                price: 1000,
+                commercialPrice: 2500,
+                title: 'Commercial Asset',
+            };
+            productsService.findAllProducts.mockResolvedValue([mockProductCommercial]);
+            const result = await service.createOrder('user-1', [{ productId: 'prod-3', licenseType: 'commercial' }]);
+
+            expect(productsService.findAllProducts).toHaveBeenCalled();
+            expect(ordersRepository.save).toHaveBeenCalled();
+            expect(paymentsService.createPaymentIntent).toHaveBeenCalledWith(2500, 'usd', expect.anything());
         });
     });
 

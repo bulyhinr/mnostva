@@ -17,14 +17,28 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
   const [filter, setFilter] = useState('All');
   const [sortBy, setSortBy] = useState<'newest' | 'price-asc' | 'price-desc'>('newest');
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isAdvancedFiltersOpen, setIsAdvancedFiltersOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
+
+  const [advancedFilters, setAdvancedFilters] = useState({
+    rigged: false,
+    animated: false,
+    polyCount: '',
+    textures: ''
+  });
 
   // Fetch products from backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const backendProducts = await productService.getAllProducts();
+        const params: any = {};
+        if (advancedFilters.rigged) params.rigged = 'true';
+        if (advancedFilters.animated) params.animated = 'true';
+        if (advancedFilters.polyCount) params.polyCount = advancedFilters.polyCount;
+        if (advancedFilters.textures) params.textures = advancedFilters.textures;
+
+        const backendProducts = await productService.getAllProducts(params);
 
         // Map backend products to frontend Product type
         const mappedProducts: Product[] = backendProducts.map((p: any) => ({
@@ -54,7 +68,7 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
     };
 
     fetchProducts();
-  }, []);
+  }, [advancedFilters]);
 
   const categories = ['All', 'Room', 'Level', 'Prop', 'Full Pack', 'Weapons'];
 
@@ -145,6 +159,15 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
             </div>
           </div>
 
+          {/* Advanced Filters Toggle */}
+          <button
+            onClick={() => setIsAdvancedFiltersOpen(!isAdvancedFiltersOpen)}
+            className={`whitespace-nowrap px-4 py-2.5 md:py-3.5 rounded-full font-black text-[10px] md:text-xs transition-all uppercase tracking-widest border-2 flex items-center gap-2 ${isAdvancedFiltersOpen ? 'bg-pink-100 text-pink-600 border-pink-200 shadow-inner' : 'bg-white text-gray-400 border-gray-100 hover:text-pink-500 hover:border-pink-200'}`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+            Filters
+          </button>
+
           {/* Custom Sort Dropdown */}
           <div className="w-full lg:w-[240px] shrink-0 relative" ref={sortRef}>
             <button
@@ -188,6 +211,59 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
             </div>
           </div>
         </aside>
+
+        {isAdvancedFiltersOpen && (
+          <ScrollReveal className="bg-white/90 backdrop-blur-2xl rounded-[2rem] p-6 mb-8 md:mb-12 shadow-md border-4 border-white max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 items-center">
+              <div>
+                <label className="block text-[10px] pb-2 font-black text-gray-400 uppercase tracking-widest">Poly Count</label>
+                <select
+                  className="w-full bg-gray-50 border-2 border-transparent focus:border-[#8a7db3] rounded-xl px-4 py-3 font-bold text-sm text-[#8a7db3] outline-none transition-all cursor-pointer"
+                  value={advancedFilters.polyCount}
+                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, polyCount: e.target.value }))}
+                >
+                  <option value="">Any</option>
+                  <option value="Low-poly">Low-poly</option>
+                  <option value="Mid-poly">Mid-poly</option>
+                  <option value="High-poly">High-poly</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] pb-2 font-black text-gray-400 uppercase tracking-widest">Textures</label>
+                <select
+                  className="w-full bg-gray-50 border-2 border-transparent focus:border-[#8a7db3] rounded-xl px-4 py-3 font-bold text-sm text-[#8a7db3] outline-none transition-all cursor-pointer"
+                  value={advancedFilters.textures}
+                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, textures: e.target.value }))}
+                >
+                  <option value="">Any</option>
+                  <option value="Untextured">Untextured</option>
+                  <option value="PBR">PBR</option>
+                  <option value="Hand-painted">Hand-painted</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-3 lg:mt-6">
+                <input
+                  type="checkbox"
+                  id="riggedToggle"
+                  className="w-5 h-5 accent-[#8a7db3] cursor-pointer"
+                  checked={advancedFilters.rigged}
+                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, rigged: e.target.checked }))}
+                />
+                <label htmlFor="riggedToggle" className="text-xs font-black text-gray-700 uppercase tracking-widest cursor-pointer select-none">Rigged</label>
+              </div>
+              <div className="flex items-center gap-3 lg:mt-6">
+                <input
+                  type="checkbox"
+                  id="animatedToggle"
+                  className="w-5 h-5 accent-[#8a7db3] cursor-pointer"
+                  checked={advancedFilters.animated}
+                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, animated: e.target.checked }))}
+                />
+                <label htmlFor="animatedToggle" className="text-xs font-black text-gray-700 uppercase tracking-widest cursor-pointer select-none">Animated</label>
+              </div>
+            </div>
+          </ScrollReveal>
+        )}
 
         {filteredProducts.length > 0 ? (
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">

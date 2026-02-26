@@ -46,7 +46,8 @@ const Marketplace: React.FC<MarketplaceProps> = ({
             externalLinks: p.externalLinks || {},
             discount: p.discount,
             galleryImages: p.galleryImages || [],
-            previewImageKey: p.previewImageKey
+            previewImageKey: p.previewImageKey,
+            previewModelKey: p.previewModelKey
           }));
           setProducts(mappedProducts);
         } catch (error) {
@@ -95,8 +96,8 @@ const Marketplace: React.FC<MarketplaceProps> = ({
                 key={cat}
                 onClick={() => setFilter(cat)}
                 className={`px-8 py-3 rounded-full font-black transition-all ${filter === cat
-                    ? 'bg-[#8a7db3] text-white shadow-xl scale-110'
-                    : 'bg-white text-gray-600 hover:bg-pink-50 border-2 border-transparent hover:border-pink-100 shadow-sm'
+                  ? 'bg-[#8a7db3] text-white shadow-xl scale-110'
+                  : 'bg-white text-gray-600 hover:bg-pink-50 border-2 border-transparent hover:border-pink-100 shadow-sm'
                   }`}
               >
                 {cat}

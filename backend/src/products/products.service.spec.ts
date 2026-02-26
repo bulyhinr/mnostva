@@ -77,54 +77,68 @@ describe('ProductsService', () => {
     });
 
     describe('findAll', () => {
+        let qbMock: any;
+
+        beforeEach(() => {
+            qbMock = {
+                leftJoinAndSelect: jest.fn().mockReturnThis(),
+                andWhere: jest.fn().mockReturnThis(),
+                orderBy: jest.fn().mockReturnThis(),
+                skip: jest.fn().mockReturnThis(),
+                take: jest.fn().mockReturnThis(),
+                getManyAndCount: jest.fn().mockResolvedValue([[{ id: '1' }], 1]),
+            };
+            repoMock.createQueryBuilder = jest.fn().mockReturnValue(qbMock);
+        });
+
         it('should return paginated products sorting default', async () => {
             const result = [[{ id: '1' }], 1];
-            repoMock.findAndCount.mockResolvedValue(result);
-
             expect(await service.findAll({ page: 1, limit: 10 })).toEqual(result);
-            expect(repoMock.findAndCount).toHaveBeenCalledWith(expect.objectContaining({
-                skip: 0,
-                take: 10,
-                order: { createdAt: 'DESC' }
-            }));
+            expect(repoMock.createQueryBuilder).toHaveBeenCalledWith('product');
+            expect(qbMock.skip).toHaveBeenCalledWith(0);
+            expect(qbMock.take).toHaveBeenCalledWith(10);
+            expect(qbMock.orderBy).toHaveBeenCalledWith('product.createdAt', 'DESC');
         });
 
         it('should return paginated products sorting by price-asc', async () => {
             const result = [[{ id: '1' }], 1];
-            repoMock.findAndCount.mockResolvedValue(result);
-
             expect(await service.findAll({ page: 1, limit: 10, sortBy: 'price-asc', category: 'Testing' })).toEqual(result);
-            expect(repoMock.findAndCount).toHaveBeenCalledWith(expect.objectContaining({
-                order: { price: 'ASC' },
-                where: { category: 'Testing' }
-            }));
+            expect(qbMock.andWhere).toHaveBeenCalledWith('product.category = :category', { category: 'Testing' });
+            expect(qbMock.orderBy).toHaveBeenCalledWith('product.price', 'ASC');
         });
 
         it('should return paginated products sorting by price-desc', async () => {
             const result = [[{ id: '1' }], 1];
-            repoMock.findAndCount.mockResolvedValue(result);
-
             expect(await service.findAll({ page: 1, limit: 10, sortBy: 'price-desc' })).toEqual(result);
-            expect(repoMock.findAndCount).toHaveBeenCalledWith(expect.objectContaining({
-                order: { price: 'DESC' }
-            }));
+            expect(qbMock.orderBy).toHaveBeenCalledWith('product.price', 'DESC');
         });
 
         it('should return paginated products sorting by newest', async () => {
             const result = [[{ id: '1' }], 1];
-            repoMock.findAndCount.mockResolvedValue(result);
-
             expect(await service.findAll({ page: 1, limit: 10, sortBy: 'newest' })).toEqual(result);
+            expect(qbMock.orderBy).toHaveBeenCalledWith('product.createdAt', 'DESC');
         });
 
         it('should return paginated products sorting by unknown field', async () => {
             const result = [[{ id: '1' }], 1];
-            repoMock.findAndCount.mockResolvedValue(result);
-
             expect(await service.findAll({ page: 1, limit: 10, sortBy: 'unknown' })).toEqual(result);
-            expect(repoMock.findAndCount).toHaveBeenCalledWith(expect.objectContaining({
-                order: { unknown: 'DESC' }
-            }));
+            expect(qbMock.orderBy).toHaveBeenCalledWith('product.unknown', 'DESC');
+        });
+
+        it('should add filters for technicalSpecs when provided', async () => {
+            const result = [[{ id: '1' }], 1];
+            expect(await service.findAll({
+                page: 1,
+                limit: 10,
+                polyCount: 'Low',
+                rigged: 'Yes',
+                animated: 'No',
+                textures: 'Included'
+            })).toEqual(result);
+            expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'polyCount' = :polyCount`, { polyCount: 'Low' });
+            expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'rigged' = :rigged`, { rigged: 'Yes' });
+            expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'animated' = :animated`, { animated: 'No' });
+            expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'textures' = :textures`, { textures: 'Included' });
         });
     });
 

@@ -43,9 +43,9 @@ describe('OrdersController', () => {
 
     describe('createCheckoutSession', () => {
         it('should create an order', async () => {
-            const result = await controller.createCheckoutSession({ user: { userId: 'user-1' } }, { productIds: ['prod-1'] });
+            const result = await controller.createCheckoutSession({ user: { userId: 'user-1' } }, { items: [{ productId: 'prod-1' }] });
 
-            expect(service.createOrder).toHaveBeenCalledWith('user-1', ['prod-1'], undefined);
+            expect(service.createOrder).toHaveBeenCalledWith('user-1', [{ productId: 'prod-1' }], undefined);
             expect(result).toEqual({ id: 'order-1', clientSecret: 'secret_123' });
         });
     });
@@ -61,7 +61,7 @@ describe('OrdersController', () => {
 
             expect(service.create).toHaveBeenCalledWith(expect.objectContaining({
                 user: { id: 'user-1' },
-                items: [{ product: { id: 'p1' }, price: 1050, quantity: 2 }],
+                items: [{ product: { id: 'p1' }, price: 1050, quantity: 2, licenseType: 'standard' }],
                 totalAmount: 2100,
                 status: 'paid'
             }));

@@ -21,6 +21,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  commercialPrice?: number;
   imageUrl: string;
   category: 'Room' | 'Level' | 'Prop' | 'Full Pack' | 'Weapons';
   externalLinks: {
@@ -42,11 +43,13 @@ export interface Product {
   discount?: Discount;
   fileKey?: string;
   previewImageKey?: string;
+  previewModelKey?: string;
   galleryImages?: string[];
 }
 
 export interface CartItem extends Product {
   quantity: number;
+  licenseType?: 'standard' | 'commercial';
 }
 
 export interface NavItem {

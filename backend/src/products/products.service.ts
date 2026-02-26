@@ -38,25 +38,56 @@ export class ProductsService implements OnModuleInit {
         return this.productsRepository.save(product);
     }
 
-    async findAll(options: { page: number; limit: number; category?: string; sortBy?: string }): Promise<[Product[], number]> {
-        let order: any = { createdAt: 'DESC' };
+    async findAll(options: {
+        page: number;
+        limit: number;
+        category?: string;
+        sortBy?: string;
+        polyCount?: string;
+        rigged?: string;
+        animated?: string;
+        textures?: string;
+    }): Promise<[Product[], number]> {
+        const qb = this.productsRepository.createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount');
 
-        if (options.sortBy === 'newest') {
-            order = { createdAt: 'DESC' };
-        } else if (options.sortBy === 'price-asc') {
-            order = { price: 'ASC' };
-        } else if (options.sortBy === 'price-desc') {
-            order = { price: 'DESC' };
-        } else if (options.sortBy) {
-            order = { [options.sortBy]: 'DESC' };
+        if (options.category && options.category !== 'All') {
+            qb.andWhere('product.category = :category', { category: options.category });
         }
 
-        return this.productsRepository.findAndCount({
-            skip: (options.page - 1) * options.limit,
-            take: options.limit,
-            where: options.category && options.category !== 'All' ? { category: options.category } : {},
-            order,
-        });
+        if (options.polyCount && options.polyCount !== 'All') {
+            qb.andWhere(`product.technicalSpecs->>'polyCount' = :polyCount`, { polyCount: options.polyCount });
+        }
+
+        if (options.rigged && options.rigged !== 'All') {
+            qb.andWhere(`product.technicalSpecs->>'rigged' = :rigged`, { rigged: options.rigged });
+        }
+
+        if (options.animated && options.animated !== 'All') {
+            qb.andWhere(`product.technicalSpecs->>'animated' = :animated`, { animated: options.animated });
+        }
+
+        if (options.textures && options.textures !== 'All') {
+            qb.andWhere(`product.technicalSpecs->>'textures' = :textures`, { textures: options.textures });
+        }
+
+        // Handle sorting
+        if (options.sortBy === 'newest') {
+            qb.orderBy('product.createdAt', 'DESC');
+        } else if (options.sortBy === 'price-asc') {
+            qb.orderBy('product.price', 'ASC');
+        } else if (options.sortBy === 'price-desc') {
+            qb.orderBy('product.price', 'DESC');
+        } else if (options.sortBy) {
+            qb.orderBy(`product.${options.sortBy}`, 'DESC');
+        } else {
+            qb.orderBy('product.createdAt', 'DESC');
+        }
+
+        qb.skip((options.page - 1) * options.limit);
+        qb.take(options.limit);
+
+        return qb.getManyAndCount();
     }
 
     async findAllProducts(): Promise<Product[]> {

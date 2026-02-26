@@ -41,6 +41,31 @@ describe('ProductsController', () => {
                 limit: 10,
             });
         });
+
+        it('should pass technical specs filters to service', async () => {
+            const result = [[{ id: '1' }], 10];
+            service.findAll.mockResolvedValue(result);
+
+            const query = {
+                page: 1,
+                limit: 10,
+                polyCount: 'Low',
+                rigged: 'Yes',
+                animated: 'No',
+                textures: 'Included'
+            };
+            await controller.findAll(query);
+            expect(service.findAll).toHaveBeenCalledWith({
+                page: 1,
+                limit: 10,
+                category: undefined,
+                sortBy: undefined,
+                polyCount: 'Low',
+                rigged: 'Yes',
+                animated: 'No',
+                textures: 'Included'
+            });
+        });
     });
 
     describe('create', () => {

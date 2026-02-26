@@ -20,4 +20,7 @@ export class OrderItem {
 
     @Column({ type: 'int', default: 1 })
     quantity: number;
+
+    @Column({ type: 'varchar', default: 'standard' })
+    licenseType: string; // 'standard' or 'commercial'
 }

@@ -9,6 +9,20 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'model-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        src?: string;
+        'auto-rotate'?: boolean;
+        'camera-controls'?: boolean;
+        'shadow-intensity'?: string;
+        'environment-image'?: string;
+      };
+    }
+  }
+}
+
 interface ProductDetailPageProps {
   product: Product;
   onBack: () => void;
@@ -84,11 +98,30 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
     }
   };
 
-  const getStorageUrl = (key?: string) => key ? `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/public/${key}` : '';
-  const mainImageUrl = product.previewImageKey ? getStorageUrl(product.previewImageKey) : product.imageUrl;
+  const getStorageUrl = (key?: string) => {
+    if (!key) return '';
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const baseUrl = isLocal ? 'http://localhost:3001/api' : (import.meta.env.VITE_API_URL || '');
+    if (key.startsWith('public/')) {
+      return `${baseUrl}/storage/${key}`;
+    }
+    return `${baseUrl}/storage/public/${key}`;
+  };
+
+  const mainImageUrl = product.previewImageKey
+    ? getStorageUrl(product.previewImageKey)
+    : (product.imageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800');
+
+  const modelViewerUrl = product.previewModelKey ? getStorageUrl(product.previewModelKey) : null;
+
+  const galleryImages = [
+    modelViewerUrl,
+    mainImageUrl,
+    ...(product.galleryImages || []).map(key => getStorageUrl(key))
+  ].filter(Boolean) as string[];
 
   const [isSparkling, setIsSparkling] = useState(false);
-  const [activeImage, setActiveImage] = useState<string>(mainImageUrl);
+  const [activeImage, setActiveImage] = useState<string>(modelViewerUrl || mainImageUrl);
   const [quantity, setQuantity] = useState(1);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -104,26 +137,25 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
   };
 
   useEffect(() => {
-    setActiveImage(mainImageUrl);
+    setActiveImage(modelViewerUrl || mainImageUrl);
     setQuantity(1);
     window.scrollTo(0, 0);
-  }, [product, mainImageUrl]);
+  }, [product, modelViewerUrl, mainImageUrl]);
 
-  const isInCart = cart.some(item => item.id === product.id);
+  const [selectedLicense, setSelectedLicense] = useState<'standard' | 'commercial'>('standard');
+
+  const isInCart = cart.some(item => item.id === product.id && (item.licenseType || 'standard') === selectedLicense);
 
   const handleAddToCart = () => {
     if (isInCart) return;
     setIsSparkling(true);
-    addToCart(product, quantity);
+    addToCart(product, quantity, selectedLicense);
     setTimeout(() => {
       setIsSparkling(false);
     }, 800);
   };
 
-  const galleryImages = [
-    mainImageUrl,
-    ...(product.galleryImages || []).map(key => getStorageUrl(key))
-  ].filter(Boolean) as string[];
+
 
   const hasExternalLinks = Object.values(product.externalLinks).some(link => !!link);
 
@@ -182,23 +214,54 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
           <div className="flex flex-col lg:flex-row">
             <div className="lg:w-3/5 p-8 lg:p-12">
               <div
-                className="relative rounded-[2.5rem] overflow-hidden shadow-xl aspect-square mb-8 group bg-gray-50 border-4 border-white cursor-zoom-in"
-                onClick={() => setIsLightboxOpen(true)}
+                className="relative rounded-[2.5rem] overflow-hidden shadow-xl aspect-square mb-8 group bg-gray-50 border-4 border-white"
               >
-                <ImageWithFallback
-                  key={activeImage}
-                  src={activeImage}
-                  alt={product.name}
-                  className="w-full h-full object-cover animate-in fade-in zoom-in duration-700 transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/20 backdrop-blur-[2px]">
-                  <div className="bg-white/95 p-6 rounded-full shadow-2xl text-[#8a7db3] scale-75 group-hover:scale-100 transition-all duration-500">
-                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                    </svg>
+                {activeImage === modelViewerUrl ? (
+                  <div className="w-full h-full relative group">
+                    {/* @ts-ignore */}
+                    <model-viewer
+                      src={modelViewerUrl}
+                      auto-rotate
+                      camera-controls
+                      shadow-intensity="1"
+                      environment-image="neutral"
+                      camera-orbit="0deg 75deg 85%"
+                      min-camera-orbit="auto auto 1%"
+                      style={{ width: '100%', height: '100%', backgroundColor: '#f9fafb' }}
+                    >
+                      {/* @ts-ignore */}
+                    </model-viewer>
+                    <div
+                      className="absolute top-4 right-4 z-10 cursor-zoom-in bg-white/95 p-3 rounded-full shadow-2xl text-[#8a7db3] hover:scale-110 transition-transform duration-300"
+                      onClick={() => setIsLightboxOpen(true)}
+                      title="Fullscreen View"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                      </svg>
+                    </div>
                   </div>
-                </div>
-                <div className="absolute top-6 left-6 flex gap-2">
+                ) : (
+                  <>
+                    <div className="w-full h-full cursor-zoom-in" onClick={() => setIsLightboxOpen(true)}>
+                      <ImageWithFallback
+                        key={activeImage}
+                        src={activeImage}
+                        alt={product.name}
+                        className="w-full h-full object-cover animate-in fade-in zoom-in duration-700 transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/20 backdrop-blur-[2px]">
+                        <div className="bg-white/95 p-6 rounded-full shadow-2xl text-[#8a7db3] scale-75 group-hover:scale-100 transition-all duration-500">
+                          <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <div className="absolute top-6 left-6 flex gap-2 pointer-events-none">
                   <span className="bg-[#8a7db3] px-5 py-2 rounded-full text-xs font-black text-white shadow-xl uppercase tracking-widest">
                     {product.category}
                   </span>
@@ -215,14 +278,20 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                   <div
                     key={idx}
                     onClick={() => setActiveImage(imgUrl)}
-                    className={`aspect-square rounded-2xl overflow-hidden bg-gray-100 border-4 transition-all cursor-pointer group hover:scale-105 active:scale-95 ${activeImage === imgUrl ? 'border-[#8a7db3] shadow-lg shadow-[#8a7db3]/20' : 'border-white hover:border-pink-200'
+                    className={`aspect-square rounded-2xl overflow-hidden bg-gray-100 border-4 transition-all cursor-pointer group hover:scale-105 active:scale-95 flex items-center justify-center ${activeImage === imgUrl ? 'border-[#8a7db3] shadow-lg shadow-[#8a7db3]/20' : 'border-white hover:border-pink-200'
                       }`}
                   >
-                    <ImageWithFallback
-                      src={imgUrl}
-                      alt={`Gallery ${idx}`}
-                      className={`w-full h-full object-cover transition-all duration-500 ${activeImage === imgUrl ? 'scale-110' : 'grayscale-[40%] group-hover:grayscale-0'}`}
-                    />
+                    {imgUrl === modelViewerUrl ? (
+                      <div className={`w-full h-full flex items-center justify-center bg-purple-50 transition-all duration-500 ${activeImage === imgUrl ? 'scale-110' : 'grayscale-[40%] group-hover:grayscale-0'}`}>
+                        <span className="text-3xl">🧊</span>
+                      </div>
+                    ) : (
+                      <ImageWithFallback
+                        src={imgUrl}
+                        alt={`Gallery ${idx}`}
+                        className={`w-full h-full object-cover transition-all duration-500 ${activeImage === imgUrl ? 'scale-110' : 'grayscale-[40%] group-hover:grayscale-0'}`}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
@@ -285,12 +354,12 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                 <div className="flex items-center gap-4 mb-6">
                   <span className="text-4xl font-black text-pink-500">
                     ${(product.discount && product.discount.isActive
-                      ? product.price * (1 - product.discount.percentage / 100)
-                      : product.price).toFixed(2)}
+                      ? (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price) * (1 - product.discount.percentage / 100)
+                      : (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price)).toFixed(2)}
                   </span>
                   {product.discount && product.discount.isActive && (
                     <>
-                      <span className="text-gray-400 font-bold line-through text-xl opacity-50">${product.price.toFixed(2)}</span>
+                      <span className="text-gray-400 font-bold line-through text-xl opacity-50">${(selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price).toFixed(2)}</span>
                       <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider animate-pulse">
                         -{product.discount.percentage}%
                       </span>
@@ -386,6 +455,27 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                 </div>
 
                 <div className="relative space-y-4">
+                  {/* License Selector */}
+                  {product.commercialPrice && (
+                    <div className="mb-6 bg-gray-50/80 p-6 rounded-3xl border-2 border-gray-100/50">
+                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Select License</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <label className={`cursor-pointer rounded-2xl border-2 p-4 transition-all ${selectedLicense === 'standard' ? 'border-[#8a7db3] bg-white shadow-md' : 'border-gray-200 hover:border-gray-300'}`}>
+                          <input type="radio" className="sr-only" name="licenseType" value="standard" checked={selectedLicense === 'standard'} onChange={() => setSelectedLicense('standard')} />
+                          <div className="font-black text-[#8a7db3] text-sm mb-1 uppercase tracking-widest">Standard</div>
+                          <div className="text-[11px] text-gray-500 font-bold leading-tight">Personal & Indie projects</div>
+                          <div className="mt-2 text-sm font-black text-gray-800">${product.price.toFixed(2)}</div>
+                        </label>
+                        <label className={`cursor-pointer rounded-2xl border-2 p-4 transition-all ${selectedLicense === 'commercial' ? 'border-[#8a7db3] bg-white shadow-md' : 'border-gray-200 hover:border-gray-300'}`}>
+                          <input type="radio" className="sr-only" name="licenseType" value="commercial" checked={selectedLicense === 'commercial'} onChange={() => setSelectedLicense('commercial')} />
+                          <div className="font-black text-[#8a7db3] text-sm mb-1 uppercase tracking-widest">Commercial</div>
+                          <div className="text-[11px] text-gray-500 font-bold leading-tight">Studio & Corporate</div>
+                          <div className="mt-2 text-sm font-black text-gray-800">${product.commercialPrice.toFixed(2)}</div>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
                   {isSparkling && (
                     <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-full h-0 flex items-center justify-center pointer-events-none z-20">
                       <div className="animate-sparkle-burst text-5xl">✨</div>
@@ -525,16 +615,37 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
             </button>
           )}
 
-          <div className={`relative max-w-7xl w-full h-full flex items-center justify-center p-4 sm:p-12 md:p-20 transition-all duration-300 ${zoomLevel > 1 ? 'overflow-auto cursor-zoom-out' : 'cursor-zoom-in'}`}>
-            <img
-              key={activeImage}
-              src={activeImage}
-              alt="Full resolution view"
-              className="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_100px_rgba(138,125,179,0.3)] animate-in slide-in-from-bottom-12 duration-500 transition-transform duration-300 origin-center"
-              style={{ transform: `scale(${zoomLevel})` }}
-              onClick={toggleZoom}
-              onError={handleImageError}
-            />
+          <div className="relative max-w-7xl w-full h-full flex items-center justify-center p-4 sm:p-12 md:p-20 transition-all duration-300">
+            {activeImage === modelViewerUrl ? (
+              <div
+                className="w-full h-full max-h-[85vh] rounded-2xl overflow-hidden shadow-[0_0_100px_rgba(138,125,179,0.3)] bg-gray-50/50 backdrop-blur"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* @ts-ignore */}
+                <model-viewer
+                  src={modelViewerUrl}
+                  auto-rotate
+                  camera-controls
+                  shadow-intensity="1"
+                  environment-image="neutral"
+                  camera-orbit="0deg 75deg 85%"
+                  min-camera-orbit="auto auto 1%"
+                  style={{ width: '100%', height: '100%' }}
+                >
+                  {/* @ts-ignore */}
+                </model-viewer>
+              </div>
+            ) : (
+              <img
+                key={activeImage}
+                src={activeImage}
+                alt="Full resolution view"
+                className={`max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_100px_rgba(138,125,179,0.3)] animate-in slide-in-from-bottom-12 duration-500 transition-transform duration-300 origin-center ${zoomLevel > 1 ? 'overflow-auto cursor-zoom-out' : 'cursor-zoom-in'}`}
+                style={{ transform: `scale(${zoomLevel})` }}
+                onClick={toggleZoom}
+                onError={handleImageError}
+              />
+            )}
 
             <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-2xl px-6 md:px-10 py-3 md:py-4 rounded-full text-white/90 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.4em] border border-white/20 shadow-2xl animate-in fade-in duration-1000 whitespace-nowrap">
               {galleryImages.findIndex(img => img === activeImage) + 1} / {galleryImages.length} — PREVIEW

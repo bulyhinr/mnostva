@@ -14,13 +14,14 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
 
   if (!isOpen) return null;
 
-  const handleRemove = (id: string) => {
-    setRemovingIds(prev => new Set(prev).add(id));
+  const handleRemove = (id: string, licenseType: 'standard' | 'commercial' = 'standard') => {
+    const key = `${id}-${licenseType}`;
+    setRemovingIds(prev => new Set(prev).add(key));
     setTimeout(() => {
-      removeFromCart(id);
+      removeFromCart(id, licenseType);
       setRemovingIds(prev => {
         const next = new Set(prev);
-        next.delete(id);
+        next.delete(key);
         return next;
       });
     }, 300);
@@ -66,10 +67,10 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
             </div>
           ) : (
             cart.map((item) => {
-              const isRemoving = removingIds.has(item.id);
+              const isRemoving = removingIds.has(`${item.id}-${item.licenseType || 'standard'}`);
               return (
                 <div
-                  key={item.id}
+                  key={`${item.id}-${item.licenseType || 'standard'}`}
                   className={`flex gap-4 group transition-all duration-300 ${isRemoving ? 'animate-slide-out-right opacity-0' : 'opacity-100'
                     }`}
                   style={{ maxHeight: isRemoving ? '0' : '500px', marginBottom: isRemoving ? '0' : '1.5rem', overflow: 'hidden' }}
@@ -81,7 +82,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-black text-gray-800 leading-tight text-sm">{item.name}</h4>
                       <button
-                        onClick={() => handleRemove(item.id)}
+                        onClick={() => handleRemove(item.id, item.licenseType)}
                         className="text-gray-300 hover:text-red-500 transition-all transform hover:scale-125 active:scale-90"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,12 +94,12 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center bg-gray-50 rounded-full px-2 py-0.5 border border-gray-100">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity - 1, item.licenseType)}
                           className="w-6 h-6 flex items-center justify-center font-black text-gray-400 hover:text-[#8a7db3]"
                         >–</button>
                         <span className="w-6 text-center text-xs font-black text-gray-700">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity + 1, item.licenseType)}
                           className="w-6 h-6 flex items-center justify-center font-black text-gray-400 hover:text-[#8a7db3]"
                         >+</button>
                       </div>

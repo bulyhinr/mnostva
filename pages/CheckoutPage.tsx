@@ -111,8 +111,10 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
             }
           } else {
             // Normal flow from cart
-            const productIds = cart.flatMap(item => Array(item.quantity).fill(item.id));
-            const data = await orderService.createCheckoutSession(productIds, token, appliedCoupon ? couponCode : undefined);
+            const items = cart.flatMap(item =>
+              Array(item.quantity).fill({ productId: item.id, licenseType: item.licenseType })
+            );
+            const data = await orderService.createCheckoutSession(items, token, appliedCoupon ? couponCode : undefined);
             setClientSecret(data.clientSecret);
 
             // Update URL to include orderId so refresh works

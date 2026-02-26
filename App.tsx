@@ -92,7 +92,8 @@ const ProductDetailWrapper: React.FC = () => {
             externalLinks: backendProduct.externalLinks || {},
             discount: backendProduct.discount,
             galleryImages: backendProduct.galleryImages || [],
-            previewImageKey: backendProduct.previewImageKey
+            previewImageKey: backendProduct.previewImageKey,
+            previewModelKey: backendProduct.previewModelKey
           };
           setProduct(mappedProduct);
         } else {

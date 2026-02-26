@@ -45,7 +45,7 @@ export class StorageController {
     @Post('generate-upload')
     async generateUploadLink(@Request() req, @Body() body: { contentType: string, isPublic?: boolean }) {
         if (!body.contentType) {
-            throw new BadRequestException('ContentType is required');
+            body.contentType = 'application/octet-stream';
         }
 
         const isAdmin = req.user.isAdmin;

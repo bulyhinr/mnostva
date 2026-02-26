@@ -48,12 +48,20 @@ export class CreateProductDto {
     @IsNumber()
     price: number;
 
+    @IsNumber()
+    @IsOptional()
+    commercialPrice?: number;
+
     @IsString()
     fileKey: string;
 
     @IsString()
     @IsOptional()
     previewImageKey?: string;
+
+    @IsString()
+    @IsOptional()
+    previewModelKey?: string;
 
     @IsString()
     @IsOptional()

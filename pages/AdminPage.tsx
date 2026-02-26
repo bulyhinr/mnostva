@@ -74,7 +74,8 @@ const AdminPage: React.FC = () => {
                 discount: p.discount, // discount object from relation
                 fileKey: p.fileKey, // Add fileKey mapping
                 galleryImages: p.galleryImages || [],
-                previewImageKey: p.previewImageKey
+                previewImageKey: p.previewImageKey,
+                previewModelKey: p.previewModelKey
             }));
 
             setProducts(mappedProducts);
@@ -123,10 +124,19 @@ const AdminPage: React.FC = () => {
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [selectedPreview, setSelectedPreview] = useState<File | null>(null);
+    const [selectedModel, setSelectedModel] = useState<File | null>(null);
     const [selectedGalleryFiles, setSelectedGalleryFiles] = useState<FileList | null>(null);
 
     const uploadFile = async (file: File, isPublic: boolean): Promise<string> => {
         const token = authService.getAccessToken();
+        let contentType = file.type;
+        // Browser might not recognize .glb and return an empty string
+        if (!contentType) {
+            if (file.name.endsWith('.glb')) contentType = 'model/gltf-binary';
+            else if (file.name.endsWith('.gltf')) contentType = 'model/gltf+json';
+            else contentType = 'application/octet-stream';
+        }
+
         // 1. Get signed upload URL
         const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-upload`, {
             method: 'POST',
@@ -134,7 +144,7 @@ const AdminPage: React.FC = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ contentType: file.type, isPublic })
+            body: JSON.stringify({ contentType, isPublic })
         });
 
         if (!res.ok) throw new Error('Failed to get upload URL');
@@ -144,7 +154,7 @@ const AdminPage: React.FC = () => {
         // 2. Upload file directly to R2
         const uploadRes = await fetch(uploadUrl, {
             method: 'PUT',
-            headers: { 'Content-Type': file.type },
+            headers: { 'Content-Type': contentType },
             body: file
         });
 
@@ -173,6 +183,11 @@ const AdminPage: React.FC = () => {
                 previewImageKey = currentProduct.imageUrl.split('/files/')[1];
             }
 
+            let previewModelKey = currentProduct.previewModelKey;
+            if (selectedModel) {
+                previewModelKey = await uploadFile(selectedModel, true);
+            }
+
             let galleryImages = [...(currentProduct.galleryImages || [])];
             if (selectedGalleryFiles) {
                 for (let i = 0; i < selectedGalleryFiles.length; i++) {
@@ -188,6 +203,7 @@ const AdminPage: React.FC = () => {
                 category: currentProduct.category,
                 fileKey: fileKey || 'products/placeholder.zip',
                 previewImageKey: previewImageKey,
+                previewModelKey: previewModelKey,
                 galleryImages: galleryImages,
                 features: (currentProduct.features || []).filter(s => s.trim() !== ''),
                 packContent: (currentProduct.packContent || []).filter(s => s.trim() !== ''),
@@ -214,8 +230,9 @@ const AdminPage: React.FC = () => {
             setIsEditingProduct(false);
             setSelectedFile(null);
             setSelectedPreview(null);
+            setSelectedModel(null);
             setSelectedGalleryFiles(null);
-            setCurrentProduct({ name: '', description: '', price: 0, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '' }, galleryImages: [] });
+            setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '' }, galleryImages: [], previewModelKey: '' });
             fetchData();
         } catch (error) {
             console.error('Failed to save product:', error);
@@ -223,7 +240,7 @@ const AdminPage: React.FC = () => {
     };
 
     const openNewProductForm = () => {
-        setCurrentProduct({ name: '', description: '', price: 0, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '' }, galleryImages: [] });
+        setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '' }, galleryImages: [], previewModelKey: '' });
         setIsEditingProduct(true);
     };
 
@@ -617,14 +634,18 @@ const AdminPage: React.FC = () => {
 
                             <form onSubmit={handleSubmitProduct} className="space-y-6 overflow-y-auto px-2 pb-4">
                                 {/* Title & Price */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div>
                                         <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Title</label>
                                         <input required type="text" value={currentProduct.name} onChange={e => setCurrentProduct({ ...currentProduct, name: e.target.value })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all" />
                                     </div>
                                     <div>
-                                        <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Price ($)</label>
+                                        <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Standard Price ($)</label>
                                         <input required type="number" step="0.01" value={currentProduct.price} onChange={e => setCurrentProduct({ ...currentProduct, price: parseFloat(e.target.value) })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Commercial Price ($)</label>
+                                        <input type="number" step="0.01" value={currentProduct.commercialPrice || ''} onChange={e => setCurrentProduct({ ...currentProduct, commercialPrice: parseFloat(e.target.value) || undefined })} placeholder="Optional" className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all" />
                                     </div>
                                 </div>
 
@@ -651,6 +672,16 @@ const AdminPage: React.FC = () => {
                                             className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all"
                                         />
                                         {currentProduct.imageUrl && <p className="text-xs text-gray-400 mt-2 ml-4">Current: {currentProduct.imageUrl}</p>}
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4 text-emerald-500">Preview 3D Model (.glb / .gltf)</label>
+                                        <input
+                                            type="file"
+                                            accept=".glb,.gltf"
+                                            onChange={e => setSelectedModel(e.target.files ? e.target.files[0] : null)}
+                                            className="w-full bg-emerald-50 border-4 border-transparent focus:border-emerald-300 rounded-2xl px-6 py-4 font-bold outline-none transition-all text-emerald-700"
+                                        />
+                                        {currentProduct.previewModelKey && <p className="text-xs text-emerald-400 mt-2 ml-4">Current Key: {currentProduct.previewModelKey.split('/').pop()}</p>}
                                     </div>
 
                                     {/* Gallery Images */}

@@ -8,14 +8,14 @@ export class OrdersController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('checkout')
-    async createCheckoutSession(@Request() req, @Body() body: { productIds: string[], couponCode?: string }) {
+    async createCheckoutSession(@Request() req, @Body() body: { items: { productId: string, licenseType?: string }[], couponCode?: string }) {
         // Create secure order with payment intent
-        return this.ordersService.createOrder(req.user.userId, body.productIds, body.couponCode);
+        return this.ordersService.createOrder(req.user.userId, body.items, body.couponCode);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Post()
-    async create(@Request() req, @Body() orderData: { userId?: string, items: { productId: string, quantity: number, price: number }[], total: number }) {
+    async create(@Request() req, @Body() orderData: { userId?: string, items: { productId: string, quantity: number, price: number, licenseType?: string }[], total: number }) {
         const userId = req.user?.userId || orderData.userId;
 
         // Transform items for TypeORM (relation by ID) and convert prices to cents
@@ -23,6 +23,7 @@ export class OrdersController {
             product: { id: item.productId } as any,
             price: Math.round(item.price * 100), // Convert to cents
             quantity: item.quantity,
+            licenseType: item.licenseType || 'standard',
         }));
 
         try {

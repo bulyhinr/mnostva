@@ -10,7 +10,16 @@ export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }
 
     @Get()
-    async findAll(@Query() query: { page?: number; limit?: number; category?: string; sortBy?: string }) {
+    async findAll(@Query() query: {
+        page?: number;
+        limit?: number;
+        category?: string;
+        sortBy?: string;
+        polyCount?: string;
+        rigged?: string;
+        animated?: string;
+        textures?: string;
+    }) {
         const page = query.page || 1;
         const limit = query.limit || 10;
         console.log(`Fetching products with page=${page}, limit=${limit}, category=${query.category}`);
@@ -21,6 +30,10 @@ export class ProductsController {
                 limit: Number(limit),
                 category: query.category,
                 sortBy: query.sortBy,
+                polyCount: query.polyCount,
+                rigged: query.rigged,
+                animated: query.animated,
+                textures: query.textures,
             });
             console.log(`Found ${products.length} products, total=${total}`);
             return { data: products, total, page, limit };
