@@ -56,7 +56,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
     name: user?.name || '',
     email: user?.email || '',
     password: '',
-    createAccount: false
+    createAccount: true
   });
 
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -157,7 +157,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
   const handleIdentitySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!user && form.createAccount) {
+    if (!user) {
       if (!form.password) {
         alert("Please enter a password to create an account.");
         return;
@@ -326,32 +326,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                       className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-[1.5rem] px-8 py-5 font-bold outline-none transition-all text-gray-900 shadow-inner"
                     />
                   </div>
-                  <label className="flex items-center gap-4 cursor-pointer group p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors mb-6">
+                  <div className="animate-in fade-in slide-in-from-top-2 mb-6 mt-6">
+                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Password</label>
                     <input
-                      type="checkbox"
-                      checked={form.createAccount}
-                      onChange={e => setForm({ ...form, createAccount: e.target.checked })}
-                      className="w-6 h-6 rounded-lg border-2 border-gray-300 text-[#8a7db3] focus:ring-purple-500 transition-all cursor-pointer"
+                      required
+                      type="password"
+                      value={form.password}
+                      onChange={e => setForm({ ...form, password: e.target.value })}
+                      placeholder="Create a password (min 6 chars)"
+                      minLength={6}
+                      className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-[1.5rem] px-8 py-5 font-bold outline-none transition-all text-gray-900 shadow-inner"
                     />
-                    <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors">
-                      Create an account to save this purchase! ✨
-                    </span>
-                  </label>
-
-                  {form.createAccount && (
-                    <div className="animate-in fade-in slide-in-from-top-2 mb-6">
-                      <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Password</label>
-                      <input
-                        required={form.createAccount}
-                        type="password"
-                        value={form.password}
-                        onChange={e => setForm({ ...form, password: e.target.value })}
-                        placeholder="••••••••"
-                        minLength={6}
-                        className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-[1.5rem] px-8 py-5 font-bold outline-none transition-all text-gray-900 shadow-inner"
-                      />
-                    </div>
-                  )}
+                  </div>
 
                   <button
                     type="submit"
