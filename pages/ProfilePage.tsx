@@ -477,11 +477,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                         const category = item.category;
 
                         return (
-                          <div key={i} className={`flex gap-5 p-5 bg-gray-50 rounded-[2.5rem] border-2 border-white shadow-sm hover:shadow-xl transition-all group ${isDeleted ? 'opacity-70 grayscale' : ''}`}>
-                            <div className="w-28 h-28 rounded-3xl overflow-hidden bg-gray-200 shrink-0 border-4 border-white shadow-lg group-hover:scale-105 transition-transform">
+                          <div key={i} className={`flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 p-5 sm:p-5 bg-gray-50 rounded-[2.5rem] border-2 border-white shadow-sm hover:shadow-xl transition-all group ${isDeleted ? 'opacity-70 grayscale' : ''}`}>
+                            <div className="w-40 h-40 sm:w-28 sm:h-28 rounded-3xl overflow-hidden bg-gray-200 shrink-0 border-4 border-white shadow-lg group-hover:scale-105 transition-transform">
                               <img src={imageUrl} className="w-full h-full object-cover" onError={handleImageError} alt={name} />
                             </div>
-                            <div className="flex flex-col justify-center flex-grow">
+                            <div className="flex flex-col items-center sm:items-start justify-center flex-grow w-full min-w-0">
                               <h4 className="font-black text-gray-900 text-lg leading-tight group-hover:text-[#8a7db3] transition-colors">{name}</h4>
 
                               {isDeleted ? (
@@ -499,7 +499,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                 <span className="text-[9px] bg-pink-50 text-pink-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold border border-pink-100">Purchased</span>
                               </div>
 
-                              <div className="flex flex-wrap gap-2">
+                              <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full mt-2">
                                 <button
                                   onClick={async () => {
                                     const productId = item.productId || item.product?.id;
@@ -547,7 +547,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                       toast.error('Network error during download.');
                                     }
                                   }}
-                                  className={`bg-white text-gray-800 border-2 border-gray-100 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted
+                                  className={`w-full sm:w-auto bg-white text-gray-800 border-2 border-gray-100 px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted
                                     ? 'cursor-not-allowed opacity-50 hover:bg-gray-100'
                                     : 'hover:bg-[#8a7db3] hover:text-white hover:border-[#8a7db3]'
                                     }`}>
@@ -557,7 +557,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                 {!isDeleted && (
                                   <button
                                     onClick={() => setReviewModal({ isOpen: true, productId: item.productId || item.product?.id, productName: name })}
-                                    className="bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white border-2 border-purple-100 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-2"
+                                    className="w-full sm:w-auto bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white border-2 border-purple-100 px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2"
                                   >
                                     <span>★</span> Review
                                   </button>
@@ -597,8 +597,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                         : product.imageUrl;
 
                       return (
-                        <div key={item.id} className="flex gap-5 p-5 bg-white rounded-[2.5rem] border-2 border-gray-100 shadow-sm hover:shadow-xl transition-all group">
-                          <div className="w-28 h-28 rounded-3xl overflow-hidden bg-gray-200 shrink-0 border-4 border-white shadow-lg group-hover:scale-105 transition-transform">
+                        <div key={item.id} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 p-5 bg-white rounded-[2.5rem] border-2 border-gray-100 shadow-sm hover:shadow-xl transition-all group">
+                          <div className="w-40 h-40 sm:w-28 sm:h-28 rounded-3xl overflow-hidden bg-gray-200 shrink-0 border-4 border-white shadow-lg group-hover:scale-105 transition-transform">
                             <img
                               src={imageUrl}
                               className="w-full h-full object-cover"
@@ -606,7 +606,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                               alt={product.title}
                             />
                           </div>
-                          <div className="flex flex-col justify-center flex-grow">
+                          <div className="flex flex-col items-center sm:items-start justify-center flex-grow w-full min-w-0">
                             <h4 className="font-black text-gray-900 text-lg leading-tight group-hover:text-[#8a7db3] transition-colors">{product.title}</h4>
                             <span className="text-[10px] font-black text-[#8a7db3] uppercase tracking-widest mt-1 mb-2 block">{product.category}</span>
 
@@ -614,7 +614,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                               <span className="font-black text-pink-500 text-lg">${(product.price / 100).toFixed(2)}</span>
                             </div>
 
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full mt-2">
                               <button
                                 onClick={() => {
                                   addToCart({
@@ -629,7 +629,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                     style: { borderRadius: '1rem', background: '#333', color: '#fff' }
                                   });
                                 }}
-                                className="bg-[#8a7db3] text-white px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm hover:translate-y-[-2px]"
+                                className="w-full sm:w-auto bg-[#8a7db3] text-white px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm hover:translate-y-[-2px]"
                               >
                                 Add to Cart 🛒
                               </button>
@@ -645,9 +645,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                     toast.error('Failed to remove');
                                   }
                                 }}
-                                className="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
+                                className="w-full sm:w-auto bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-4 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
                               >
-                                ✕
+                                ✕ Remove
                               </button>
                             </div>
                           </div>
