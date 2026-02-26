@@ -249,7 +249,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                 { id: 'purchases', label: 'My Assets', icon: '📦' },
                 { id: 'wishlist', label: 'Saved', icon: '❤️' },
                 { id: 'settings', label: 'Settings', icon: '⚙️' },
-                { id: 'logs', label: 'Activity', icon: '📜' }
+                // { id: 'logs', label: 'Activity', icon: '📜' }
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -274,10 +274,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
               ))}
             </nav>
 
-            <div className="mt-10 p-4 bg-white/50 rounded-2xl border border-white">
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Support ID</p>
-              <p className="text-xs font-mono text-gray-900 font-bold">#{user.id.toUpperCase()}</p>
-            </div>
           </div>
 
           {/* Content Area */}
@@ -321,7 +317,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                             <div className="bg-gray-50/50 px-8 py-4 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100">
                               <div className="flex items-center gap-4">
                                 <span className="bg-[#8a7db3] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
-                                  #{order.id}
+                                  #{order.id.substring(0, 8)}
                                 </span>
                                 <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">
                                   {new Date(order.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}

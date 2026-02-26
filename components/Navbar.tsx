@@ -172,7 +172,7 @@ const Navbar: React.FC = () => {
               )}
 
               <button
-                onClick={() => setIsCartOpen(true)}
+                onClick={() => setIsCartOpen(prev => !prev)}
                 className={`relative bg-white text-[#8a7db3] rounded-full font-black shadow-lg hover:shadow-white/20 active:scale-95 uppercase tracking-tight flex items-center gap-2 transition-all duration-300 ${isPinned ? 'px-5 py-2 text-[10px]' : 'px-7 py-3 text-xs'
                   } ${cartBumping ? 'animate-bounce-short' : ''}`}
               >
@@ -192,7 +192,7 @@ const Navbar: React.FC = () => {
           {/* Mobile UI */}
           <div className="lg:hidden flex items-center gap-2">
             <button
-              onClick={() => setIsCartOpen(true)}
+              onClick={() => setIsCartOpen(prev => !prev)}
               className={`relative text-white p-2 active:scale-90 transition-transform ${cartBumping ? 'animate-bounce-short' : ''}`}
             >
               <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
