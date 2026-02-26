@@ -266,9 +266,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                   {tab.label}
                 </button>
               ))}
-            </nav>
 
-            <div className="mt-auto pt-8">
               <button
                 onClick={logout}
                 className="w-full text-left px-6 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex items-center gap-4 text-pink-500 hover:bg-pink-50 hover:shadow-sm"
@@ -276,8 +274,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                 <span className="text-xl filter drop-shadow-sm">👋</span>
                 Logout
               </button>
-            </div>
-
+            </nav>
           </div>
 
           {/* Content Area */}
