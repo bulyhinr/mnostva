@@ -203,18 +203,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
       />
 
       <ScrollReveal className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+        <div className="flex flex-col md:flex-row items-center mb-8 gap-4">
           <button
             onClick={onBack}
             className="flex items-center gap-2 text-[#8a7db3] font-black uppercase tracking-widest hover:translate-x-[-4px] transition-transform"
           >
             ← Back
-          </button>
-          <button
-            onClick={logout}
-            className="text-pink-600 font-black uppercase tracking-widest text-xs hover:underline flex items-center gap-2 transition-colors"
-          >
-            Logout 👋
           </button>
         </div>
 
@@ -273,6 +267,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                 </button>
               ))}
             </nav>
+
+            <div className="mt-auto pt-8">
+              <button
+                onClick={logout}
+                className="w-full text-left px-6 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex items-center gap-4 text-pink-500 hover:bg-pink-50 hover:shadow-sm"
+              >
+                <span className="text-xl filter drop-shadow-sm">👋</span>
+                Logout
+              </button>
+            </div>
 
           </div>
 
