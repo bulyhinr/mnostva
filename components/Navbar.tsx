@@ -108,8 +108,7 @@ const Navbar: React.FC = () => {
               setIsCartOpen(false);
             }}
           >
-            <div className={`${transitionClass} flex items-center ${isPinned ? 'h-8 md:h-10' : 'h-12 md:h-16'
-              }`}>
+            <div className={`${transitionClass} flex items-center h-12 md:h-16`}>
               <Logo className="h-full" />
             </div>
           </div>
