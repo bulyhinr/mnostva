@@ -44,17 +44,15 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
       <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
         <div className="p-8 mt-20 border-b-4 border-gray-100 flex items-center justify-between">
           <h2 className="text-3xl font-black text-gray-900">Your <span className="text-[#8a7db3]">Basket</span></h2>
+          <button onClick={onClose} className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full font-black text-[10px] uppercase tracking-widest transition-colors shadow-sm active:scale-95">
+            Close
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         <div className="flex-grow overflow-y-auto p-8 space-y-6 overflow-x-hidden">
-          <div className="flex justify-end mb-2">
-            <button onClick={onClose} className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full font-black text-[10px] uppercase tracking-widest transition-colors shadow-sm active:scale-95">
-              Close
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
           {cart.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-6xl mb-6">🧺</div>
