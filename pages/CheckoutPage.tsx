@@ -12,6 +12,7 @@ import ImageWithFallback from '../components/ImageWithFallback';
 // Stripe imports
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import { PayPalButtons } from "@paypal/react-paypal-js";
 import StripeCheckoutForm from '../components/StripeCheckoutForm';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
@@ -40,6 +41,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
 
   // Stripe Session State
   const [clientSecret, setClientSecret] = useState<string>(state?.clientSecret || '');
+  const [paypalOrderId, setPaypalOrderId] = useState<string>('');
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
   const [stripeError, setStripeError] = useState<string>('');
 
   const [couponCode, setCouponCode] = useState('');
@@ -100,7 +103,13 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
           if (orderId) {
             // Recovery mode or "Pay Now" from profile
             const data = await orderService.getPaymentDetails(orderId, token);
-            setClientSecret(data.clientSecret);
+            if (data.clientSecret) {
+              setPaymentMethod('stripe');
+              setClientSecret(data.clientSecret);
+            } else if (data.paypalOrderId) {
+              setPaymentMethod('paypal');
+              setPaypalOrderId(data.paypalOrderId);
+            }
 
             // Fetch order items to show in summary
             const myOrders = await orderService.getMyOrders(token);
@@ -114,8 +123,19 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
             const items = cart.flatMap(item =>
               Array(item.quantity).fill({ productId: item.id, licenseType: item.licenseType })
             );
-            const data = await orderService.createCheckoutSession(items, token, appliedCoupon ? couponCode : undefined);
-            setClientSecret(data.clientSecret);
+            const data = await orderService.createCheckoutSession(items, token, appliedCoupon ? couponCode : undefined, paymentMethod);
+            
+            if (data.isFree || data.status === 'paid') {
+              clearCart();
+              goToStep(4);
+              return;
+            }
+
+            if (paymentMethod === 'stripe') {
+              setClientSecret(data.clientSecret || '');
+            } else {
+              setPaypalOrderId(data.paypalOrderId || '');
+            }
 
             // Update URL to include orderId so refresh works
             navigate(`/checkout?orderId=${data.orderId}`, {
@@ -132,9 +152,16 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
       };
       initPayment();
     }
-  }, [step, cart, clientSecret, orderId, existingOrderAmount]);
+  }, [step, cart, clientSecret, paypalOrderId, orderId, existingOrderAmount, paymentMethod]);
 
   const goToStep = (nextStep: 1 | 2 | 3 | 4) => {
+    if (nextStep < 3) {
+      setClientSecret('');
+      setPaypalOrderId('');
+      if (cart.length > 0) {
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
     setDirection(nextStep > step ? 'forward' : 'backward');
     setStep(nextStep);
   };
@@ -430,7 +457,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   {couponError && <p className="text-red-500 text-xs font-bold mb-4 ml-2">{couponError}</p>}
                   {appliedCoupon && <p className="text-pink-500 text-xs font-black mb-4 ml-2 animate-pulse">✨ {appliedCoupon.discountPercentage}% off applied!</p>}
 
-                  <div className="flex justify-between items-center mb-10">
+                  <div className="flex justify-between items-center mb-6">
                     <span className="text-gray-500 uppercase tracking-[0.3em] font-black text-[11px]">Grand Total</span>
                     <div className="text-right">
                       {appliedCoupon && <span className="text-gray-400 line-through text-sm mr-2 font-bold">${totalPrice.toFixed(2)}</span>}
@@ -439,15 +466,37 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                       </span>
                     </div>
                   </div>
-                  <div className="flex gap-4">
-                    {(step !== 2 || !user) && (
-                      <button
-                        onClick={() => goToStep(1)}
-                        className="flex-1 bg-gray-100 text-gray-600 py-6 rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-gray-200 transition-all"
-                      >
-                        Back
+
+                  <div className="mb-6">
+                    <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Select Payment Method</p>
+                    <div className="flex gap-4">
+                      <button onClick={() => setPaymentMethod('stripe')} className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold border-4 transition-all ${paymentMethod === 'stripe' ? 'border-[#8a7db3] bg-purple-50 text-[#8a7db3]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
+                        <span className="text-2xl">💳</span>
+                        <span className="text-xs uppercase tracking-wider">Card</span>
                       </button>
-                    )}
+                      <button onClick={() => setPaymentMethod('paypal')} className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold border-4 transition-all ${paymentMethod === 'paypal' ? 'border-[#003087] bg-blue-50 text-[#003087]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
+                        <svg viewBox="0 0 32 32" className="h-8 w-8 mb-[-4px]" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M22.012 12.017c-.36-1.526-1.423-2.584-3.153-2.964-1.282-.284-3.033-.284-4.99-.284H11.75c-.504 0-.936.386-1.025.885L8.536 23.513a.625.625 0 0 0 .616.73h3.456c.504 0 .937-.385 1.026-.885l1.118-7.14c.089-.498.52-.884 1.025-.884h1.996c3.084 0 5.61-1.332 6.27-4.004.285-1.154.215-2.072-.03-2.613v-.7z" fill="currentColor"/>
+                          <path d="M22.012 12.017c-.255 1.027-.614 1.838-1.22 2.45-1.018 1.026-2.578 1.542-4.524 1.542h-1.997c-.503 0-.935.385-1.024.884l-1.118 7.14a.626.626 0 0 0 .616.73h3.456c.504 0 .936-.385 1.025-.885l1.01-6.427c.088-.498.52-.884 1.024-.884h.994c2.825 0 4.966-1.12 5.576-3.328.326-1.173.28-2.483-.435-3.618-.266-.418-.61-.83-1.055-1.135-.558-.383-1.178-.65-1.328-.47z" fill="currentColor" fillOpacity="0.8"/>
+                        </svg>
+                        <span className="text-xs uppercase tracking-wider">PayPal</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => {
+                        if (!user) {
+                          goToStep(1);
+                        } else {
+                          onBack();
+                        }
+                      }}
+                      className="flex-1 bg-gray-100 text-gray-600 py-6 rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-gray-200 transition-all"
+                    >
+                      Back
+                    </button>
                     <button
                       onClick={() => goToStep(3)}
                       className="flex-[2] bg-pink-500 text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest border-b-8 border-pink-700/30"
@@ -508,7 +557,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
 
                 {/* Right Side: Stripe Elements */}
                 <div className="w-full lg:w-[55%] animate-in slide-in-from-right-4 duration-700">
-                  {isProcessing && !clientSecret ? (
+                  {isProcessing && !clientSecret && !paypalOrderId ? (
                     <div className="flex flex-col items-center justify-center py-20">
                       <div className="w-16 h-16 border-4 border-gray-100 border-t-[#8a7db3] rounded-full animate-spin mb-4"></div>
                       <p className="font-black text-gray-400 uppercase tracking-widest text-xs">Initializing Secure Checkout...</p>
@@ -519,22 +568,66 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                       <button onClick={() => goToStep(2)} className="text-[#8a7db3] font-black hover:underline">Try Again</button>
                     </div>
                   ) : (
-                    clientSecret && (
+                    paymentMethod === 'stripe' && clientSecret ? (
                       <Elements options={{ clientSecret, appearance }} stripe={stripePromise}>
                         <StripeCheckoutForm
                           amount={displayTotal || 0}
                           onSuccess={handlePaymentSuccess}
                           onBack={() => {
-                            if (state?.orderId) {
-                              // Go back for existing orders
-                              window.history.back();
+                            if (cart.length > 0) {
+                               goToStep(2);
                             } else {
-                              goToStep(2);
+                               window.history.back();
                             }
                           }}
                         />
                       </Elements>
-                    )
+                    ) : paymentMethod === 'paypal' && paypalOrderId ? (
+                      <div className="bg-white p-8 rounded-[2.5rem] border-2 border-gray-100 shadow-sm">
+                        <h3 className="font-black text-gray-800 text-xl mb-6 text-center">Complete with PayPal</h3>
+                        <PayPalButtons 
+                          style={{ layout: "vertical", shape: "pill" }}
+                          createOrder={(data, actions) => {
+                            return Promise.resolve(paypalOrderId);
+                          }}
+                          onApprove={async (data, actions) => {
+                            setIsProcessing(true);
+                            try {
+                              const token = authService.getAccessToken();
+                              if (!token) throw new Error("Not authenticated");
+                              
+                              // Use internal orderId, not PayPal's data.orderID
+                              if (!orderId) throw new Error("Missing local order ID");
+                              const updatedOrder = await orderService.capturePayPalOrder(orderId, token);
+                              
+                              if (updatedOrder.status === 'paid') {
+                                clearCart();
+                                goToStep(4);
+                              } else {
+                                setStripeError("Payment is processing but not yet confirmed. Please check your profile shortly.");
+                              }
+                            } catch (e: any) {
+                              setStripeError(e?.message || "Could not verify payment. Please check your order history.");
+                            } finally {
+                              setIsProcessing(false);
+                            }
+                          }}
+                          onError={(err) => {
+                            setStripeError("PayPal encountered an error. Please try again.");
+                          }}
+                          onCancel={() => {
+                             // User cancelled, do nothing
+                          }}
+                        />
+                        <button onClick={() => {
+                          if (cart.length > 0) {
+                            goToStep(2);
+                          } else {
+                            window.history.back();
+                          }
+                        }} className="w-full mt-6 text-gray-400 font-bold uppercase text-xs hover:text-[#8a7db3] transition-colors">← Go Back</button>
+                      </div>
+                    ) : null
                   )}
                 </div>
               </div>

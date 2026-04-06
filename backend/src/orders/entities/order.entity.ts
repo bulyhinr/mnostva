@@ -17,6 +17,12 @@ export class Order {
     @Column({ name: 'stripe_payment_intent_id', nullable: true })
     stripePaymentIntentId: string;
 
+    @Column({ name: 'paypal_order_id', nullable: true })
+    paypalOrderId: string;
+
+    @Column({ name: 'payment_method', default: 'stripe' })
+    paymentMethod: string;
+
     @Column({ name: 'receipt_url', nullable: true })
     receiptUrl: string;
 

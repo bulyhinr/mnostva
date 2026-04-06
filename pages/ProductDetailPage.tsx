@@ -280,12 +280,12 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                   </>
                 )}
 
-                <div className="absolute top-6 left-6 flex gap-2 pointer-events-none">
-                  <span className="bg-[#8a7db3] px-5 py-2 rounded-full text-xs font-black text-white shadow-xl uppercase tracking-widest">
+                <div className="absolute top-4 left-4 md:top-6 md:left-6 flex flex-wrap gap-2 pointer-events-none max-w-[calc(100%-2rem)]">
+                  <span className="bg-[#8a7db3] px-4 py-2 rounded-[1rem] text-[10px] md:text-xs font-black text-white shadow-xl uppercase tracking-widest max-w-full break-words text-center line-clamp-2">
                     {product.category}
                   </span>
                   {product.technicalSpecs?.animated && (
-                    <span className="bg-[#a2c367] text-white px-5 py-2 rounded-full text-xs font-black shadow-xl uppercase tracking-widest">
+                    <span className="bg-[#a2c367] text-white px-4 py-2 rounded-[1rem] text-[10px] md:text-xs font-black shadow-xl uppercase tracking-widest shrink-0">
                       ANIMATED
                     </span>
                   )}
@@ -345,7 +345,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                     </h4>
                     <div className="flex flex-wrap gap-3">
                       {product.compatibility.map((engine, idx) => (
-                        <span key={idx} className="bg-white px-5 py-2 rounded-full text-sm font-black text-gray-600 border-2 border-gray-50 shadow-sm uppercase tracking-tighter">
+                        <span key={idx} className="inline-flex items-center justify-center bg-white px-4 py-2.5 md:px-5 md:py-2 rounded-[1.25rem] text-xs md:text-sm font-black text-gray-600 border-2 border-gray-50 shadow-sm uppercase tracking-tight break-words break-all sm:break-normal max-w-full text-center leading-snug">
                           {engine}
                         </span>
                       ))}

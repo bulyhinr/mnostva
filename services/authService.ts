@@ -133,6 +133,26 @@ class AuthService {
         }
     }
 
+    async forgotPassword(email: string): Promise<{ message: string }> {
+        try {
+            const response = await axios.post(`${API_URL}/auth/forgot-password`, { email });
+            return response.data;
+        } catch (error) {
+            console.error('Forgot password failed:', error);
+            throw error;
+        }
+    }
+
+    async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+        try {
+            const response = await axios.post(`${API_URL}/auth/reset-password`, { token, newPassword });
+            return response.data;
+        } catch (error) {
+            console.error('Reset password failed:', error);
+            throw error;
+        }
+    }
+
     /**
      * Logout - clear tokens and user data
      */

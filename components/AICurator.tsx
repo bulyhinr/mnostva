@@ -22,6 +22,9 @@ const AICurator: React.FC = () => {
     }
   };
 
+  // Temporarily hidden per user request
+  return null;
+  
   return (
     <section id="curator" className="py-20 px-4 bg-purple-900 text-white relative overflow-hidden rounded-[4rem] mx-4 mb-20">
       <div className="absolute top-0 right-0 w-96 h-96 bg-pink-500/20 rounded-full blur-[120px]"></div>

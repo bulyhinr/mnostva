@@ -2,7 +2,8 @@ import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/co
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { RegisterDto, LoginDto } from './dto/auth.dto';
+import * as crypto from 'crypto';
+import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto } from './dto/auth.dto';
 import { User } from '../users/entities/user.entity';
 
 import { EmailService } from '../email/email.service';
@@ -49,6 +50,41 @@ export class AuthService {
         }
 
         return this.generateTokens(user);
+    }
+
+    async forgotPassword(dto: ForgotPasswordDto): Promise<{ message: string }> {
+        const user = await this.usersService.findByEmail(dto.email.toLowerCase());
+        if (!user) {
+            return { message: 'If an account with this email exists, a reset link has been sent.' };
+        }
+
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
+
+        user.resetToken = resetToken;
+        user.resetTokenExpiry = resetTokenExpiry;
+        await this.usersService.save(user);
+
+        await this.emailService.sendPasswordResetEmail(user.email, resetToken);
+
+        return { message: 'If an account with this email exists, a reset link has been sent.' };
+    }
+
+    async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
+        const user = await this.usersService.findByResetToken(dto.token);
+        
+        if (!user || !user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+            throw new UnauthorizedException('Invalid or expired reset token');
+        }
+
+        const salt = await bcrypt.genSalt();
+        user.passwordHash = await bcrypt.hash(dto.newPassword, salt);
+        user.resetToken = null;
+        user.resetTokenExpiry = null;
+
+        await this.usersService.save(user);
+
+        return { message: 'Password has been reset successfully' };
     }
 
     private async generateTokens(user: User) {

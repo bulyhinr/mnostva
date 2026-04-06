@@ -30,10 +30,10 @@ export interface Product {
 }
 
 export const productService = {
-    async getAllProducts(params?: { limit?: number; sortBy?: string }) {
+    async getAllProducts(params?: { page?: number; limit?: number; sortBy?: string; category?: string; [key: string]: any }) {
         const query = new URLSearchParams(params as any).toString();
-        const response = await axios.get<{ data: Product[] }>(`${API_URL}/products?${query}`);
-        return response.data.data;
+        const response = await axios.get<{ data: Product[], total: number, page: number, limit: number }>(`${API_URL}/products?${query}`);
+        return response.data;
     },
 
     async getProductById(id: string) {

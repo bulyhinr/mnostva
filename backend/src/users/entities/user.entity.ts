@@ -24,6 +24,13 @@ export class User {
     @Exclude() // Hide password hash from JSON responses
     passwordHash: string;
 
+    @Column({ type: 'varchar', nullable: true })
+    @Exclude()
+    resetToken: string | null;
+
+    @Column({ type: 'timestamp', nullable: true })
+    resetTokenExpiry: Date | null;
+
     @Column({ default: false })
     isAdmin: boolean;
 

@@ -15,8 +15,16 @@ export class UsersService {
         return this.usersRepository.findOne({ where: { email } });
     }
 
+    async findByResetToken(resetToken: string): Promise<User | null> {
+        return this.usersRepository.findOne({ where: { resetToken } });
+    }
+
     async findOne(id: string): Promise<User | null> {
         return this.usersRepository.findOne({ where: { id } });
+    }
+
+    async save(user: User): Promise<User> {
+        return this.usersRepository.save(user);
     }
 
     async create(userData: Partial<User>): Promise<User> {

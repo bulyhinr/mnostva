@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Header } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminGuard } from '../auth/admin.guard';
@@ -10,6 +10,9 @@ export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }
 
     @Get()
+    @Header('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    @Header('Pragma', 'no-cache')
+    @Header('Expires', '0')
     async findAll(@Query() query: {
         page?: number;
         limit?: number;
@@ -19,6 +22,7 @@ export class ProductsController {
         rigged?: string;
         animated?: string;
         textures?: string;
+        search?: string;
     }) {
         const page = query.page || 1;
         const limit = query.limit || 10;
@@ -34,6 +38,7 @@ export class ProductsController {
                 rigged: query.rigged,
                 animated: query.animated,
                 textures: query.textures,
+                search: query.search,
             });
             console.log(`Found ${products.length} products, total=${total}`);
             return { data: products, total, page, limit };

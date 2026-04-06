@@ -60,6 +60,8 @@ describe('OrdersService', () => {
                     useValue: {
                         createPaymentIntent: jest.fn().mockResolvedValue(mockPaymentIntent),
                         retrievePaymentIntent: jest.fn().mockResolvedValue(mockPaymentIntent),
+                        createPayPalOrder: jest.fn().mockResolvedValue({ id: 'paypal_order_123' }),
+                        capturePayPalOrder: jest.fn().mockResolvedValue({ status: 'COMPLETED' }),
                     },
                 },
                 {
@@ -130,8 +132,35 @@ describe('OrdersService', () => {
             });
         });
 
+        it('should create a paypal order successfully', async () => {
+            productsService.findAllProducts.mockResolvedValue([mockProduct]);
+            const result = await service.createOrder('user-1', [{ productId: 'prod-1' }], undefined, 'paypal');
+
+            expect(paymentsService.createPayPalOrder).toHaveBeenCalled();
+            expect(result).toEqual({ orderId: 'order-1', paypalOrderId: 'paypal_order_123' });
+        });
+
         it('should throw error if no product ids provided', async () => {
             await expect(service.createOrder('user-1', [])).rejects.toThrow('No products in order');
+        });
+
+        it('should throw error if payment method is invalid', async () => {
+            productsService.findAllProducts.mockResolvedValue([mockProduct]);
+            await expect(service.createOrder('user-1', [{ productId: 'prod-1' }], undefined, 'bitcoin')).rejects.toThrow('Invalid payment method string');
+        });
+
+        it('should instantly fulfill a free order and not call Stripe/PayPal', async () => {
+            const mockFreeProduct = { id: 'prod-free', price: 0 };
+            productsService.findAllProducts.mockResolvedValue([mockFreeProduct]);
+
+            jest.spyOn(service, 'findOne').mockResolvedValue({ id: 'order-1', user: { email: 'test@test.com' } } as any);
+
+            const result = await service.createOrder('user-1', [{ productId: 'prod-free' }], undefined, 'stripe');
+            
+            expect(paymentsService.createPaymentIntent).not.toHaveBeenCalled();
+            expect(paymentsService.createPayPalOrder).not.toHaveBeenCalled();
+            expect(ordersRepository.save).toHaveBeenCalled();
+            expect(result).toEqual({ orderId: 'order-1', isFree: true, status: 'paid' });
         });
 
         it('should throw NotFoundException if product not found', async () => {
@@ -268,10 +297,21 @@ describe('OrdersService', () => {
     });
 
     describe('getPaymentDetails', () => {
-        it('should return client secret', async () => {
-            jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder } as any);
+        it('should return client secret for stripe', async () => {
+            jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder, paymentMethod: 'stripe' } as any);
             const result = await service.getPaymentDetails('order-1', 'user-1');
             expect(result).toEqual({ clientSecret: 'secret_123' });
+        });
+
+        it('should return paypal order id if payment method is paypal', async () => {
+            jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder, paymentMethod: 'paypal', paypalOrderId: 'paypal_order_123' } as any);
+            const result = await service.getPaymentDetails('order-1', 'user-1');
+            expect(result).toEqual({ paypalOrderId: 'paypal_order_123' });
+        });
+
+        it('should throw if payment method is paypal but missing paypalOrderId', async () => {
+            jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder, paymentMethod: 'paypal', paypalOrderId: null } as any);
+            await expect(service.getPaymentDetails('order-1', 'user-1')).rejects.toThrow('PayPal Order ID missing on order');
         });
 
         it('should throw if order not found', async () => {
@@ -298,6 +338,34 @@ describe('OrdersService', () => {
             jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder } as any);
             paymentsService.retrievePaymentIntent.mockResolvedValue({ ...mockPaymentIntent, client_secret: null });
             await expect(service.getPaymentDetails('order-1', 'user-1')).rejects.toThrow('Client secret not returned from Stripe');
+        });
+    });
+
+    describe('capturePayPalOrder', () => {
+        it('should return already paid order', async () => {
+            jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder, status: 'paid' } as any);
+            const result = await service.capturePayPalOrder('order-1', 'user-1');
+            expect(result.status).toBe('paid');
+        });
+
+        it('should throw if not a paypal order', async () => {
+            jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder, paypalOrderId: null } as any);
+            await expect(service.capturePayPalOrder('order-1', 'user-1')).rejects.toThrow('Not a PayPal order');
+        });
+
+        it('should capture paypal order and update status', async () => {
+            jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder, paymentMethod: 'paypal', paypalOrderId: 'paypal_order_123' } as any);
+            const result = await service.capturePayPalOrder('order-1', 'user-1');
+            
+            expect(paymentsService.capturePayPalOrder).toHaveBeenCalledWith('paypal_order_123');
+            expect(ordersRepository.save).toHaveBeenCalledWith(expect.objectContaining({ status: 'paid' }));
+            expect(result.status).toBe('paid');
+        });
+
+        it('should throw error if payment capture failed', async () => {
+            paymentsService.capturePayPalOrder.mockResolvedValue({ status: 'DECLINED' });
+            jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder, paymentMethod: 'paypal', paypalOrderId: 'paypal_order_123' } as any);
+            await expect(service.capturePayPalOrder('order-1', 'user-1')).rejects.toThrow('Payment capture failed, status: DECLINED');
         });
     });
 });

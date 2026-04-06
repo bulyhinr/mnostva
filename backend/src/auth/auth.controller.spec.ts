@@ -42,4 +42,22 @@ describe('AuthController', () => {
             expect(service.register).toHaveBeenCalledWith(dto);
         });
     });
+
+    describe('forgotPassword', () => {
+        it('should call AuthService.forgotPassword', async () => {
+            const dto = { email: 't@t.com' };
+            service.forgotPassword = jest.fn().mockResolvedValue({ message: 'sent' });
+            expect(await controller.forgotPassword(dto)).toEqual({ message: 'sent' });
+            expect(service.forgotPassword).toHaveBeenCalledWith(dto);
+        });
+    });
+
+    describe('resetPassword', () => {
+        it('should call AuthService.resetPassword', async () => {
+            const dto = { token: 't', newPassword: 'p' };
+            service.resetPassword = jest.fn().mockResolvedValue({ message: 'done' });
+            expect(await controller.resetPassword(dto)).toEqual({ message: 'done' });
+            expect(service.resetPassword).toHaveBeenCalledWith(dto);
+        });
+    });
 });

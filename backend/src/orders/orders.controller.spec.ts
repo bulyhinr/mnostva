@@ -20,6 +20,7 @@ describe('OrdersController', () => {
         getPaymentDetails: jest.fn().mockResolvedValue({ clientSecret: 'secret_123' }),
         cancelOrder: jest.fn().mockResolvedValue({ ...mockOrder, status: 'cancelled' }),
         verifyPayment: jest.fn().mockResolvedValue({ ...mockOrder, status: 'paid' }),
+        capturePayPalOrder: jest.fn().mockResolvedValue({ ...mockOrder, status: 'paid' }),
     };
 
     beforeEach(async () => {
@@ -43,9 +44,9 @@ describe('OrdersController', () => {
 
     describe('createCheckoutSession', () => {
         it('should create an order', async () => {
-            const result = await controller.createCheckoutSession({ user: { userId: 'user-1' } }, { items: [{ productId: 'prod-1' }] });
+            const result = await controller.createCheckoutSession({ user: { userId: 'user-1' } }, { items: [{ productId: 'prod-1' }], paymentMethod: 'stripe' });
 
-            expect(service.createOrder).toHaveBeenCalledWith('user-1', [{ productId: 'prod-1' }], undefined);
+            expect(service.createOrder).toHaveBeenCalledWith('user-1', [{ productId: 'prod-1' }], undefined, 'stripe');
             expect(result).toEqual({ id: 'order-1', clientSecret: 'secret_123' });
         });
     });
@@ -144,6 +145,14 @@ describe('OrdersController', () => {
         it('should verify payment', async () => {
             const result = await controller.verifyOrder('order-1', { user: { userId: 'user-1' } });
             expect(service.verifyPayment).toHaveBeenCalledWith('order-1', 'user-1');
+            expect(result.status).toEqual('paid');
+        });
+    });
+
+    describe('capturePayPalOrder', () => {
+        it('should capture paypal payment', async () => {
+            const result = await controller.capturePayPalOrder('order-1', { user: { userId: 'user-1' } });
+            expect(service.capturePayPalOrder).toHaveBeenCalledWith('order-1', 'user-1');
             expect(result.status).toEqual('paid');
         });
     });

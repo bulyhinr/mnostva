@@ -48,10 +48,11 @@ export const orderService = {
     },
 
     // New method for secure checkout
-    async createCheckoutSession(items: { productId: string, licenseType?: string }[], token: string, couponCode?: string) {
-        const response = await axios.post<{ clientSecret: string, orderId: string }>(`${API_URL}/orders/checkout`, {
+    async createCheckoutSession(items: any[], token: string, couponCode?: string, paymentMethod?: string) {
+        const response = await axios.post<{ clientSecret?: string, paypalOrderId?: string, orderId: string, isFree?: boolean, status?: string }>(`${API_URL}/orders/checkout`, {
             items,
-            couponCode
+            couponCode,
+            paymentMethod
         }, {
             headers: { Authorization: `Bearer ${token}` }
         });
@@ -67,7 +68,7 @@ export const orderService = {
     },
 
     async getPaymentDetails(orderId: string, token: string) {
-        const response = await axios.get<{ clientSecret: string }>(`${API_URL}/orders/${orderId}/payment`, {
+        const response = await axios.get<{ clientSecret?: string, paypalOrderId?: string }>(`${API_URL}/orders/${orderId}/payment`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return response.data;
@@ -82,6 +83,13 @@ export const orderService = {
 
     async verifyPayment(orderId: string, token: string) {
         const response = await axios.post(`${API_URL}/orders/${orderId}/verify`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return mapOrderToFrontend(response.data);
+    },
+
+    async capturePayPalOrder(orderId: string, token: string) {
+        const response = await axios.post(`${API_URL}/orders/${orderId}/capture-paypal`, {}, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return mapOrderToFrontend(response.data);

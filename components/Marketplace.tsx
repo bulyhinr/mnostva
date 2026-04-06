@@ -30,8 +30,8 @@ const Marketplace: React.FC<MarketplaceProps> = ({
       if (limit) {
         try {
           // Fetch latest products from backend for "Latest Releases"
-          const backendProducts = await productService.getAllProducts({ limit, sortBy: 'newest' });
-          const mappedProducts: Product[] = backendProducts.map((p: any) => ({
+          const response: any = await productService.getAllProducts({ limit, sortBy: 'newest' });
+          const mappedProducts: Product[] = (response.data || []).map((p: any) => ({
             id: p.id,
             name: p.title,
             price: p.price / 100,

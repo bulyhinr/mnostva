@@ -27,9 +27,13 @@ export class OrdersService {
         return this.ordersRepository.save(order);
     }
 
-    async createOrder(userId: string, itemsData: { productId: string, licenseType?: string }[], couponCode?: string) {
+    async createOrder(userId: string, itemsData: { productId: string, licenseType?: string }[], couponCode?: string, paymentMethod: string = 'stripe') {
         if (!itemsData || itemsData.length === 0) {
             throw new Error('No products in order');
+        }
+
+        if (paymentMethod !== 'stripe' && paymentMethod !== 'paypal') {
+            throw new Error('Invalid payment method string');
         }
 
         // 1. Fetch products to get current prices
@@ -90,23 +94,55 @@ export class OrdersService {
         order.couponCode = finalCouponCode;
         order.couponDiscount = couponDiscountAmount;
         order.status = 'pending';
+        order.paymentMethod = paymentMethod;
+
+        if (totalAmount <= 0) {
+            order.status = 'paid';
+            const savedOrder = await this.ordersRepository.save(order);
+            
+            if (order.couponCode) {
+                 await this.couponsService.incrementUses(order.couponCode);
+            }
+            
+            // Reload to get user email
+            const reloadedOrder = await this.findOne(savedOrder.id);
+            if (reloadedOrder && reloadedOrder.user && reloadedOrder.user.email) {
+                this.emailService.sendOrderConfirmation(reloadedOrder.user.email, savedOrder);
+            }
+            
+            return {
+                orderId: savedOrder.id,
+                isFree: true,
+                status: 'paid'
+            };
+        }
 
         const savedOrder = await this.ordersRepository.save(order);
 
-        // 3. Create Payment Intent
-        const paymentIntent = await this.paymentsService.createPaymentIntent(totalAmount, 'usd', {
-            orderId: savedOrder.id,
-            userId,
-        });
+        if (paymentMethod === 'paypal') {
+            const paypalOrder = await this.paymentsService.createPayPalOrder(totalAmount);
+            savedOrder.paypalOrderId = paypalOrder.id;
+            await this.ordersRepository.save(savedOrder);
+            return {
+                paypalOrderId: paypalOrder.id,
+                orderId: savedOrder.id
+            };
+        } else {
+            // 3. Create Payment Intent
+            const paymentIntent = await this.paymentsService.createPaymentIntent(totalAmount, 'usd', {
+                orderId: savedOrder.id,
+                userId,
+            });
 
-        // 4. Save Payment Intent ID to Order (for webhook matching)
-        savedOrder.stripePaymentIntentId = paymentIntent.id;
-        await this.ordersRepository.save(savedOrder);
+            // 4. Save Payment Intent ID to Order (for webhook matching)
+            savedOrder.stripePaymentIntentId = paymentIntent.id;
+            await this.ordersRepository.save(savedOrder);
 
-        return {
-            clientSecret: paymentIntent.client_secret,
-            orderId: savedOrder.id
-        };
+            return {
+                clientSecret: paymentIntent.client_secret,
+                orderId: savedOrder.id
+            };
+        }
     }
 
     async updateStatus(id: string, status: 'pending' | 'paid' | 'failed' | 'fulfilled' | 'cancelled') {
@@ -146,7 +182,7 @@ export class OrdersService {
         });
     }
 
-    async getPaymentDetails(orderId: string, userId: string): Promise<{ clientSecret: string }> {
+    async getPaymentDetails(orderId: string, userId: string): Promise<{ clientSecret?: string, paypalOrderId?: string }> {
         const order = await this.findOne(orderId);
         if (!order) throw new NotFoundException('Order not found');
 
@@ -159,6 +195,13 @@ export class OrdersService {
             // Just return whatever, but ideally frontend shouldn't call this
             // returning empty or error depending on flow
             throw new Error('Order is already paid');
+        }
+
+        if (order.paymentMethod === 'paypal') {
+            if (!order.paypalOrderId) {
+                throw new Error('PayPal Order ID missing on order');
+            }
+            return { paypalOrderId: order.paypalOrderId };
         }
 
         if (!order.stripePaymentIntentId) {
@@ -213,5 +256,26 @@ export class OrdersService {
         }
 
         return order;
+    }
+
+    async capturePayPalOrder(orderId: string, userId: string): Promise<Order> {
+        const order = await this.findOne(orderId);
+        if (!order) throw new NotFoundException('Order not found');
+        if (!order.user || order.user.id !== userId) throw new NotFoundException('Access denied');
+        if (order.status === 'paid') return order;
+        if (!order.paypalOrderId) throw new Error('Not a PayPal order');
+
+        const captureResult = await this.paymentsService.capturePayPalOrder(order.paypalOrderId);
+        if (captureResult.status === 'COMPLETED') {
+            order.status = 'paid';
+            if (order.couponCode) {
+                await this.couponsService.incrementUses(order.couponCode);
+            }
+            const savedOrder = await this.ordersRepository.save(order);
+            this.emailService.sendOrderConfirmation(order.user.email, savedOrder);
+            return savedOrder;
+        } else {
+            throw new Error(`Payment capture failed, status: ${captureResult.status}`);
+        }
     }
 }

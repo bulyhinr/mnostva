@@ -47,6 +47,7 @@ export class ProductsService implements OnModuleInit {
         rigged?: string;
         animated?: string;
         textures?: string;
+        search?: string;
     }): Promise<[Product[], number]> {
         const qb = this.productsRepository.createQueryBuilder('product')
             .leftJoinAndSelect('product.discount', 'discount');
@@ -55,20 +56,24 @@ export class ProductsService implements OnModuleInit {
             qb.andWhere('product.category = :category', { category: options.category });
         }
 
+        if (options.search) {
+            qb.andWhere('(product.title ILIKE :search OR product.description ILIKE :search)', { search: `%${options.search}%` });
+        }
+
         if (options.polyCount && options.polyCount !== 'All') {
-            qb.andWhere(`product.technicalSpecs->>'polyCount' = :polyCount`, { polyCount: options.polyCount });
+            qb.andWhere(`product."technicalSpecs"->>'polyCount' = :polyCount`, { polyCount: options.polyCount });
         }
 
         if (options.rigged && options.rigged !== 'All') {
-            qb.andWhere(`product.technicalSpecs->>'rigged' = :rigged`, { rigged: options.rigged });
+            qb.andWhere(`product."technicalSpecs"->>'rigged' = :rigged`, { rigged: options.rigged });
         }
 
         if (options.animated && options.animated !== 'All') {
-            qb.andWhere(`product.technicalSpecs->>'animated' = :animated`, { animated: options.animated });
+            qb.andWhere(`product."technicalSpecs"->>'animated' = :animated`, { animated: options.animated });
         }
 
         if (options.textures && options.textures !== 'All') {
-            qb.andWhere(`product.technicalSpecs->>'textures' = :textures`, { textures: options.textures });
+            qb.andWhere(`product."technicalSpecs"->>'textures' = :textures`, { textures: options.textures });
         }
 
         // Handle sorting

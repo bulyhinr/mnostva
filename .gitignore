@@ -28,3 +28,6 @@ dist-ssr
 
 # Documentation
 *.md
+
+# Scraped Data
+scraped_items/

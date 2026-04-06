@@ -18,14 +18,29 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
   });
   const [file, setFile] = useState<File | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate sending
-    console.log('Sending freelance inquiry:', { ...formData, file });
-    toast.success('Message sent! We\'ll be in touch soon. 🚀');
-    setIsModalOpen(false);
-    setFormData({ name: '', email: '', description: '' });
-    setFile(null);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/email/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          description: formData.description
+        })
+      });
+      if (!response.ok) throw new Error('Failed to send');
+      
+      toast.success('Message sent! We\'ll be in touch soon. 🚀');
+      setIsModalOpen(false);
+      setFormData({ name: '', email: '', description: '' });
+      setFile(null);
+    } catch (e) {
+      toast.error('Failed to send message. Try again later.');
+    }
   };
 
   return (
@@ -141,27 +156,30 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
       {/* Freelance Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"
+          className="fixed inset-0 z-[200] flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"
           onClick={() => setIsModalOpen(false)}
         >
           <div
-            className="bg-white rounded-[2.5rem] p-8 md:p-12 max-w-lg w-full shadow-2xl relative animate-in zoom-in-95 duration-300 border-4 border-white max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-[2rem] max-w-lg w-full shadow-2xl relative animate-in zoom-in-95 duration-300 border-4 border-white max-h-[90vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Absolute close button attached to the main window so it never scrolls */}
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-pink-500 transition-colors w-10 h-10 flex items-center justify-center rounded-full hover:bg-pink-50"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 text-gray-400 hover:text-pink-500 transition-colors w-10 h-10 flex items-center justify-center rounded-full z-20 bg-white/90 backdrop-blur-sm"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
-            <div className="text-center mb-10">
-              <span className="inline-block px-4 py-1.5 rounded-full bg-pink-100 text-pink-600 font-bold text-[10px] uppercase tracking-widest mb-4">Let's create magic</span>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-900 uppercase tracking-tighter leading-tight">Work With Us</h2>
-              <p className="text-gray-500 font-medium mt-2 max-w-xs mx-auto text-sm">Have a vision for a stylized world? Tell us about it!</p>
+            {/* Inner scrollable area */}
+            <div className="overflow-y-auto w-full h-full p-6 md:p-10">
+              <div className="text-center mb-8 shrink-0">
+              <span className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-pink-100 text-pink-600 font-bold text-[9px] sm:text-[10px] uppercase tracking-widest mb-2 sm:mb-4">Let's create magic</span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 uppercase tracking-tighter leading-tight">Work With Us</h2>
+              <p className="text-gray-500 font-medium mt-1 sm:mt-2 max-w-xs mx-auto text-xs sm:text-sm">Have a vision for a stylized world? Tell us about it!</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               <div>
                 <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4">Your Name</label>
                 <input
@@ -169,7 +187,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all placeholder:text-gray-300"
+                  className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 font-bold text-sm sm:text-base outline-none transition-all placeholder:text-gray-300"
                   placeholder="Designer Dave"
                 />
               </div>
@@ -181,7 +199,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all placeholder:text-gray-300"
+                  className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 font-bold text-sm sm:text-base outline-none transition-all placeholder:text-gray-300"
                   placeholder="dave@studio.com"
                 />
               </div>
@@ -190,10 +208,10 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                 <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4">Project Idea / Brief</label>
                 <textarea
                   required
-                  rows={4}
+                  rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all placeholder:text-gray-300 resize-none"
+                  className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 font-bold text-sm sm:text-base outline-none transition-all placeholder:text-gray-300 resize-none"
                   placeholder="I need a low-poly candy forest level for my mobile game..."
                 />
               </div>
@@ -206,8 +224,8 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                     onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
-                  <div className="w-full bg-gray-50 border-4 border-dashed border-gray-200 group-hover:border-[#8a7db3] rounded-2xl px-6 py-8 text-center transition-all flex flex-col items-center justify-center gap-2">
-                    <span className="bg-white w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-sm">📎</span>
+                  <div className="w-full bg-gray-50 border-2 sm:border-4 border-dashed border-gray-200 group-hover:border-[#8a7db3] rounded-xl sm:rounded-2xl px-4 py-4 sm:py-5 text-center transition-all flex flex-col items-center justify-center gap-2">
+                    <span className="bg-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-xl shadow-sm">📎</span>
                     <span className="text-xs font-bold text-gray-500 group-hover:text-[#8a7db3]">
                       {file ? file.name : 'Click to upload reference images or docs'}
                     </span>
@@ -215,17 +233,18 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full bg-[#8a7db3] text-white py-5 rounded-[2rem] font-black text-lg shadow-xl hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest relative overflow-hidden group"
+                  className="w-full bg-[#8a7db3] text-white py-4 sm:py-4 rounded-[1.5rem] sm:rounded-[2rem] font-black text-base sm:text-lg shadow-xl hover:translate-y-[-2px] sm:hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest relative overflow-hidden group"
                 >
                   <span className="relative z-10">Send Request 🚀</span>
                   <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                 </button>
-                <p className="text-center text-[10px] text-gray-400 font-bold mt-4 uppercase tracking-widest">We usually reply within 24 hours</p>
+                <p className="text-center text-[9px] sm:text-[10px] text-gray-400 font-bold mt-3 uppercase tracking-widest">We usually reply within 24 hours</p>
               </div>
             </form>
+            </div>
           </div>
         </div>
       )}

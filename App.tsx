@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Marketplace from './components/Marketplace';
@@ -207,14 +208,22 @@ const AppContent: React.FC = () => {
 
 // Root App Component
 const App: React.FC = () => {
+  const initialOptions = {
+    clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test',
+    currency: "USD",
+    intent: "capture",
+  };
+
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <AppContent />
-        </CartProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <PayPalScriptProvider options={initialOptions}>
+      <BrowserRouter>
+        <AuthProvider>
+          <CartProvider>
+            <AppContent />
+          </CartProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </PayPalScriptProvider>
   );
 };
 

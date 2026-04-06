@@ -105,3 +105,46 @@ export const getOrderConfirmationTemplate = (order: any) => {
 </html>
 `;
 };
+
+export const getPasswordResetTemplate = (token: string) => `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #333; line-height: 1.6; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; padding: 40px 0; background-color: #fafafa; border-radius: 20px; margin-bottom: 30px; }
+    .logo { font-weight: 900; font-size: 24px; color: #333; text-transform: uppercase; letter-spacing: 2px; }
+    .logo span { color: #8a7db3; }
+    .content { padding: 0 20px; }
+    .button { display: inline-block; padding: 15px 30px; background-color: #8a7db3; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #999; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Mnostva<span>.art</span></div>
+    </div>
+    <div class="content">
+      <h1>Password Reset Request 🔐</h1>
+      <p>We received a request to reset the password for your account.</p>
+      <p>Click the button below to choose a new password. This link is valid for 1 hour.</p>
+      
+      <div style="text-align: center;">
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?reset_token=${token}" class="button">Reset Password</a>
+      </div>
+
+      <p>If you didn't request this, you can safely ignore this email. Your password will remain unchanged.</p>
+      <p>You can also change your email and other settings in your dashboard -> Settings tab.</p>
+      <br>
+      <p>Stay Colorful! 🌈</p>
+      <p>- The Mnostva Team</p>
+    </div>
+    <div class="footer">
+      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;

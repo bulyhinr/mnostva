@@ -28,6 +28,7 @@ describe('PaymentsService', () => {
                     provide: ConfigService,
                     useValue: {
                         getOrThrow: jest.fn().mockReturnValue('fake_key'),
+                        get: jest.fn().mockImplementation((key, defaultVal) => defaultVal || 'fake_val'),
                     },
                 },
             ],
@@ -87,6 +88,44 @@ describe('PaymentsService', () => {
                 expand: ['latest_charge']
             });
             expect(result).toEqual({ id: 'pi_123' });
+        });
+    });
+
+    describe('PayPal Methods', () => {
+        beforeEach(() => {
+            global.fetch = jest.fn();
+        });
+
+        it('should get access token and create order', async () => {
+            (global.fetch as jest.Mock)
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ access_token: 'fake_token' })
+                })
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ id: 'paypal_order_123' })
+                });
+
+            const result = await service.createPayPalOrder(1000, 'USD');
+            expect(result).toEqual({ id: 'paypal_order_123' });
+            expect(global.fetch).toHaveBeenCalledTimes(2);
+        });
+
+        it('should get access token and capture order', async () => {
+            (global.fetch as jest.Mock)
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ access_token: 'fake_token' })
+                })
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: async () => ({ status: 'COMPLETED' })
+                });
+
+            const result = await service.capturePayPalOrder('paypal_order_123');
+            expect(result).toEqual({ status: 'COMPLETED' });
+            expect(global.fetch).toHaveBeenCalledTimes(2);
         });
     });
 });

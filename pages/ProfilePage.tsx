@@ -281,7 +281,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
           <div className="lg:w-3/4 p-8 lg:p-14">
             {activeTab === 'dashboard' && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-10 tracking-tight">Hello, <span className="text-[#8a7db3]">{user.name.split(' ')[0]}</span>! <span className="animate-pulse">🌈</span></h1>
+                <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-10 tracking-tight">Hello, <span className="text-[#8a7db3]">{user.name.split(' ')[0]}</span>!</h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                   <div className="bg-pink-50 p-7 rounded-[2.5rem] border-2 border-pink-100 shadow-sm group hover:scale-[1.02] transition-transform">

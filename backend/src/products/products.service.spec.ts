@@ -140,6 +140,16 @@ describe('ProductsService', () => {
             expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'animated' = :animated`, { animated: 'No' });
             expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'textures' = :textures`, { textures: 'Included' });
         });
+
+        it('should filter by search text using ILIKE', async () => {
+            const result = [[{ id: '1' }], 1];
+            expect(await service.findAll({
+                page: 1,
+                limit: 10,
+                search: 'Low Poly'
+            })).toEqual(result);
+            expect(qbMock.andWhere).toHaveBeenCalledWith('(product.title ILIKE :search OR product.description ILIKE :search)', { search: '%Low Poly%' });
+        });
     });
 
     describe('findAllProducts', () => {

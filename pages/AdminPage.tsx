@@ -49,16 +49,20 @@ const AdminPage: React.FC = () => {
 
     const categories = ['Room', 'Level', 'Prop', 'Full Pack', 'Weapons'];
 
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const itemsPerPage = 20;
+
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [backendProducts, backendDiscounts, backendCoupons] = await Promise.all([
-                productService.getAllProducts(),
+            const [backendProductsResponse, backendDiscounts, backendCoupons] = await Promise.all([
+                productService.getAllProducts({ page, limit: itemsPerPage }),
                 discountService.getAllDiscounts(authService.getAccessToken() || ''),
                 couponService.getAllCoupons(authService.getAccessToken() || '')
             ]);
 
-            const mappedProducts: Product[] = backendProducts.map((p: any) => ({
+            const mappedProducts: Product[] = (backendProductsResponse.data || []).map((p: any) => ({
                 id: p.id,
                 name: p.title,
                 price: p.price / 100,
@@ -79,6 +83,7 @@ const AdminPage: React.FC = () => {
             }));
 
             setProducts(mappedProducts);
+            setTotalPages(Math.ceil((backendProductsResponse.total || 0) / itemsPerPage));
             setDiscounts(backendDiscounts);
             setCoupons(backendCoupons);
         } catch (error) {
@@ -90,7 +95,7 @@ const AdminPage: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [page]);
 
     // --- Product Handlers ---
 
@@ -499,6 +504,29 @@ const AdminPage: React.FC = () => {
                                         ))}
                                     </tbody>
                                 </table>
+
+                                {/* Pagination Controls */}
+                                {totalPages > 1 && (
+                                    <div className="py-6 flex items-center justify-center gap-4 border-t-2 border-gray-100 bg-white">
+                                        <button 
+                                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                                            disabled={page === 1}
+                                            className="px-6 py-2 font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 transition-all border-2 border-transparent"
+                                        >
+                                            Prev
+                                        </button>
+                                        <div className="font-bold text-gray-500 text-xs uppercase tracking-widest">
+                                            Page {page} of {totalPages}
+                                        </div>
+                                        <button 
+                                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                            disabled={page === totalPages}
+                                            className="px-6 py-2 font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 transition-all border-2 border-transparent"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </>

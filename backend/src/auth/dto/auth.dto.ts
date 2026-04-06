@@ -25,3 +25,20 @@ export class LoginDto {
     @IsString()
     password: string;
 }
+
+export class ForgotPasswordDto {
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+}
+
+export class ResetPasswordDto {
+    @IsNotEmpty()
+    @IsString()
+    token: string;
+
+    @IsNotEmpty()
+    @IsString()
+    @MinLength(6)
+    newPassword: string;
+}

@@ -8,9 +8,9 @@ export class OrdersController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('checkout')
-    async createCheckoutSession(@Request() req, @Body() body: { items: { productId: string, licenseType?: string }[], couponCode?: string }) {
-        // Create secure order with payment intent
-        return this.ordersService.createOrder(req.user.userId, body.items, body.couponCode);
+    async createCheckoutSession(@Request() req, @Body() body: { items: { productId: string, licenseType?: string }[], couponCode?: string, paymentMethod?: string }) {
+        // Create secure order with payment intent or PayPal order
+        return this.ordersService.createOrder(req.user.userId, body.items, body.couponCode, body.paymentMethod);
     }
 
     @UseGuards(AuthGuard('jwt'))
@@ -72,5 +72,11 @@ export class OrdersController {
     @Post(':id/verify')
     async verifyOrder(@Param('id') id: string, @Request() req) {
         return this.ordersService.verifyPayment(id, req.user.userId);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post(':id/capture-paypal')
+    async capturePayPalOrder(@Param('id') id: string, @Request() req) {
+        return this.ordersService.capturePayPalOrder(id, req.user.userId);
     }
 }

@@ -63,12 +63,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
     }, 800);
   };
 
-  const galleryImages = [
-    product.imageUrl,
-    `https://picsum.photos/seed/variant1${product.id}/1200/1200`,
-    `https://picsum.photos/seed/variant2${product.id}/1200/1200`,
-    `https://picsum.photos/seed/variant3${product.id}/1200/1200`,
-  ];
+  const productGalleryImages = Array.isArray(product.galleryImages) 
+    ? product.galleryImages.map(key => key.startsWith('http') ? key : `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/public/${key}`)
+    : [];
+
+  const allImages = [product.imageUrl, ...productGalleryImages];
+  const galleryImages = Array.from(new Set(allImages));
 
   const handleLicenseClick = (e: React.MouseEvent) => {
     e.preventDefault();
