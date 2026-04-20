@@ -31,7 +31,10 @@ async function bootstrap() {
       }
       // Check against configured origin
       const allowedOrigin = configService.get<string>('CORS_ORIGIN');
-      if (allowedOrigin && origin === allowedOrigin) {
+      const normalizedAllowed = allowedOrigin?.replace(/\/$/, '');
+      const normalizedOrigin = origin.replace(/\/$/, '');
+
+      if (normalizedAllowed && normalizedOrigin === normalizedAllowed) {
         return callback(null, true);
       }
       callback(new Error('Not allowed by CORS'));
