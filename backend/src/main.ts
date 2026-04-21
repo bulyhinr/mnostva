@@ -32,11 +32,13 @@ async function bootstrap() {
         }
 
         // Flexible match for mnostva domains and cloudflare previews
-        if (
+        const isMnostvaDomain =
           origin.includes('mnostva') ||
           origin.includes('workers.dev') ||
-          origin.includes('pages.dev')
-        ) {
+          origin.includes('pages.dev');
+
+        if (isMnostvaDomain) {
+          console.log(`CORS: Allowed by pattern matching. Origin: ${origin}`);
           return callback(null, true);
         }
 
@@ -46,8 +48,11 @@ async function bootstrap() {
         const normalizedOrigin = origin.replace(/\/$/, '');
 
         if (normalizedAllowed && normalizedOrigin === normalizedAllowed) {
+          console.log(`CORS: Allowed by exact match. Origin: ${origin}`);
           return callback(null, true);
         }
+
+        console.warn(`CORS: Blocked. Received Origin: ${origin}, Allowed Origin: ${allowedOrigin}`);
         callback(new Error('Not allowed by CORS'));
       },
       credentials: true,
