@@ -11,6 +11,13 @@ import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
+  
+  // Global Request Logger
+  app.use((req, res, next) => {
+    console.log(`[Incoming Request] ${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+    next();
+  });
+
   const configService = app.get(ConfigService);
 
   // Global Validation Pipe
