@@ -248,7 +248,7 @@ class AuthService {
             const mockToken = btoa(JSON.stringify({
                 userId: 'u1',
                 email: email,
-                exp: Date.now() / 1000 + 3600 // 1 hour from now
+                exp: Date.now() / 1000 + 86400 // 24 hours from now
             }));
 
             this.setTokens(mockToken, mockToken);

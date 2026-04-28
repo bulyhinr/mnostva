@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -14,6 +15,7 @@ export class AuthService {
         private usersService: UsersService,
         private jwtService: JwtService,
         private emailService: EmailService,
+        private configService: ConfigService,
     ) { }
 
     async register(registerDto: RegisterDto): Promise<any> {
@@ -87,14 +89,37 @@ export class AuthService {
         return { message: 'Password has been reset successfully' };
     }
 
+    async refresh(refreshToken: string): Promise<any> {
+        try {
+            const payload = this.jwtService.verify(refreshToken, {
+                secret: this.configService.get('JWT_REFRESH_SECRET'),
+            });
+            const user = await this.usersService.findOne(payload.sub);
+            if (!user) {
+                throw new UnauthorizedException('User not found');
+            }
+            return this.generateTokens(user);
+        } catch (e) {
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+    }
+
     private async generateTokens(user: User) {
         const payload = { sub: user.id, email: user.email, isAdmin: user.isAdmin };
-        const accessToken = this.jwtService.sign(payload);
+        
+        const accessToken = this.jwtService.sign(payload, {
+            expiresIn: this.configService.get('JWT_ACCESS_EXPIRATION', '24h'),
+            secret: this.configService.get('JWT_SECRET'),
+        });
 
-        // Refresh token logic would go here
+        const refreshToken = this.jwtService.sign(payload, {
+            expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION', '7d'),
+            secret: this.configService.get('JWT_REFRESH_SECRET'),
+        });
 
         return {
             accessToken,
+            refreshToken,
             user: {
                 id: user.id,
                 email: user.email,

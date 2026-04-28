@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import ImageWithFallback from './ImageWithFallback';
@@ -55,9 +56,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
       <div className="absolute inset-0 bg-gradient-to-br from-[#8a7db3] via-pink-400 to-[#a2c367] animate-gradient-slow opacity-30 group-hover:opacity-100 rounded-[2.8rem] transition-all duration-700 blur-[3px] group-hover:blur-[1px] group-hover:animate-border-pulse"></div>
 
       <div className="relative bg-white/90 backdrop-blur-xl rounded-[2.6rem] overflow-hidden flex flex-col h-full border border-white/40 shadow-xl group-hover:bg-white/95 transition-colors duration-500">
-        <div
-          className="relative h-64 overflow-hidden cursor-pointer"
-          onClick={() => onOpen(product)}
+        <Link
+          to={`/product/${product.id}`}
+          className="relative h-64 overflow-hidden block"
+          onClick={(e) => {
+            // Standard left click opens modal/handles navigation via onOpen
+            if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+              e.preventDefault();
+              onOpen(product);
+            }
+            // Middle click and Ctrl+Click are handled naturally by the browser/Link
+          }}
         >
           <ImageWithFallback
             src={imageUrl}
@@ -114,15 +123,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
               </div>
             )}
           </div>
-        </div>
+        </Link>
 
         <div className="p-6 flex flex-col flex-grow">
-          <h3
+          <Link
+            to={`/product/${product.id}`}
             className="text-2xl font-black text-gray-800 mb-2 group-hover:text-[#8a7db3] transition-colors cursor-pointer active:scale-95 origin-left inline-block uppercase tracking-tight"
-            onClick={() => onOpen(product)}
+            onClick={(e) => {
+              if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                e.preventDefault();
+                onOpen(product);
+              }
+            }}
           >
             {product.name}
-          </h3>
+          </Link>
           <p className="text-gray-500 text-sm mb-4 line-clamp-2 font-medium">
             {product.description}
           </p>
@@ -156,15 +171,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
               {isInCart ? 'In Basket 🛒' : 'Add to Basket 🧺'}
             </button>
 
-            <button
+            <Link
+              to={`/product/${product.id}`}
+              className="block w-full text-center bg-white/50 text-[#8a7db3] border border-purple-100 hover:bg-purple-50 py-2 rounded-xl text-[10px] font-black transition-all active:bg-purple-100 uppercase tracking-widest"
               onClick={(e) => {
-                e.stopPropagation();
-                onOpen(product);
+                if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                  e.preventDefault();
+                  onOpen(product);
+                }
               }}
-              className="w-full bg-white/50 text-[#8a7db3] border border-purple-100 hover:bg-purple-50 py-2 rounded-xl text-[10px] font-black transition-all active:bg-purple-100 uppercase tracking-widest"
             >
               Technical Info
-            </button>
+            </Link>
           </div>
         </div>
       </div>

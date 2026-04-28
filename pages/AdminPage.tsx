@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Product, Discount, Coupon } from '../types';
 import { productService } from '../services/productService';
 import { discountService } from '../services/discountService';
@@ -452,15 +453,20 @@ const AdminPage: React.FC = () => {
                                         {products.map(product => (
                                             <tr key={product.id} className="hover:bg-gray-50 transition-colors group">
                                                 <td className="px-8 py-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-xl border-2 border-white shadow-sm overflow-hidden shrink-0">
+                                                    <Link to={`/product/${product.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group/item">
+                                                        <div className="w-12 h-12 rounded-xl border-2 border-white shadow-sm overflow-hidden shrink-0 group-hover/item:scale-105 transition-transform">
                                                             <ImageWithFallback src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
                                                         </div>
                                                         <div>
-                                                            <p className="font-black text-gray-900 group-hover:text-[#8a7db3] transition-colors">{product.name}</p>
+                                                            <p className="font-black text-gray-900 group-hover/item:text-[#8a7db3] transition-colors flex items-center gap-2">
+                                                                {product.name}
+                                                                <svg className="w-3 h-3 opacity-0 group-hover/item:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                </svg>
+                                                            </p>
                                                             <p className="text-[10px] text-gray-400 font-bold truncate max-w-[200px]">{product.description}</p>
                                                         </div>
-                                                    </div>
+                                                    </Link>
                                                 </td>
                                                 <td className="px-8 py-6">
                                                     <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">
