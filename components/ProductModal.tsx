@@ -183,9 +183,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
                   <span className="text-4xl font-black text-pink-500">${product.price.toFixed(2)}</span>
                   <span className="text-gray-400 font-bold line-through text-lg opacity-50">${(product.price * 1.5).toFixed(2)}</span>
                 </div>
-                <p className="text-gray-600 leading-relaxed font-medium">
-                  {product.description}
-                </p>
+                <div 
+                  className="text-gray-600 leading-relaxed font-medium rich-content"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
               </div>
 
               <div className="space-y-8 flex-grow">
