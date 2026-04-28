@@ -198,7 +198,7 @@ const AppContent: React.FC = () => {
             License
           </button>
         </div>
-        <p className="font-medium">© {new Date().getFullYear()} Mnostva Art. Stay Colorful! 🌈</p>
+        <p className="font-medium">© 2021 Mnostva Art. Stay Colorful! 🌈</p>
       </footer>
 
       <MascotContact />
