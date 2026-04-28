@@ -38,7 +38,7 @@ const StoreIcons = {
   ),
   fab: (
     <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-      <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2zM12 15.63l-4.5 2.04 4.5-11.04 4.5 11.04-4.5-2.04z" />
+      <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm7.33 14.57L12 20.57l-7.33-4V7.43L12 3.43l7.33 4v9.14zM10.5 8h4v2h-4v2h3v2h-3v4H9V8h1.5z" />
     </svg>
   ),
   cgtrader: (
