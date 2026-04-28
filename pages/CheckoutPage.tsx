@@ -72,7 +72,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
 
   // Fetch Order Details if missing (e.g. "Pay Now" flow where clientSecret is passed but items are not)
   useEffect(() => {
-    if (step === 3 && orderId && existingOrderItems.length === 0) {
+    if (orderId && existingOrderItems.length === 0) {
       const fetchOrderDetails = async () => {
         try {
           const token = authService.getAccessToken();
@@ -395,48 +395,82 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Confirm your stylized picks</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                  {cart.map(item => (
-                    <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-[2.5rem] border-2 border-white shadow-sm group hover:border-pink-100 transition-all relative">
-                      <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md relative">
-                        <ImageWithFallback src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
-                        {item.quantity > 1 && (
-                          <div className="absolute top-1 right-1 bg-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg border border-white">
-                            x{item.quantity}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-grow min-w-0">
-                        <h4 className="font-black text-gray-900 group-hover:text-[#8a7db3] transition-colors text-sm truncate">
-                          {item.name}
-                        </h4>
-                        <p className="text-[10px] text-[#8a7db3] font-black uppercase tracking-widest truncate">{item.category}</p>
-                        {item.quantity > 1 && (
-                          <p className="text-[9px] text-gray-400 font-bold mt-1">
-                            Unit Price: ${item.price.toFixed(2)}
-                          </p>
-                        )}
-                      </div>
-                      <div className="text-right shrink-0">
-                        {item.discount && item.discount.isActive ? (
-                          <>
-                            <p className="text-[10px] font-bold text-gray-400 line-through">
-                              ${(item.price * item.quantity).toFixed(2)}
+                  {orderId && existingOrderItems.length > 0 ? (
+                    existingOrderItems.map((item, idx) => (
+                      <div key={`${item.productId || item.id}-${idx}`} className="flex items-center gap-4 p-4 bg-gray-50 rounded-[2.5rem] border-2 border-white shadow-sm group hover:border-pink-100 transition-all relative">
+                        <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md relative">
+                          <ImageWithFallback src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                          {item.quantity > 1 && (
+                            <div className="absolute top-1 right-1 bg-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg border border-white">
+                              x{item.quantity}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-grow min-w-0">
+                          <h4 className="font-black text-gray-900 group-hover:text-[#8a7db3] transition-colors text-sm truncate">
+                            {item.name}
+                          </h4>
+                          <p className="text-[10px] text-[#8a7db3] font-black uppercase tracking-widest truncate">{item.licenseType}</p>
+                          {item.quantity > 1 && (
+                            <p className="text-[9px] text-gray-400 font-bold mt-1">
+                              Unit Price: ${item.price.toFixed(2)}
                             </p>
-                            <p className="font-black text-pink-500 text-sm">
-                              ${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}
-                            </p>
-                          </>
-                        ) : (
+                          )}
+                        </div>
+                        <div className="text-right shrink-0">
                           <p className="font-black text-pink-500 text-sm">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            {item.price === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}
                           </p>
-                        )}
-                        {item.quantity > 1 && (
-                          <span className="text-[10px] font-black text-gray-300 block">x{item.quantity}</span>
-                        )}
+                          {item.quantity > 1 && (
+                            <span className="text-[10px] font-black text-gray-300 block">x{item.quantity}</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    cart.map(item => (
+                      <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-[2.5rem] border-2 border-white shadow-sm group hover:border-pink-100 transition-all relative">
+                        <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md relative">
+                          <ImageWithFallback src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                          {item.quantity > 1 && (
+                            <div className="absolute top-1 right-1 bg-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg border border-white">
+                              x{item.quantity}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-grow min-w-0">
+                          <h4 className="font-black text-gray-900 group-hover:text-[#8a7db3] transition-colors text-sm truncate">
+                            {item.name}
+                          </h4>
+                          <p className="text-[10px] text-[#8a7db3] font-black uppercase tracking-widest truncate">{item.category}</p>
+                          {item.quantity > 1 && (
+                            <p className="text-[9px] text-gray-400 font-bold mt-1">
+                              Unit Price: ${item.price.toFixed(2)}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right shrink-0">
+                          {item.discount && item.discount.isActive ? (
+                            <>
+                              <p className="text-[10px] font-bold text-gray-400 line-through">
+                                ${(item.price * item.quantity).toFixed(2)}
+                              </p>
+                              <p className="font-black text-pink-500 text-sm">
+                                ${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}
+                              </p>
+                            </>
+                          ) : (
+                            <p className="font-black text-pink-500 text-sm">
+                              {item.price === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}
+                            </p>
+                          )}
+                          {item.quantity > 1 && (
+                            <span className="text-[10px] font-black text-gray-300 block">x{item.quantity}</span>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
                 <div className="max-w-md mx-auto pt-10 border-t-4 border-gray-50 w-full mt-auto">
                   <div className="mb-6 flex gap-2">
@@ -526,39 +560,41 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                       <span className="text-pink-500 font-black text-xs uppercase animate-pulse">Ready to ship! 🚀</span>
                     </div>
                   </div>
-                  <div className="bg-purple-50 p-8 rounded-[2.5rem] border-2 border-white shadow-sm">
-                    <h3 className="font-black text-[#8a7db3] mb-4">Order Summary</h3>
-                    <ul className="space-y-3">
-                      {cart.length > 0 ? (
-                        cart.map((item, idx) => (
-                          <li key={`${item.id}-${idx}`} className="flex justify-between text-sm font-bold text-gray-600">
-                            <span>{item.name} {item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
-                            <span>
-                              {item.discount?.isActive ? (
-                                <span className="text-pink-500">${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}</span>
-                              ) : (
-                                <span>${(item.price * item.quantity).toFixed(2)}</span>
-                              )}
-                            </span>
+                    <div className="bg-purple-50 p-8 rounded-[2.5rem] border-2 border-white shadow-sm">
+                      <h3 className="font-black text-[#8a7db3] mb-4">Order Summary</h3>
+                      <ul className="space-y-3">
+                        {orderId && existingOrderItems.length > 0 ? (
+                          existingOrderItems.map((item, idx) => (
+                            <li key={`${item.id}-${idx}`} className="flex justify-between text-sm font-bold text-gray-600">
+                              <span>{item.name} {item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                              <span>
+                                {item.price === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}
+                              </span>
+                            </li>
+                          ))
+                        ) : cart.length > 0 ? (
+                          cart.map((item, idx) => (
+                            <li key={`${item.id}-${idx}`} className="flex justify-between text-sm font-bold text-gray-600">
+                              <span>{item.name} {item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                              <span>
+                                {item.discount?.isActive ? (
+                                  <span className="text-pink-500">${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}</span>
+                                ) : (
+                                  <span>{item.price === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}</span>
+                                )}
+                              </span>
+                            </li>
+                          ))
+                        ) : orderId ? (
+                          <li className="flex justify-between text-sm font-bold text-gray-600">
+                            <span className="text-[#8a7db3] uppercase tracking-wider">Pending Order Payment</span>
+                            <span>${(displayTotal || 0).toFixed(2)}</span>
                           </li>
-                        ))
-                      ) : existingOrderItems.length > 0 ? (
-                        existingOrderItems.map((item, idx) => (
-                          <li key={`${item.id}-${idx}`} className="flex justify-between text-sm font-bold text-gray-600">
-                            <span>{item.name} {item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
-                            <span>${((item.price || 0) / 1).toFixed(2)}</span>
-                          </li>
-                        ))
-                      ) : orderId ? (
-                        <li className="flex justify-between text-sm font-bold text-gray-600">
-                          <span className="text-[#8a7db3] uppercase tracking-wider">Pending Order Payment</span>
-                          <span>${(displayTotal || 0).toFixed(2)}</span>
-                        </li>
-                      ) : (
-                        <li className="text-gray-400 italic text-sm">No items details available</li>
-                      )}
-                    </ul>
-                  </div>
+                        ) : (
+                          <li className="text-gray-400 italic text-sm">No items details available</li>
+                        )}
+                      </ul>
+                    </div>
                 </div>
 
                 {/* Right Side: Stripe Elements */}
