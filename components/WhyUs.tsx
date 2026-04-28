@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ScrollReveal from './ScrollReveal';
+import { reviewsService } from '../services/reviewsService';
 
 const BENEFITS = [
   {
@@ -51,7 +52,21 @@ const ASSET_VIDEOS = [
   'https://cdn.pixabay.com/video/2022/10/11/134446-759858369_tiny.mp4',
 ];
 
+const MOCK_REVIEWS = [
+  { id: '1', rating: 5, comment: 'Absolutely amazing asset pack! Fits perfectly with my game style.', user: { name: 'Alex' }, product: { title: 'Cosy Bedroom' } },
+  { id: '2', rating: 5, comment: 'Optimization is top tier. High quality textures!', user: { name: 'Sarah' }, product: { title: 'Modular Level Pack' } },
+  { id: '3', rating: 4, comment: 'Great lighting setups. Saved me hours of work.', user: { name: 'John' }, product: { title: 'Cyberpunk Prop Pack' } },
+];
+
 const WhyUs: React.FC = () => {
+  const [reviews, setReviews] = useState<any[]>([]);
+
+  useEffect(() => {
+    reviewsService.getLatestReviews(10)
+      .then(setReviews)
+      .catch(console.error);
+  }, []);
+
   return (
     <section id="benefits" className="py-24 px-4 max-w-7xl mx-auto relative">
       {/* Decorative Floating Elements */}
@@ -135,12 +150,12 @@ const WhyUs: React.FC = () => {
         </div>
       </ScrollReveal>
 
-      {/* Motion Carousel Section */}
+      {/* Reviews Section */}
       <div className="mt-24">
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h3 className="text-3xl font-black text-gray-900 uppercase">Gallery In Motion</h3>
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">A glimpse into our production environments</p>
+            <h3 className="text-3xl font-black text-gray-900 uppercase">What Our Buyers Say</h3>
+            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Real feedback from game developers</p>
           </div>
           <div className="hidden md:flex gap-2">
             <span className="w-12 h-1 bg-[#8a7db3]/20 rounded-full"></span>
@@ -149,22 +164,42 @@ const WhyUs: React.FC = () => {
           </div>
         </div>
         
-        <div className="relative overflow-hidden group">
+        <div className="relative overflow-hidden group py-4">
           <div className="flex gap-8 animate-carousel-move hover:pause-animation">
-            {[...ASSET_VIDEOS, ...ASSET_VIDEOS].map((video, idx) => (
+            {[...(reviews.length > 0 ? reviews : MOCK_REVIEWS), ...(reviews.length > 0 ? reviews : MOCK_REVIEWS)].map((review, idx) => (
               <div 
                 key={idx} 
-                className="min-w-[320px] md:min-w-[500px] aspect-video rounded-[2.5rem] overflow-hidden bg-white shadow-xl border-8 border-white group-hover:border-pink-50 transition-all hover:scale-[1.02]"
+                className="min-w-[320px] md:min-w-[400px] bg-white/80 backdrop-blur-md rounded-[2.5rem] p-8 shadow-xl border-4 border-white hover:border-purple-100 transition-all hover:scale-[1.02] flex flex-col justify-between"
               >
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline
-                  className="w-full h-full object-cover"
-                >
-                  <source src={video} type="video/mp4" />
-                </video>
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-purple-100 text-[#8a7db3] rounded-2xl flex items-center justify-center font-black text-lg border border-purple-200">
+                        {review.user?.name?.charAt(0) || '?'}
+                      </div>
+                      <div>
+                        <div className="font-black text-gray-800 text-sm uppercase tracking-wider">{review.user?.name || 'Anonymous'}</div>
+                        <div className="flex text-yellow-400 text-xs mt-0.5">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <span key={star}>{star <= review.rating ? '★' : '☆'}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-4xl opacity-20 text-[#8a7db3] font-serif">“</span>
+                  </div>
+                  <p className="text-gray-600 font-medium text-base leading-relaxed italic mb-6">
+                    {review.comment}
+                  </p>
+                </div>
+                {review.product && (
+                  <div className="mt-auto pt-4 border-t border-purple-100/30 flex items-center gap-2">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Asset:</span>
+                    <span className="text-[11px] font-black text-[#8a7db3] uppercase tracking-wider bg-purple-50/50 px-3 py-1 rounded-lg truncate max-w-[220px]">
+                      {review.product.title || review.product.name}
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
           </div>

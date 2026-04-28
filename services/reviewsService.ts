@@ -22,5 +22,10 @@ export const reviewsService = {
     async getStats(productId: string) {
         const response = await axios.get(`${API_URL}/reviews/product/${productId}/stats`);
         return response.data;
+    },
+
+    async getLatestReviews(limit: number = 10) {
+        const response = await axios.get(`${API_URL}/reviews/latest?limit=${limit}`);
+        return response.data;
     }
 };

@@ -88,4 +88,11 @@ export class ReviewsService {
             count: parseInt(result.count || 0, 10),
         };
     }
+    async findLatestReviews(limit: number = 10): Promise<Review[]> {
+        return this.reviewsRepository.find({
+            relations: ['user', 'product'],
+            order: { createdAt: 'DESC' },
+            take: limit,
+        });
+    }
 }

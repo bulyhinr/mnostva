@@ -13,6 +13,11 @@ export class ReviewsController {
         return this.reviewsService.create(req.user.userId, createReviewDto);
     }
 
+    @Get('latest')
+    async findLatest() {
+        return this.reviewsService.findLatestReviews();
+    }
+
     @Get('product/:productId')
     async findAll(@Param('productId') productId: string) {
         return this.reviewsService.findAllByProduct(productId);
