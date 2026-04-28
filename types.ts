@@ -46,6 +46,7 @@ export interface Product {
   previewImageKey?: string;
   previewModelKey?: string;
   galleryImages?: string[];
+  updatedAt?: string;
 }
 
 export interface CartItem extends Product {

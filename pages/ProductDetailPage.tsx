@@ -386,6 +386,15 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                     {stats.count} Review{stats.count !== 1 ? 's' : ''}
                   </span>
                 </div>
+                {product.updatedAt && (
+                  <div className="text-xs text-[#8a7db3] font-black uppercase tracking-widest mb-6 flex items-center gap-1.5 bg-purple-50/50 w-fit px-3 py-1.5 rounded-full border border-purple-100/30">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
+                    </span>
+                    Updated: {new Date(product.updatedAt).toLocaleDateString('ru-RU')}
+                  </div>
+                )}
                 <div className="flex items-center gap-4 mb-6">
                   <span className="text-4xl font-black text-pink-500">
                     ${(product.discount && product.discount.isActive

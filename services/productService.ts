@@ -26,6 +26,8 @@ export interface Product {
         artstation?: string;
     };
     galleryImages?: string[];
+    previewModelKey?: string;
+    updatedAt?: string;
     discount?: any;
 }
 

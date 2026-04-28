@@ -70,7 +70,8 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
           externalLinks: p.externalLinks || {},
           discount: p.discount,
           galleryImages: p.galleryImages || [],
-          previewImageKey: p.previewImageKey
+          previewImageKey: p.previewImageKey,
+          updatedAt: p.updatedAt
         }));
 
         setProducts(mappedProducts);
