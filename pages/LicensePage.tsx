@@ -51,7 +51,7 @@ const sections = [
 ];
 
 export const LicensePage: React.FC<LicensePageProps> = ({ onBack }) => {
-  const [openSection, setOpenSection] = useState<string | null>('one-time');
+  const [openSection, setOpenSection] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-gray-50/50 py-20 px-4 md:px-8">

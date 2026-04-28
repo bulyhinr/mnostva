@@ -194,12 +194,7 @@ const AppContent: React.FC = () => {
           <a href="https://www.instagram.com/mnostva" target="_blank" className="hover:text-pink-500 transition-colors font-bold">Instagram</a>
           <a href="https://www.artstation.com/mnostva" target="_blank" className="hover:text-pink-500 transition-colors font-bold">ArtStation</a>
           <a href="https://x.com/mnostva" target="_blank" className="hover:text-pink-500 transition-colors font-bold">X (Twitter)</a>
-          <button
-            onClick={() => navigate('/license')}
-            className="hover:text-pink-500 transition-colors font-bold uppercase tracking-widest text-[11px]"
-          >
-            License
-          </button>
+
           <button
             onClick={() => navigate('/legal')}
             className="hover:text-pink-500 transition-colors font-bold uppercase tracking-widest text-[11px]"
