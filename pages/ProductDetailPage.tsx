@@ -397,9 +397,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                 )}
                 <div className="flex items-center gap-4 mb-6">
                   <span className="text-4xl font-black text-pink-500">
-                    ${(product.discount && product.discount.isActive
+                    {(product.discount && product.discount.isActive
                       ? (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price) * (1 - product.discount.percentage / 100)
-                      : (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price)).toFixed(2)}
+                      : (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price)) === 0
+                      ? 'Free Pack'
+                      : `$${(product.discount && product.discount.isActive
+                        ? (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price) * (1 - product.discount.percentage / 100)
+                        : (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price)).toFixed(2)}`}
                   </span>
                   {product.discount && product.discount.isActive && (
                     <>

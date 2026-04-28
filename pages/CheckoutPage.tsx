@@ -462,7 +462,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                     <div className="text-right">
                       {appliedCoupon && <span className="text-gray-400 line-through text-sm mr-2 font-bold">${totalPrice.toFixed(2)}</span>}
                       <span className="text-gray-900 text-5xl font-black">
-                        ${(totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)).toFixed(2)}
+                        {(totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)) === 0 
+                          ? 'Free Pack' 
+                          : `$${(totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)).toFixed(2)}`}
                       </span>
                     </div>
                   </div>
@@ -501,7 +503,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                       onClick={() => goToStep(3)}
                       className="flex-[2] bg-pink-500 text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest border-b-8 border-pink-700/30"
                     >
-                      Go to Payment 💳
+                      {totalPrice === 0 ? 'Get Free Pack 🎁' : 'Go to Payment 💳'}
                     </button>
                   </div>
                 </div>
@@ -516,7 +518,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   <div className="bg-gray-50 p-8 rounded-[2.5rem] border-2 border-white shadow-inner">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Total to Pay</p>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-6xl font-black text-gray-900">${(displayTotal || 0).toFixed(2)}</span>
+                      <span className="text-6xl font-black text-gray-900">
+                        {(displayTotal || 0) === 0 ? 'Free Pack' : `$${(displayTotal || 0).toFixed(2)}`}
+                      </span>
                       <span className="text-pink-500 font-black text-xs uppercase animate-pulse">Ready to ship! 🚀</span>
                     </div>
                   </div>

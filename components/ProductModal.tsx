@@ -180,8 +180,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
               <div className="mb-8">
                 <h2 className="text-4xl font-black text-gray-900 mb-4 leading-tight">{product.name}</h2>
                 <div className="flex items-center gap-4 mb-6">
-                  <span className="text-4xl font-black text-pink-500">${product.price.toFixed(2)}</span>
-                  <span className="text-gray-400 font-bold line-through text-lg opacity-50">${(product.price * 1.5).toFixed(2)}</span>
+                  <span className="text-4xl font-black text-pink-500">
+                    {product.price === 0 ? 'Free Pack' : `$${product.price.toFixed(2)}`}
+                  </span>
+                  {product.price > 0 && (
+                    <span className="text-gray-400 font-bold line-through text-lg opacity-50">${(product.price * 1.5).toFixed(2)}</span>
+                  )}
                 </div>
                 <div 
                   className="text-gray-600 leading-relaxed font-medium rich-content"

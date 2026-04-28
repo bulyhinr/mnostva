@@ -111,7 +111,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
                             <span className="text-pink-500 font-black">${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}</span>
                           </>
                         ) : (
-                          <div className="text-pink-500 font-black">${(item.price * item.quantity).toFixed(2)}</div>
+                          <div className="text-pink-500 font-black">
+                            {(item.price * item.quantity) === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -126,7 +128,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
           <div className="p-8 bg-gray-50 border-t-4 border-gray-100 space-y-6">
             <div className="flex justify-between items-center text-xl font-black">
               <span className="text-gray-400">Total</span>
-              <span className="text-gray-900">${totalPrice.toFixed(2)}</span>
+              <span className="text-gray-900">{totalPrice === 0 ? 'Free Pack' : `$${totalPrice.toFixed(2)}`}</span>
             </div>
             <button
               onClick={handleCheckoutClick}

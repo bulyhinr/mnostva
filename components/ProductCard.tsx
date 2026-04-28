@@ -119,7 +119,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
               </>
             ) : (
               <div className="bg-pink-500 text-white px-4 py-2 rounded-2xl font-bold shadow-lg">
-                ${product.price.toFixed(2)}
+                {product.price === 0 ? 'Free Pack' : `$${product.price.toFixed(2)}`}
               </div>
             )}
           </div>
