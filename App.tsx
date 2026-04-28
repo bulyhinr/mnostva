@@ -197,7 +197,7 @@ const AppContent: React.FC = () => {
 
           <button
             onClick={() => navigate('/legal')}
-            className="hover:text-pink-500 transition-colors font-bold uppercase tracking-widest text-[11px]"
+            className="hover:text-pink-500 transition-colors font-bold"
           >
             Legal
           </button>
