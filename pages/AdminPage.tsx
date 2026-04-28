@@ -9,6 +9,8 @@ import { authService } from '../services/authService';
 import ScrollReveal from '../components/ScrollReveal';
 import ImageWithFallback from '../components/ImageWithFallback';
 import { Toaster, toast } from 'react-hot-toast';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const AdminPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -695,7 +697,23 @@ const AdminPage: React.FC = () => {
                                 {/* Description */}
                                 <div>
                                     <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Description</label>
-                                    <textarea required rows={8} value={currentProduct.description} onChange={e => setCurrentProduct({ ...currentProduct, description: e.target.value })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all resize-y" />
+                                    <div id="description-quill-bounds" className="bg-white rounded-2xl overflow-hidden border-4 border-transparent focus-within:border-[#8a7db3] transition-all">
+                                        <ReactQuill
+                                            theme="snow"
+                                            value={currentProduct.description}
+                                            onChange={content => setCurrentProduct({ ...currentProduct, description: content })}
+                                            modules={{
+                                                toolbar: [
+                                                    ['bold', 'italic', 'underline'],
+                                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                                    ['link'],
+                                                    ['clean']
+                                                ],
+                                            }}
+                                            className="min-h-[200px] [&_.ql-editor]:min-h-[200px] [&_.ql-editor]:max-h-[300px] [&_.ql-editor]:overflow-y-auto"
+                                            bounds="#description-quill-bounds"
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Category & Image */}

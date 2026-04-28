@@ -401,9 +401,10 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                     </>
                   )}
                 </div>
-                <p className="text-gray-600 text-lg leading-relaxed font-medium">
-                  {product.description}
-                </p>
+                <div 
+                  className="text-gray-600 text-lg leading-relaxed font-medium rich-content"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
               </div>
 
               <div className="space-y-10 flex-grow">

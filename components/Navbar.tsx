@@ -101,17 +101,13 @@ const Navbar: React.FC = () => {
             }`}
         >
           {/* Logo Section */}
-          <div
-            className="flex items-center cursor-pointer group shrink-0"
-            onClick={() => {
-              navigate('/');
-              setIsCartOpen(false);
-            }}
+          <Link
+            to="/"
+            className="relative flex items-center cursor-pointer group shrink-0 h-10 md:h-16 w-32 md:w-48"
+            onClick={() => setIsCartOpen(false)}
           >
-            <div className={`${transitionClass} flex items-center h-12 md:h-16`}>
-              <Logo className="h-full" />
-            </div>
-          </div>
+            <Logo className="h-full pointer-events-none" />
+          </Link>
 
           {/* Desktop Menu */}
           <div className={`hidden lg:flex items-center ${transitionClass} ${isPinned ? 'gap-8' : 'gap-6'}`}>

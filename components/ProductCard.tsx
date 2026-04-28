@@ -139,7 +139,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
             {product.name}
           </Link>
           <p className="text-gray-500 text-sm mb-4 line-clamp-2 font-medium">
-            {product.description}
+            {product.description.replace(/<[^>]*>?/gm, '')}
           </p>
 
           <div className="flex flex-wrap gap-2 mb-6">
