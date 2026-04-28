@@ -469,22 +469,24 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                     </div>
                   </div>
 
-                  <div className="mb-6">
-                    <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Select Payment Method</p>
-                    <div className="flex gap-4">
-                      <button onClick={() => setPaymentMethod('stripe')} className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold border-4 transition-all ${paymentMethod === 'stripe' ? 'border-[#8a7db3] bg-purple-50 text-[#8a7db3]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
-                        <span className="text-2xl">💳</span>
-                        <span className="text-xs uppercase tracking-wider">Card</span>
-                      </button>
-                      <button onClick={() => setPaymentMethod('paypal')} className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold border-4 transition-all ${paymentMethod === 'paypal' ? 'border-[#003087] bg-blue-50 text-[#003087]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
-                        <svg viewBox="0 0 32 32" className="h-8 w-8 mb-[-4px]" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M22.012 12.017c-.36-1.526-1.423-2.584-3.153-2.964-1.282-.284-3.033-.284-4.99-.284H11.75c-.504 0-.936.386-1.025.885L8.536 23.513a.625.625 0 0 0 .616.73h3.456c.504 0 .937-.385 1.026-.885l1.118-7.14c.089-.498.52-.884 1.025-.884h1.996c3.084 0 5.61-1.332 6.27-4.004.285-1.154.215-2.072-.03-2.613v-.7z" fill="currentColor"/>
-                          <path d="M22.012 12.017c-.255 1.027-.614 1.838-1.22 2.45-1.018 1.026-2.578 1.542-4.524 1.542h-1.997c-.503 0-.935.385-1.024.884l-1.118 7.14a.626.626 0 0 0 .616.73h3.456c.504 0 .936-.385 1.025-.885l1.01-6.427c.088-.498.52-.884 1.024-.884h.994c2.825 0 4.966-1.12 5.576-3.328.326-1.173.28-2.483-.435-3.618-.266-.418-.61-.83-1.055-1.135-.558-.383-1.178-.65-1.328-.47z" fill="currentColor" fillOpacity="0.8"/>
-                        </svg>
-                        <span className="text-xs uppercase tracking-wider">PayPal</span>
-                      </button>
+                  {(totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)) > 0 && (
+                    <div className="mb-6">
+                      <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Select Payment Method</p>
+                      <div className="flex gap-4">
+                        <button onClick={() => setPaymentMethod('stripe')} className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold border-4 transition-all ${paymentMethod === 'stripe' ? 'border-[#8a7db3] bg-purple-50 text-[#8a7db3]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
+                          <span className="text-2xl">💳</span>
+                          <span className="text-xs uppercase tracking-wider">Card</span>
+                        </button>
+                        <button onClick={() => setPaymentMethod('paypal')} className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-bold border-4 transition-all ${paymentMethod === 'paypal' ? 'border-[#003087] bg-blue-50 text-[#003087]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
+                          <svg viewBox="0 0 32 32" className="h-8 w-8 mb-[-4px]" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.012 12.017c-.36-1.526-1.423-2.584-3.153-2.964-1.282-.284-3.033-.284-4.99-.284H11.75c-.504 0-.936.386-1.025.885L8.536 23.513a.625.625 0 0 0 .616.73h3.456c.504 0 .937-.385 1.026-.885l1.118-7.14c.089-.498.52-.884 1.025-.884h1.996c3.084 0 5.61-1.332 6.27-4.004.285-1.154.215-2.072-.03-2.613v-.7z" fill="currentColor"/>
+                            <path d="M22.012 12.017c-.255 1.027-.614 1.838-1.22 2.45-1.018 1.026-2.578 1.542-4.524 1.542h-1.997c-.503 0-.935.385-1.024.884l-1.118 7.14a.626.626 0 0 0 .616.73h3.456c.504 0 .936-.385 1.025-.885l1.01-6.427c.088-.498.52-.884 1.024-.884h.994c2.825 0 4.966-1.12 5.576-3.328.326-1.173.28-2.483-.435-3.618-.266-.418-.61-.83-1.055-1.135-.558-.383-1.178-.65-1.328-.47z" fill="currentColor" fillOpacity="0.8"/>
+                          </svg>
+                          <span className="text-xs uppercase tracking-wider">PayPal</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="flex gap-4">
                     <button
