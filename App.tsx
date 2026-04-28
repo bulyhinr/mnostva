@@ -15,6 +15,7 @@ import AboutPage from './pages/AboutPage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
 import CheckoutPage from './pages/CheckoutPage';
+import LegalPage from './pages/LegalPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
@@ -182,6 +183,7 @@ const AppContent: React.FC = () => {
             </ProtectedRoute>
           } />
 
+          <Route path="/legal" element={<LegalPage />} />
           {/* Catch all - redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -197,6 +199,12 @@ const AppContent: React.FC = () => {
             className="hover:text-pink-500 transition-colors font-bold uppercase tracking-widest text-[11px]"
           >
             License
+          </button>
+          <button
+            onClick={() => navigate('/legal')}
+            className="hover:text-pink-500 transition-colors font-bold uppercase tracking-widest text-[11px]"
+          >
+            Legal
           </button>
         </div>
         <p className="font-medium">© 2021 Mnostva Art. Stay Colorful! 🌈</p>
