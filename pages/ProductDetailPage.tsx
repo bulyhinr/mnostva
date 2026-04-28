@@ -33,7 +33,7 @@ interface ProductDetailPageProps {
 const StoreIcons = {
   unity: (
     <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-      <path d="M22.01 12.02c0 .28-.05.54-.15.78l-1.93-.72a.5.5 0 0 0-.64.29.5.5 0 0 0 .29.64l1.93.72a3.02 3.02 0 0 1-2.02 2.02l-.72-1.93a.5.5 0 0 0-.64-.29.5.5 0 0 0-.29.64l.72 1.93c-.24.1-.5.15-.78.15s-.54-.05-.78-.15l.72-1.93a.5.5 0 0 0-.29-.64.5.5 0 0 0-.64.29l-.72 1.93a3.02 3.02 0 0 1-2.02-2.02l1.93-.72a.5.5 0 0 0 .29-.64.5.5 0 0 0-.64-.29l-1.93.72c.1-.24.15-.5.15-.78s-.05-.54-.15-.78l1.93.72a.5.5 0 0 0 .64-.29.5.5 0 0 0-.29-.64l-1.93-.72a3.02 3.02 0 0 1 2.02-2.02l.72 1.93a.5.5 0 0 0 .64.29.5.5 0 0 0 .29-.64l-.72-1.93c.24-.1.5-.15.78-.15s.54.05.78.15l-.72 1.93a.5.5 0 0 0 .29.64.5.5 0 0 0 .64-.29l.72-1.93a3.02 3.02 0 0 1 2.02 2.02l-1.93.72a.5.5 0 0 0-.29.64.5.5 0 0 0 .64.29l1.93-.72c-.1.24-.15.5-.15.78zM12 2.02c5.51 0 10 4.49 10 10s-4.49 10-10 10-10-4.49-10-10 4.49-10 10-10z" />
+      <path d="M12 1.5L2 7.23v10.54L12 23.5l10-5.73V7.23L12 1.5zm0 2.29l8.03 4.6L12 13.01 3.97 8.39 12 3.79zM3.97 10.7l7.03 4.02v8.13l-7.03-4.04V10.7zM13 22.85v-8.13l7.03-4.02v8.11L13 22.85z" />
     </svg>
   ),
   fab: (
@@ -345,7 +345,15 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                     </h4>
                     <div className="flex flex-wrap gap-3">
                       {product.compatibility.map((engine, idx) => (
-                        <span key={idx} className="inline-flex items-center justify-center bg-white px-4 py-2.5 md:px-5 md:py-2 rounded-[1.25rem] text-xs md:text-sm font-black text-gray-600 border-2 border-gray-50 shadow-sm uppercase tracking-tight break-words break-all sm:break-normal max-w-full text-center leading-snug">
+                        <span key={idx} className="inline-flex items-center gap-1.5 bg-white px-4 py-2.5 md:px-5 md:py-2 rounded-[1.25rem] text-xs md:text-sm font-black text-gray-600 border-2 border-gray-50 shadow-sm uppercase tracking-tight">
+                          {engine.toLowerCase().includes('unity') && (
+                            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-[#222c37]">
+                              <path d="M12 1.5L2 7.23v10.54L12 23.5l10-5.73V7.23L12 1.5zm0 2.29l8.03 4.6L12 13.01 3.97 8.39 12 3.79zM3.97 10.7l7.03 4.02v8.13l-7.03-4.04V10.7zM13 22.85v-8.13l7.03-4.02v8.11L13 22.85z" />
+                            </svg>
+                          )}
+                          {engine.toLowerCase().includes('unreal') && (
+                            <span className="text-lg">🎮</span>
+                          )}
                           {engine}
                         </span>
                       ))}

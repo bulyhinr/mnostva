@@ -13,7 +13,11 @@ const BENEFITS = [
   {
     title: 'Unity & UE Ready',
     description: 'Perfectly optimized meshes for the world\'s top engines.',
-    icon: '🚀',
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-10 h-10 fill-[#222c37]">
+        <path d="M12 1.5L2 7.23v10.54L12 23.5l10-5.73V7.23L12 1.5zm0 2.29l8.03 4.6L12 13.01 3.97 8.39 12 3.79zM3.97 10.7l7.03 4.02v8.13l-7.03-4.04V10.7zM13 22.85v-8.13l7.03-4.02v8.11L13 22.85z" />
+      </svg>
+    ),
     color: 'from-blue-400 to-indigo-400',
     size: 'lg:col-span-1'
   },
