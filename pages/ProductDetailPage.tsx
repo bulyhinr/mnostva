@@ -392,7 +392,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
                     </span>
-                    Updated: {new Date(product.updatedAt).toLocaleDateString('ru-RU')}
+                    Last Update: {new Date(product.updatedAt).toLocaleDateString('ru-RU')}
                   </div>
                 )}
                 <div className="flex items-center gap-4 mb-6">

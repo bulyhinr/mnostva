@@ -142,15 +142,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
             {product.description.replace(/<[^>]*>?/gm, '')}
           </p>
 
-          {product.updatedAt && (
-            <div className="text-[10px] text-[#8a7db3] font-black uppercase tracking-widest mb-4 flex items-center gap-1.5 bg-purple-50/50 w-fit px-3 py-1 rounded-full border border-purple-100/30">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
-              </span>
-              Updated: {new Date(product.updatedAt).toLocaleDateString('ru-RU')}
-            </div>
-          )}
+
 
           <div className="flex flex-wrap gap-2 mb-6">
             {product.tags.map(tag => (

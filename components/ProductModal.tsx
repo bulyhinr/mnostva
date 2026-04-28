@@ -179,6 +179,15 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
             <div className="lg:w-2/5 p-8 lg:p-12 bg-gray-50/50 lg:border-l border-gray-100 flex flex-col">
               <div className="mb-8">
                 <h2 className="text-4xl font-black text-gray-900 mb-4 leading-tight">{product.name}</h2>
+                {product.updatedAt && (
+                  <div className="text-[10px] text-[#8a7db3] font-black uppercase tracking-widest mb-4 flex items-center gap-1.5 bg-purple-50/50 w-fit px-3 py-1 rounded-full border border-purple-100/30">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
+                    </span>
+                    Last Update: {new Date(product.updatedAt).toLocaleDateString('ru-RU')}
+                  </div>
+                )}
                 <div className="flex items-center gap-4 mb-6">
                   <span className="text-4xl font-black text-pink-500">
                     {product.price === 0 ? 'Free Pack' : `$${product.price.toFixed(2)}`}
