@@ -383,16 +383,20 @@ const AdminPage: React.FC = () => {
     };
 
 
+    const isEditingAny = isEditingProduct || isEditingDiscount || isEditingCoupon;
+
     return (
         <div className="min-h-screen pt-10 pb-20 px-4 bg-gray-50">
             <Toaster position="top-right" reverseOrder={false} />
             <ScrollReveal className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 className="text-4xl font-black text-gray-900 mb-2 uppercase tracking-tighter">Admin Panel</h1>
-                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Manage assets & discounts</p>
-                    </div>
-                </div>
+                {!isEditingAny && (
+                    <>
+                        <div className="flex justify-between items-center mb-8">
+                            <div>
+                                <h1 className="text-4xl font-black text-gray-900 mb-2 uppercase tracking-tighter">Admin Panel</h1>
+                                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Manage assets & discounts</p>
+                            </div>
+                        </div>
 
                 {/* Tabs */}
                 <div className="flex bg-white rounded-2xl p-2 mb-8 w-fit shadow-sm border border-gray-100">
@@ -485,6 +489,7 @@ const AdminPage: React.FC = () => {
                                                         <button
                                                             onClick={() => handleEditProduct(product)}
                                                             className="p-2 border-2 border-gray-100 rounded-xl text-gray-400 hover:text-[#8a7db3] hover:border-[#8a7db3]/30 transition-all"
+                                                            aria-label={`Edit ${product.name}`}
                                                         >
                                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -493,6 +498,7 @@ const AdminPage: React.FC = () => {
                                                         <button
                                                             onClick={() => handleDeleteProduct(product.id)}
                                                             className="p-2 border-2 border-gray-100 rounded-xl text-gray-400 hover:text-pink-500 hover:border-pink-100 transition-all"
+                                                            aria-label={`Delete ${product.name}`}
                                                         >
                                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -640,27 +646,30 @@ const AdminPage: React.FC = () => {
                         </div>
                     </>
                 )}
+                </>
+            )}
 
-                {/* Modals */}
+            {/* Modals */}
 
-                {/* Product Modal */}
+                {/* Product Form */}
                 {isEditingProduct && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                        <div className="bg-white rounded-[3rem] p-8 md:p-12 max-w-2xl w-full shadow-2xl relative animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-hidden flex flex-col">
+                    <div className="bg-white rounded-[3rem] p-8 md:p-16 shadow-xl relative flex flex-col h-fit animate-in fade-in slide-in-from-bottom-4 duration-500 mb-10">
+                        <div className="flex justify-between items-start mb-10 border-b-2 border-gray-100 pb-8">
+                            <h2 className="text-4xl font-black text-gray-900 uppercase tracking-tighter shrink-0">
+                                {currentProduct.id ? 'Edit Asset' : 'New Asset'}
+                            </h2>
                             <button
                                 onClick={() => setIsEditingProduct(false)}
-                                className="absolute top-8 right-8 text-gray-400 hover:text-gray-900 transition-colors z-[110]"
+                                className="bg-gray-100 text-gray-400 hover:text-gray-900 hover:bg-gray-200 transition-all w-14 h-14 rounded-full flex items-center justify-center shadow-sm"
+                                aria-label="Close form"
                             >
-                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
+                        </div>
 
-                            <h2 className="text-3xl font-black text-gray-900 mb-8 uppercase tracking-tighter shrink-0">
-                                {currentProduct.id ? 'Edit Asset' : 'New Asset'}
-                            </h2>
-
-                            <form onSubmit={handleSubmitProduct} className="space-y-6 overflow-y-auto px-2 pb-4">
+                        <form onSubmit={handleSubmitProduct} className="space-y-10 pb-10">
                                 {/* Title & Price */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div>
@@ -680,7 +689,7 @@ const AdminPage: React.FC = () => {
                                 {/* Description */}
                                 <div>
                                     <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Description</label>
-                                    <textarea required rows={2} value={currentProduct.description} onChange={e => setCurrentProduct({ ...currentProduct, description: e.target.value })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all" />
+                                    <textarea required rows={8} value={currentProduct.description} onChange={e => setCurrentProduct({ ...currentProduct, description: e.target.value })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all resize-y" />
                                 </div>
 
                                 {/* Category & Image */}
@@ -899,59 +908,76 @@ const AdminPage: React.FC = () => {
 
                                 <button type="submit" className="w-full bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest mt-8">Save Asset Magic 🪄</button>
                             </form>
-                        </div>
                     </div>
                 )}
 
-                {/* Discount Modal */}
+                {/* Discount Form */}
                 {isEditingDiscount && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                        <div className="bg-white rounded-[3rem] p-8 md:p-12 max-w-lg w-full shadow-2xl relative animate-in zoom-in-95 duration-300">
-                            <button onClick={() => setIsEditingDiscount(false)} className="absolute top-8 right-8 text-gray-400 hover:text-gray-900 transition-colors">✕</button>
-                            <h2 className="text-3xl font-black text-gray-900 mb-8 uppercase tracking-tighter">{currentDiscount.id ? 'Edit Discount' : 'New Discount'}</h2>
-
-                            <form onSubmit={handleSubmitDiscount} className="space-y-6">
-                                <div>
-                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Discount Name</label>
-                                    <input required type="text" value={currentDiscount.name} onChange={e => setCurrentDiscount({ ...currentDiscount, name: e.target.value })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" placeholder="e.g. Summer Sale" />
-                                </div>
-                                <div>
-                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Percentage (%)</label>
-                                    <input required type="number" min="0" max="100" value={currentDiscount.percentage} onChange={e => setCurrentDiscount({ ...currentDiscount, percentage: parseFloat(e.target.value) })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" />
-                                </div>
-                                <div className="flex items-center gap-4 ml-4">
-                                    <input type="checkbox" checked={currentDiscount.isActive} onChange={e => setCurrentDiscount({ ...currentDiscount, isActive: e.target.checked })} className="w-6 h-6 rounded border-gray-300 text-[#8a7db3]" />
-                                    <label className="font-bold text-gray-700">Active</label>
-                                </div>
-                                <button type="submit" className="w-full bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest mt-4">Save Discount</button>
-                            </form>
+                    <div className="bg-white rounded-[3rem] p-8 md:p-16 shadow-xl relative flex flex-col h-fit animate-in fade-in slide-in-from-bottom-4 duration-500 mb-10">
+                        <div className="flex justify-between items-start mb-10 border-b-2 border-gray-100 pb-8">
+                            <h2 className="text-4xl font-black text-gray-900 uppercase tracking-tighter shrink-0">
+                                {currentDiscount.id ? 'Edit Discount' : 'New Discount'}
+                            </h2>
+                            <button 
+                                onClick={() => setIsEditingDiscount(false)} 
+                                className="bg-gray-100 text-gray-400 hover:text-gray-900 hover:bg-gray-200 transition-all w-14 h-14 rounded-full flex items-center justify-center shadow-sm"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
+                        
+                        <form onSubmit={handleSubmitDiscount} className="space-y-8 pb-10">
+                            <div>
+                                <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Discount Name</label>
+                                <input required type="text" value={currentDiscount.name} onChange={e => setCurrentDiscount({ ...currentDiscount, name: e.target.value })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" placeholder="e.g. Summer Sale" />
+                            </div>
+                            <div>
+                                <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Percentage (%)</label>
+                                <input required type="number" min="0" max="100" value={currentDiscount.percentage} onChange={e => setCurrentDiscount({ ...currentDiscount, percentage: parseFloat(e.target.value) })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" />
+                            </div>
+                            <div className="flex items-center gap-4 ml-4">
+                                <input type="checkbox" checked={currentDiscount.isActive} onChange={e => setCurrentDiscount({ ...currentDiscount, isActive: e.target.checked })} className="w-6 h-6 rounded border-gray-300 text-[#8a7db3]" />
+                                <label className="font-bold text-gray-700">Active</label>
+                            </div>
+                            <button type="submit" className="w-full bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest mt-4">Save Discount</button>
+                        </form>
                     </div>
                 )}
 
-                {/* Coupon Modal */}
+                {/* Coupon Form */}
                 {isEditingCoupon && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                        <div className="bg-white rounded-[3rem] p-8 md:p-12 max-w-lg w-full shadow-2xl relative animate-in zoom-in-95 duration-300">
-                            <button onClick={() => setIsEditingCoupon(false)} className="absolute top-8 right-8 text-gray-400 hover:text-gray-900 transition-colors">✕</button>
-                            <h2 className="text-3xl font-black text-gray-900 mb-8 uppercase tracking-tighter">New Coupon</h2>
-
-                            <form onSubmit={handleSubmitCoupon} className="space-y-6">
-                                <div>
-                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Coupon Code</label>
-                                    <input required type="text" value={currentCoupon.code} onChange={e => setCurrentCoupon({ ...currentCoupon, code: e.target.value.toUpperCase() })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none uppercase" placeholder="e.g. SUMMER20" />
-                                </div>
-                                <div>
-                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Discount (%)</label>
-                                    <input required type="number" min="1" max="100" value={currentCoupon.discountPercentage} onChange={e => setCurrentCoupon({ ...currentCoupon, discountPercentage: parseFloat(e.target.value) })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" />
-                                </div>
-                                <div>
-                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Max Uses (Leave empty for unlimited)</label>
-                                    <input type="number" min="1" value={currentCoupon.maxUses || ''} onChange={e => setCurrentCoupon({ ...currentCoupon, maxUses: e.target.value ? parseInt(e.target.value) : null })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" placeholder="∞" />
-                                </div>
-                                <button type="submit" className="w-full bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest mt-4">Create Coupon 🎫</button>
-                            </form>
+                    <div className="bg-white rounded-[3rem] p-8 md:p-16 shadow-xl relative flex flex-col h-fit animate-in fade-in slide-in-from-bottom-4 duration-500 mb-10">
+                        <div className="flex justify-between items-start mb-10 border-b-2 border-gray-100 pb-8">
+                            <h2 className="text-4xl font-black text-gray-900 uppercase tracking-tighter shrink-0">
+                                New Coupon
+                            </h2>
+                            <button 
+                                onClick={() => setIsEditingCoupon(false)} 
+                                className="bg-gray-100 text-gray-400 hover:text-gray-900 hover:bg-gray-200 transition-all w-14 h-14 rounded-full flex items-center justify-center shadow-sm"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
+                        
+                        <form onSubmit={handleSubmitCoupon} className="space-y-8 pb-10">
+                            <div>
+                                <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Coupon Code</label>
+                                <input required type="text" value={currentCoupon.code} onChange={e => setCurrentCoupon({ ...currentCoupon, code: e.target.value.toUpperCase() })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none uppercase" placeholder="e.g. SUMMER20" />
+                            </div>
+                            <div>
+                                <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Discount (%)</label>
+                                <input required type="number" min="1" max="100" value={currentCoupon.discountPercentage} onChange={e => setCurrentCoupon({ ...currentCoupon, discountPercentage: parseFloat(e.target.value) })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" />
+                            </div>
+                            <div>
+                                <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Max Uses (Leave empty for unlimited)</label>
+                                <input type="number" min="1" value={currentCoupon.maxUses || ''} onChange={e => setCurrentCoupon({ ...currentCoupon, maxUses: e.target.value ? parseInt(e.target.value) : null })} className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none" placeholder="∞" />
+                            </div>
+                            <button type="submit" className="w-full bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest mt-4">Create Coupon 🎫</button>
+                        </form>
                     </div>
                 )}
 

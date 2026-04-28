@@ -18,6 +18,21 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      test: {
+        environment: 'happy-dom',
+        globals: true,
+        setupFiles: './setupTests.ts',
+        include: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+        exclude: ['**/node_modules/**', '**/dist/**', './backend/**'],
+        clearMocks: true,
+        mockReset: true,
+        restoreMocks: true,
+        poolOptions: {
+            threads: {
+                singleThread: true
+            }
+        }
       }
     };
 });

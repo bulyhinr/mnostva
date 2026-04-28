@@ -19,7 +19,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminO
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="w-12 h-12 border-4 border-gray-200 border-t-[#8a7db3] rounded-full animate-spin"></div>
+            <div 
+                className="w-12 h-12 border-4 border-gray-200 border-t-[#8a7db3] rounded-full animate-spin"
+                aria-label="Loading"
+            ></div>
             </div>
         );
     }

@@ -135,10 +135,10 @@ describe('ProductsService', () => {
                 animated: 'No',
                 textures: 'Included'
             })).toEqual(result);
-            expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'polyCount' = :polyCount`, { polyCount: 'Low' });
-            expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'rigged' = :rigged`, { rigged: 'Yes' });
-            expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'animated' = :animated`, { animated: 'No' });
-            expect(qbMock.andWhere).toHaveBeenCalledWith(`product.technicalSpecs->>'textures' = :textures`, { textures: 'Included' });
+            expect(qbMock.andWhere).toHaveBeenCalledWith(`product."technicalSpecs"->>'polyCount' = :polyCount`, { polyCount: 'Low' });
+            expect(qbMock.andWhere).toHaveBeenCalledWith(`product."technicalSpecs"->>'rigged' = :rigged`, { rigged: 'Yes' });
+            expect(qbMock.andWhere).toHaveBeenCalledWith(`product."technicalSpecs"->>'animated' = :animated`, { animated: 'No' });
+            expect(qbMock.andWhere).toHaveBeenCalledWith(`product."technicalSpecs"->>'textures' = :textures`, { textures: 'Included' });
         });
 
         it('should filter by search text using ILIKE', async () => {
