@@ -50,6 +50,11 @@ const StoreIcons = {
     <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
       <path d="M1.77 19.3L5 20.4l8.3-14.4L11.6 3.4l-9.8 15.9zm13.3-13.1l-1.3 2.1 6.8 11.8 1.7-1.1-7.2-12.8zm-2.4 8.7l-4.2 7.2h12.8l-1.5-2.6H11.5l-1.5-2.6h2.7l-1.4-2.4-1.4 2.4h2.7z" />
     </svg>
+  ),
+  superhive: (
+    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+      <path d="M12 2L22 7.77v8.46L12 22l-10-5.77V7.77L12 2zM12 4.31L4 8.93v6.14l8 4.62 8-4.62V8.93l-8-4.62z"/>
+    </svg>
   )
 };
 
@@ -122,9 +127,27 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
     return `https://sketchfab.com/models/${id}/embed?autostart=1&ui_controls=1&ui_infos=0&ui_watermark=1`;
   };
   const sketchfabEmbedUrl = getSketchfabEmbedUrl(product.externalLinks?.sketchfab);
+ 
+  const getYoutubeEmbedUrl = (url?: string) => {
+    if (!url) return null;
+    let videoId = '';
+    if (url.includes('v=')) {
+      videoId = url.split('v=')[1].split('&')[0];
+    } else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('youtube.com/shorts/')) {
+      videoId = url.split('youtube.com/shorts/')[1].split('?')[0];
+    } else if (url.includes('embed/')) {
+      videoId = url.split('embed/')[1].split('?')[0];
+    }
+    if (!videoId) return null;
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+  };
+  const youtubeEmbedUrl = getYoutubeEmbedUrl(product.externalLinks?.youtube);
 
   const galleryImages = [
     sketchfabEmbedUrl,
+    youtubeEmbedUrl,
     modelViewerUrl,
     mainImageUrl,
     ...(product.galleryImages || []).map(key => getStorageUrl(key))
@@ -153,7 +176,28 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
   }, [product, sketchfabEmbedUrl, modelViewerUrl, mainImageUrl]);
 
   const [selectedLicense, setSelectedLicense] = useState<'standard' | 'commercial'>('standard');
-
+ 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isLightboxOpen) return;
+ 
+      if (e.key === 'ArrowRight') {
+        const currentIndex = galleryImages.findIndex(img => img === activeImage);
+        const nextIndex = (currentIndex + 1) % galleryImages.length;
+        setActiveImage(galleryImages[nextIndex]);
+      } else if (e.key === 'ArrowLeft') {
+        const currentIndex = galleryImages.findIndex(img => img === activeImage);
+        const prevIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+        setActiveImage(galleryImages[prevIndex]);
+      } else if (e.key === 'Escape') {
+        setIsLightboxOpen(false);
+      }
+    };
+ 
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen, activeImage, galleryImages]);
+ 
   const isInCart = cart.some(item => item.id === product.id && (item.licenseType || 'standard') === selectedLicense);
 
   const handleAddToCart = () => {
@@ -167,7 +211,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
 
 
 
-  const hasExternalLinks = Object.values(product.externalLinks).some(link => !!link);
+  const hasExternalLinks = Object.entries(product.externalLinks || {}).some(([key, url]) => !!url && key !== 'youtube');
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     e.currentTarget.onerror = null;
@@ -233,6 +277,16 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                       src={sketchfabEmbedUrl}
                       className="w-full h-full border-0 absolute top-0 left-0"
                       allow="autoplay; fullscreen; vr"
+                    ></iframe>
+                  </div>
+                ) : activeImage === youtubeEmbedUrl ? (
+                  <div className="w-full h-full relative group bg-black">
+                    <iframe
+                      title="YouTube Video"
+                      src={youtubeEmbedUrl!}
+                      className="w-full h-full border-0 absolute top-0 left-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
                     ></iframe>
                   </div>
                 ) : activeImage === modelViewerUrl ? (
@@ -305,6 +359,14 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                         <span className="flex items-center justify-center text-sky-500" title="Sketchfab 3D View">
                           <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                          </svg>
+                        </span>
+                      </div>
+                    ) : imgUrl === youtubeEmbedUrl ? (
+                      <div className={`w-full h-full flex items-center justify-center bg-red-50 transition-all duration-500 ${activeImage === imgUrl ? 'scale-110' : 'grayscale-[40%] group-hover:grayscale-0'}`}>
+                        <span className="flex items-center justify-center text-red-500" title="YouTube Video">
+                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
                           </svg>
                         </span>
                       </div>
@@ -542,12 +604,12 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                     {isInCart ? 'In Your Basket 🧺' : 'Add to Basket 🛒'}
                   </button>
 
-                  {product.externalLinks && Object.values(product.externalLinks).some(url => !!url) && (
+                  {hasExternalLinks && (
                     <div className="pt-6 space-y-4">
                       <p className="text-center text-xs font-black text-gray-400 uppercase tracking-widest">Available on other platforms</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {Object.entries(product.externalLinks).map(([key, url]) => {
-                          if (!url || url.trim() === '') return null;
+                          if (!url || url.trim() === '' || key === 'youtube') return null;
                           const label = key.charAt(0).toUpperCase() + key.slice(1);
                           const Icon = StoreIcons[key as keyof typeof StoreIcons];
                           return (
@@ -675,6 +737,19 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                   src={sketchfabEmbedUrl}
                   className="w-full h-full border-0"
                   allow="autoplay; fullscreen; vr"
+                ></iframe>
+              </div>
+            ) : activeImage === youtubeEmbedUrl ? (
+              <div
+                className="w-full h-full max-h-[85vh] rounded-2xl overflow-hidden shadow-[0_0_100px_rgba(138,125,179,0.3)] bg-black"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <iframe
+                  title="YouTube Fullscreen"
+                  src={youtubeEmbedUrl!}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
                 ></iframe>
               </div>
             ) : activeImage === modelViewerUrl ? (

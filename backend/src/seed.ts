@@ -33,6 +33,7 @@ async function bootstrap() {
             name: 'Admin User',
             passwordHash,
             isAdmin: true,
+            termsAcceptedAt: new Date(),
         });
         console.log('✅ Created admin user:', adminEmail);
     }

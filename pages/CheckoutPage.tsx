@@ -59,7 +59,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
     name: user?.name || '',
     email: user?.email || '',
     password: '',
-    createAccount: true
+    createAccount: true,
+    acceptedTerms: false
   });
 
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -192,7 +193,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
         return;
       }
       try {
-        await register(form.name, form.email, form.password);
+        if (!form.acceptedTerms) {
+          alert("You must agree to the Terms and Privacy Policy to create an account.");
+          return;
+        }
+        await register(form.name, form.email, form.password, form.acceptedTerms);
       } catch (error: any) {
         console.error("Registration during checkout failed:", error);
 
@@ -366,6 +371,19 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                       minLength={6}
                       className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-[1.5rem] px-8 py-5 font-bold outline-none transition-all text-gray-900 shadow-inner"
                     />
+                  </div>
+                  <div className="flex items-center gap-3 text-left px-4 py-3 animate-in fade-in">
+                    <input
+                      id="checkout-terms"
+                      type="checkbox"
+                      checked={form.acceptedTerms}
+                      onChange={(e) => setForm({ ...form, acceptedTerms: e.target.checked })}
+                      className="w-5 h-5 accent-[#8a7db3] cursor-pointer shrink-0"
+                      required
+                    />
+                    <label htmlFor="checkout-terms" className="text-xs font-bold text-gray-500 leading-tight cursor-pointer">
+                      I agree to the <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-[#8a7db3] hover:underline">Terms and Privacy Policy</a>.
+                    </label>
                   </div>
 
                   <button

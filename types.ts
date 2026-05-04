@@ -30,6 +30,8 @@ export interface Product {
     cgtrader?: string;
     artstation?: string;
     sketchfab?: string;
+    superhive?: string;
+    youtube?: string;
   };
   tags: string[];
   features?: string[];

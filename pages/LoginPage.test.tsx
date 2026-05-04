@@ -107,4 +107,32 @@ describe('LoginPage', () => {
     
     expect(mockOnSuccess).not.toHaveBeenCalled();
   });
+
+  it('calls register with acceptedTerms on signup submit', async () => {
+    mockRegister.mockResolvedValue(undefined);
+
+    render(
+      <MemoryRouter>
+        <LoginPage onSuccess={mockOnSuccess} onBack={mockOnBack} />
+      </MemoryRouter>
+    );
+
+    // Switch to signup
+    fireEvent.click(screen.getByText(/Sign up here/i));
+
+    // Fill fields
+    fireEvent.change(screen.getByPlaceholderText(/Artist Name/i), { target: { value: 'New Artist' } });
+    fireEvent.change(screen.getByPlaceholderText(/123@123.com/i), { target: { value: 'new@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText(/••••••/i), { target: { value: 'password123' } });
+    
+    // Check terms
+    fireEvent.click(screen.getByRole('checkbox'));
+    
+    fireEvent.click(screen.getByRole('button', { name: /Create Account/i }));
+
+    await waitFor(() => {
+      expect(mockRegister).toHaveBeenCalledWith('New Artist', 'new@example.com', 'password123', true);
+      expect(mockOnSuccess).toHaveBeenCalled();
+    });
+  });
 });

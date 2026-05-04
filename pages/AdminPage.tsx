@@ -56,11 +56,22 @@ const AdminPage: React.FC = () => {
     const [totalPages, setTotalPages] = useState(1);
     const itemsPerPage = 20;
 
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+            if (page !== 1) setPage(1);
+        }, 500);
+        return () => clearTimeout(handler);
+    }, [searchQuery]);
+
     const fetchData = async () => {
         try {
             setLoading(true);
             const [backendProductsResponse, backendDiscounts, backendCoupons] = await Promise.all([
-                productService.getAllProducts({ page, limit: itemsPerPage }),
+                productService.getAllProducts({ page, limit: itemsPerPage, search: debouncedSearchQuery }),
                 discountService.getAllDiscounts(authService.getAccessToken() || ''),
                 couponService.getAllCoupons(authService.getAccessToken() || '')
             ]);
@@ -73,9 +84,9 @@ const AdminPage: React.FC = () => {
                 imageUrl: p.previewImageKey ? `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/public/${p.previewImageKey}` : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
                 description: p.description,
                 tags: [p.category || 'Asset', '3D Model'],
-                features: Array.isArray(p.features) ? p.features : (typeof p.features === 'string' ? (p.features as string).split(',').filter(Boolean) : []),
-                packContent: Array.isArray(p.packContent) ? p.packContent : (typeof p.packContent === 'string' ? (p.packContent as string).split(',').filter(Boolean) : []),
-                compatibility: Array.isArray(p.compatibility) ? p.compatibility : (typeof p.compatibility === 'string' ? (p.compatibility as string).split(',').filter(Boolean) : []),
+                features: Array.isArray(p.features) ? p.features : [],
+                packContent: Array.isArray(p.packContent) ? p.packContent : [],
+                compatibility: Array.isArray(p.compatibility) ? p.compatibility : [],
                 technicalSpecs: p.technicalSpecs || {},
                 externalLinks: p.externalLinks || {},
                 discount: p.discount, // discount object from relation
@@ -98,7 +109,7 @@ const AdminPage: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, [page]);
+    }, [page, debouncedSearchQuery]);
 
     // --- Product Handlers ---
 
@@ -240,7 +251,7 @@ const AdminPage: React.FC = () => {
             setSelectedPreview(null);
             setSelectedModel(null);
             setSelectedGalleryFiles(null);
-            setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '' }, galleryImages: [], previewModelKey: '' });
+            setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '' }, galleryImages: [], previewModelKey: '' });
             fetchData();
         } catch (error) {
             console.error('Failed to save product:', error);
@@ -248,7 +259,7 @@ const AdminPage: React.FC = () => {
     };
 
     const openNewProductForm = () => {
-        setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '' }, galleryImages: [], previewModelKey: '' });
+        setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '' }, galleryImages: [], previewModelKey: '' });
         setIsEditingProduct(true);
     };
 
@@ -426,10 +437,30 @@ const AdminPage: React.FC = () => {
                 {/* Products View */}
                 {activeTab === 'products' && (
                     <>
-                        <div className="flex justify-end mb-8">
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+                            <div className="flex-1 max-w-md relative">
+                                <input
+                                    type="text"
+                                    placeholder="Search assets by name or description..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-white border-2 border-gray-100 focus:border-[#8a7db3] rounded-2xl px-6 py-4 pr-12 font-bold outline-none transition-all shadow-sm"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery('')}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+                                        aria-label="Clear search"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
                             <button
                                 onClick={openNewProductForm}
-                                className="bg-[#8a7db3] text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:translate-y-[-4px] transition-all"
+                                className="bg-[#8a7db3] text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:translate-y-[-4px] transition-all whitespace-nowrap"
                             >
                                 Add New Asset +
                             </button>
@@ -744,6 +775,16 @@ const AdminPage: React.FC = () => {
                                         />
                                         {currentProduct.previewModelKey && <p className="text-xs text-emerald-400 mt-2 ml-4">Current Key: {currentProduct.previewModelKey.split('/').pop()}</p>}
                                     </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-[11px] font-black text-red-500 uppercase tracking-widest mb-3 ml-4">YouTube Video URL (For Gallery)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                                            value={currentProduct.externalLinks?.youtube || ''}
+                                            onChange={e => setCurrentProduct({ ...currentProduct, externalLinks: { ...currentProduct.externalLinks, youtube: e.target.value } })}
+                                            className="w-full bg-red-50 border-4 border-transparent focus:border-red-300 rounded-2xl px-6 py-4 font-bold outline-none transition-all text-red-700"
+                                        />
+                                    </div>
 
                                     {/* Gallery Images */}
                                     <div className="md:col-span-2">
@@ -922,8 +963,17 @@ const AdminPage: React.FC = () => {
                                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-4">ArtStation</label>
                                             <input
                                                 type="text"
-                                                value={currentProduct.externalLinks?.artstation}
+                                                value={currentProduct.externalLinks?.artstation || ''}
                                                 onChange={e => setCurrentProduct({ ...currentProduct, externalLinks: { ...currentProduct.externalLinks, artstation: e.target.value } })}
+                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-[#8a7db3] rounded-xl px-4 py-3 font-bold outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-4">Superhive</label>
+                                            <input
+                                                type="text"
+                                                value={currentProduct.externalLinks?.superhive || ''}
+                                                onChange={e => setCurrentProduct({ ...currentProduct, externalLinks: { ...currentProduct.externalLinks, superhive: e.target.value } })}
                                                 className="w-full bg-gray-50 border-2 border-transparent focus:border-[#8a7db3] rounded-xl px-4 py-3 font-bold outline-none"
                                             />
                                         </div>

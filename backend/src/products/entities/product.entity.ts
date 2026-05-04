@@ -28,19 +28,19 @@ export class Product {
     @Column({ name: 'preview_model_key', nullable: true })
     previewModelKey: string; // Cloudflare R2 key for the .glb/.gltf model
 
-    @Column({ name: 'gallery_images', type: 'simple-array', nullable: true })
+    @Column({ name: 'gallery_images', type: 'jsonb', nullable: true })
     galleryImages: string[];
 
     @Column({ nullable: true })
     category: string;
 
-    @Column({ type: 'simple-array', nullable: true })
+    @Column({ type: 'jsonb', nullable: true })
     features: string[];
 
-    @Column({ type: 'simple-array', nullable: true })
+    @Column({ type: 'jsonb', nullable: true })
     packContent: string[];
 
-    @Column({ type: 'simple-array', nullable: true })
+    @Column({ type: 'jsonb', nullable: true })
     compatibility: string[];
 
     @Column({ type: 'jsonb', nullable: true })
@@ -58,6 +58,8 @@ export class Product {
         cgtrader?: string;
         artstation?: string;
         sketchfab?: string;
+        superhive?: string;
+        youtube?: string;
     };
 
     @ManyToOne(() => Discount, (discount) => discount.products, { nullable: true, eager: true, onDelete: 'SET NULL' })

@@ -28,10 +28,13 @@ export class AuthService {
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(registerDto.password, salt);
 
+        const { acceptedTerms, ...userData } = registerDto;
+
         const newUser = await this.usersService.create({
-            ...registerDto,
+            ...userData,
             email,
             passwordHash,
+            termsAcceptedAt: new Date(),
         });
 
         // Send welcome email

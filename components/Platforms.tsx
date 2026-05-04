@@ -42,6 +42,16 @@ const PLATFORMS = [
         <path d="M1.77 19.3L5 20.4l8.3-14.4L11.6 3.4l-9.8 15.9zm13.3-13.1l-1.3 2.1 6.8 11.8 1.7-1.1-7.2-12.8zm-2.4 8.7l-4.2 7.2h12.8l-1.5-2.6H11.5l-1.5-2.6h2.7l-1.4-2.4-1.4 2.4h2.7z"/>
       </svg>
     )
+  },
+  {
+    name: 'Superhive',
+    url: 'https://superhivemarket.com/creators/mnostva',
+    color: '#ffb400',
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
+        <path d="M12 2L22 7.77v8.46L12 22l-10-5.77V7.77L12 2zM12 4.31L4 8.93v6.14l8 4.62 8-4.62V8.93l-8-4.62z"/>
+      </svg>
+    )
   }
 ];
 
@@ -57,7 +67,7 @@ const Platforms: React.FC = () => {
         </p>
       </ScrollReveal>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
         {PLATFORMS.map((platform, idx) => (
           <ScrollReveal key={platform.name} delay={idx * 100}>
             <a 

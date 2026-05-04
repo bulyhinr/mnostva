@@ -32,7 +32,7 @@ vi.mock('../components/ImageWithFallback', () => ({
 describe('ProductDetailPage', () => {
     const mockProduct = {
         id: '1',
-        title: 'Cool Asset',
+        name: 'Cool Asset',
         price: 50.00,
         category: 'Prop',
         description: 'Large description text here',
@@ -90,5 +90,67 @@ describe('ProductDetailPage', () => {
         fireEvent.click(addBtn);
 
         expect(mockAddToCart).toHaveBeenCalledWith(mockProduct, 1, 'standard');
+    });
+
+    it('renders YouTube iframe when youtube link is provided', () => {
+        const productWithYoutube = {
+            ...mockProduct,
+            externalLinks: { youtube: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
+        };
+ 
+        render(
+            <MemoryRouter>
+                <ProductDetailPage 
+                    product={productWithYoutube as any} 
+                    onBack={mockOnBack} 
+                    onNavigateToLicense={vi.fn()}
+                />
+            </MemoryRouter>
+        );
+ 
+        // YouTube icon should be visible in gallery thumbnails
+        expect(screen.getAllByTitle(/YouTube Video/i).length).toBeGreaterThanOrEqual(1);
+        
+        // Click on youtube thumbnail
+        fireEvent.click(screen.getAllByTitle(/YouTube Video/i)[0]);
+        
+        // Main view should show youtube iframe
+        expect(screen.getAllByTitle(/YouTube Video/i).length).toBeGreaterThanOrEqual(1);
+    });
+ 
+    it('handles keyboard navigation in lightbox', async () => {
+        const productWithGallery = {
+            ...mockProduct,
+            galleryImages: ['img1.jpg', 'img2.jpg']
+        };
+ 
+        render(
+            <MemoryRouter>
+                <ProductDetailPage 
+                    product={productWithGallery as any} 
+                    onBack={mockOnBack} 
+                    onNavigateToLicense={vi.fn()}
+                />
+            </MemoryRouter>
+        );
+ 
+        // Open lightbox
+        const mainImage = screen.getByAltText(/Cool Asset/i);
+        fireEvent.click(mainImage);
+ 
+        // Should show lightbox (checking for fullscreen preview indicator)
+        expect(screen.getByText(/1 \/ 3 — PREVIEW/i)).toBeInTheDocument();
+ 
+        // Press Right Arrow
+        fireEvent.keyDown(window, { key: 'ArrowRight' });
+        expect(screen.getByText(/2 \/ 3 — PREVIEW/i)).toBeInTheDocument();
+ 
+        // Press Left Arrow
+        fireEvent.keyDown(window, { key: 'ArrowLeft' });
+        expect(screen.getByText(/1 \/ 3 — PREVIEW/i)).toBeInTheDocument();
+ 
+        // Press Escape
+        fireEvent.keyDown(window, { key: 'Escape' });
+        expect(screen.queryByText(/1 \/ 3 — PREVIEW/i)).not.toBeInTheDocument();
     });
 });

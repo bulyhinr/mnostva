@@ -20,6 +20,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   
   const { login, register, forgotPassword, resetPassword } = useAuth();
   const [searchParams] = useSearchParams();
@@ -68,7 +69,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
           setLoading(false);
           return;
         }
-        await register(name, email, password);
+        if (!acceptedTerms) {
+          setError('You must agree to the Terms and Privacy Policy');
+          setLoading(false);
+          return;
+        }
+        await register(name, email, password, acceptedTerms);
         onSuccess();
       } else {
         const success = await login(email, password);
@@ -128,7 +134,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-gradient-to-br from-[#8a7db3]/10 to-pink-50">
+    <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-transparent">
       <ScrollReveal className="w-full max-w-md">
         <button
           onClick={onBack}
@@ -193,6 +199,22 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
                   required
                   className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all text-[#8a7db3] placeholder-[#8a7db3]/30"
                 />
+              </div>
+            )}
+
+            {isSignup && !isForgotPassword && !isResetPassword && (
+              <div className="flex items-center gap-3 text-left px-2 py-3 animate-in fade-in">
+                <input
+                  id="terms"
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.value === 'on' || e.target.checked)}
+                  className="w-5 h-5 accent-[#8a7db3] cursor-pointer shrink-0"
+                  required
+                />
+                <label htmlFor="terms" className="text-xs font-bold text-gray-500 leading-tight cursor-pointer">
+                  I agree to the <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-[#8a7db3] hover:underline">Terms and Privacy Policy</a>.
+                </label>
               </div>
             )}
 

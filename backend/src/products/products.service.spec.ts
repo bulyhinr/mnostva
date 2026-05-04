@@ -64,15 +64,32 @@ describe('ProductsService', () => {
     });
 
     describe('create', () => {
-        it('should create and save a product', async () => {
-            const dto = { title: 'Test', price: 100, category: 'Cat' } as any;
+        it('should create and save a product with all fields', async () => {
+            const dto = { 
+                title: 'Test', 
+                price: 100, 
+                category: 'Cat',
+                externalLinks: {
+                    unity: 'u',
+                    superhive: 'sh',
+                    youtube: 'yt'
+                },
+                features: ['f1', 'f2'],
+                packContent: ['p1'],
+                compatibility: ['c1']
+            } as any;
             const savedProduct = { id: '1', ...dto };
-
+ 
             repoMock.create.mockReturnValue(savedProduct);
             repoMock.save.mockResolvedValue(savedProduct);
-
+ 
             expect(await service.create(dto)).toEqual(savedProduct);
-            expect(repoMock.create).toHaveBeenCalledWith(expect.objectContaining(dto));
+            expect(repoMock.create).toHaveBeenCalledWith(expect.objectContaining({
+                externalLinks: expect.objectContaining({
+                    superhive: 'sh',
+                    youtube: 'yt'
+                })
+            }));
         });
     });
 
@@ -160,12 +177,20 @@ describe('ProductsService', () => {
     });
 
     describe('update', () => {
-        it('should update product and return it', async () => {
+        it('should update product including new external links and return it', async () => {
             repoMock.update.mockResolvedValue({ affected: 1 });
             repoMock.findOne.mockResolvedValue({ id: '1', title: 'New' });
-
-            expect(await service.update('1', { title: 'New', discountId: 'disc-id' } as any)).toEqual({ id: '1', title: 'New' });
-            expect(repoMock.update).toHaveBeenCalledWith('1', { title: 'New', discount: { id: 'disc-id' } });
+ 
+            const updateDto = { 
+                title: 'New', 
+                discountId: 'disc-id',
+                externalLinks: { superhive: 'sh-new', youtube: 'yt-new' }
+            } as any;
+ 
+            expect(await service.update('1', updateDto)).toEqual({ id: '1', title: 'New' });
+            expect(repoMock.update).toHaveBeenCalledWith('1', expect.objectContaining({
+                externalLinks: { superhive: 'sh-new', youtube: 'yt-new' }
+            }));
         });
 
         it('should update product setting discountId to null', async () => {

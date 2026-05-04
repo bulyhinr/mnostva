@@ -74,7 +74,7 @@ describe('AuthService', () => {
 
     describe('register', () => {
         it('should create new user', async () => {
-            const registerDto = { email: 'new@test.com', password: 'pass', name: 'New' };
+            const registerDto = { email: 'new@test.com', password: 'pass', name: 'New', acceptedTerms: true };
             (usersService.findByEmail as jest.Mock).mockResolvedValue(null);
 
             const createdUser = { id: '2', ...registerDto, passwordHash: 'hash', isAdmin: false };
@@ -89,7 +89,7 @@ describe('AuthService', () => {
         });
 
         it('should throw Conflict if email exists', async () => {
-            const registerDto = { email: 'exist@test.com', password: 'pass', name: 'Exist' };
+            const registerDto = { email: 'exist@test.com', password: 'pass', name: 'Exist', acceptedTerms: true };
             (usersService.findByEmail as jest.Mock).mockResolvedValue({ id: '1' });
 
             await expect(service.register(registerDto)).rejects.toThrow(ConflictException);

@@ -39,6 +39,14 @@ class ExternalLinksDto {
     @IsString()
     @IsOptional()
     sketchfab?: string;
+
+    @IsString()
+    @IsOptional()
+    superhive?: string;
+
+    @IsString()
+    @IsOptional()
+    youtube?: string;
 }
 
 export class CreateProductDto {

@@ -14,6 +14,9 @@ export class RegisterDto {
     @IsString()
     @MinLength(6)
     password: string;
+
+    @IsNotEmpty()
+    acceptedTerms: boolean;
 }
 
 export class LoginDto {

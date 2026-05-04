@@ -29,6 +29,11 @@ const StoreIcons = {
     <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
       <path d="M1.77 19.3L5 20.4l8.3-14.4L11.6 3.4l-9.8 15.9zm13.3-13.1l-1.3 2.1 6.8 11.8 1.7-1.1-7.2-12.8zm-2.4 8.7l-4.2 7.2h12.8l-1.5-2.6H11.5l-1.5-2.6h2.7l-1.4-2.4-1.4 2.4h2.7z" />
     </svg>
+  ),
+  superhive: (
+    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+      <path d="M12 2L22 7.77v8.46L12 22l-10-5.77V7.77L12 2zM12 4.31L4 8.93v6.14l8 4.62 8-4.62V8.93l-8-4.62z"/>
+    </svg>
   )
 };
 
@@ -86,25 +91,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
             {product.category}
           </div>
 
-          {/* External Links Icons Overlay */}
-          <div className="absolute top-4 right-4 flex flex-col gap-2">
-            {Object.entries(product.externalLinks).map(([key, url]) => {
-              if (!url) return null;
-              return (
-                <a
-                  key={key}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow-lg hover:scale-110 hover:bg-white transition-all text-gray-800"
-                  title={`View on ${key}`}
-                >
-                  {StoreIcons[key as keyof typeof StoreIcons]}
-                </a>
-              );
-            })}
-          </div>
+
 
           <div className="absolute bottom-4 right-4 flex flex-col items-end gap-1 transform group-hover:translate-y-[-4px] transition-transform duration-300">
             {product.discount && product.discount.isActive ? (

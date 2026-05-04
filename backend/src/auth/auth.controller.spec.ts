@@ -36,7 +36,7 @@ describe('AuthController', () => {
 
     describe('register', () => {
         it('should call AuthService.register', async () => {
-            const dto = { email: 't@t.com', password: 'p', name: 'N' };
+            const dto = { email: 't@t.com', password: 'p', name: 'N', acceptedTerms: true };
             service.register.mockResolvedValue('token');
             expect(await controller.register(dto)).toBe('token');
             expect(service.register).toHaveBeenCalledWith(dto);
