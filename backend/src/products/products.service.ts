@@ -40,13 +40,42 @@ export class ProductsService implements OnModuleInit {
         }
     }
 
+    private sanitizeProduct(product: Product): Product {
+        if (!product) return product;
+
+        const ensureArray = (data: any): string[] => {
+            if (Array.isArray(data)) return data;
+            if (typeof data === 'string') {
+                const trimmed = data.trim();
+                if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                    try {
+                        const parsed = JSON.parse(trimmed);
+                        if (Array.isArray(parsed)) return parsed;
+                    } catch (e) {
+                        return trimmed.slice(1, -1).split(',').map(s => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+                    }
+                }
+                return trimmed.split(',').map(s => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+            }
+            return [];
+        };
+
+        product.features = ensureArray(product.features);
+        product.packContent = ensureArray(product.packContent);
+        product.compatibility = ensureArray(product.compatibility);
+        product.galleryImages = ensureArray(product.galleryImages);
+
+        return product;
+    }
+
     async create(createProductDto: CreateProductDto): Promise<Product> {
         const { discountId, ...rest } = createProductDto;
         const product = this.productsRepository.create({
             ...rest,
             discount: discountId ? { id: discountId } : null as any,
         });
-        return this.productsRepository.save(product);
+        const savedProduct = await this.productsRepository.save(product);
+        return this.sanitizeProduct(savedProduct);
     }
 
     async findAll(options: {
@@ -103,15 +132,18 @@ export class ProductsService implements OnModuleInit {
         qb.skip((options.page - 1) * options.limit);
         qb.take(options.limit);
 
-        return qb.getManyAndCount();
+        const [products, total] = await qb.getManyAndCount();
+        return [products.map(p => this.sanitizeProduct(p)), total];
     }
 
     async findAllProducts(): Promise<Product[]> {
-        return this.productsRepository.find({ order: { createdAt: 'DESC' } });
+        const products = await this.productsRepository.find({ order: { createdAt: 'DESC' } });
+        return products.map(p => this.sanitizeProduct(p));
     }
 
     async findOne(id: string): Promise<Product | null> {
-        return this.productsRepository.findOne({ where: { id } });
+        const product = await this.productsRepository.findOne({ where: { id } });
+        return product ? this.sanitizeProduct(product) : null;
     }
 
     async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
@@ -126,7 +158,7 @@ export class ProductsService implements OnModuleInit {
         if (!updatedProduct) {
             throw new Error('Product not found');
         }
-        return updatedProduct;
+        return this.sanitizeProduct(updatedProduct);
     }
 
     async remove(id: string): Promise<void> {
