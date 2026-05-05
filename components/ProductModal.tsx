@@ -110,12 +110,22 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
   const ensureArray = (data: any): any[] => {
     if (Array.isArray(data)) return data;
     if (typeof data === 'string') {
-      try {
-        const parsed = JSON.parse(data);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch (e) {
-        return [];
+      const trimmed = data.trim();
+      if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) return parsed;
+        } catch (e) {
+          // If JSON.parse fails, manually strip brackets and split
+          return trimmed
+            .slice(1, -1)
+            .split(',')
+            .map(s => s.trim().replace(/^["']|["']$/g, ''))
+            .filter(Boolean);
+        }
       }
+      // Fallback for comma-separated strings
+      return trimmed.split(',').map(s => s.trim()).filter(Boolean);
     }
     return [];
   };
