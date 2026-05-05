@@ -122,4 +122,33 @@ describe('MarketplacePage', () => {
 
         expect(await screen.findByText(/No assets found!/i)).toBeInTheDocument();
     });
+    it('should not crash when a product has null galleryImages', async () => {
+        const mockProducts = {
+            data: [
+                {
+                    id: 'rob-1',
+                    title: 'Robust Asset',
+                    price: 2500,
+                    category: 'Room',
+                    description: 'Testing robustness',
+                    previewImageKey: 'image123',
+                    galleryImages: null // This should be handled safely
+                }
+            ],
+            total: 1
+        };
+
+        (productService.getAllProducts as any).mockResolvedValue(mockProducts);
+
+        render(
+            <MemoryRouter>
+                <MarketplacePage 
+                    onSelectProduct={mockOnSelectProduct} 
+                    onNavigateToLicense={mockOnNavigateToLicense} 
+                />
+            </MemoryRouter>
+        );
+
+        expect(await screen.findByText(/Robust Asset/i)).toBeInTheDocument();
+    });
 });

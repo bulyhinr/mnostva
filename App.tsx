@@ -93,7 +93,7 @@ const ProductDetailWrapper: React.FC = () => {
             technicalSpecs: backendProduct.technicalSpecs || {},
             externalLinks: backendProduct.externalLinks || {},
             discount: backendProduct.discount,
-            galleryImages: backendProduct.galleryImages || [],
+            galleryImages: Array.isArray(backendProduct.galleryImages) ? backendProduct.galleryImages : [],
             previewImageKey: backendProduct.previewImageKey,
             previewModelKey: backendProduct.previewModelKey,
             updatedAt: backendProduct.updatedAt

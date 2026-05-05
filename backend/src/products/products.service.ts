@@ -15,14 +15,25 @@ export class ProductsService implements OnModuleInit {
 
     async onModuleInit() {
         try {
-            // Ensure product_id is nullable to support SET NULL logic on delete
-            await this.productsRepository.query(
-                `ALTER TABLE "order_items" ALTER COLUMN "product_id" DROP NOT NULL`
+            // Use a safer check for table existence before patching
+            const hasOrderItems = await this.productsRepository.query(
+                `SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'order_items')`
             );
-            await this.productsRepository.query(
-                `ALTER TABLE "download_logs" ALTER COLUMN "product_id" DROP NOT NULL`
+            if (hasOrderItems[0].exists) {
+                await this.productsRepository.query(
+                    `ALTER TABLE "order_items" ALTER COLUMN "product_id" DROP NOT NULL`
+                );
+            }
+
+            const hasDownloadLogs = await this.productsRepository.query(
+                `SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'download_logs')`
             );
-            console.log('Schema patched: order_items.product_id and download_logs.product_id are now nullable');
+            if (hasDownloadLogs[0].exists) {
+                await this.productsRepository.query(
+                    `ALTER TABLE "download_logs" ALTER COLUMN "product_id" DROP NOT NULL`
+                );
+            }
+            console.log('Schema patches checked/applied safely.');
         } catch (e) {
             // Ignore if column doesn't exist or already nullable
             console.warn('Schema patch skipped:', (e as Error).message);

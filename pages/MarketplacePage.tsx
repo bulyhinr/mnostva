@@ -69,7 +69,7 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
           technicalSpecs: p.technicalSpecs || {},
           externalLinks: p.externalLinks || {},
           discount: p.discount,
-          galleryImages: p.galleryImages || [],
+          galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
           previewImageKey: p.previewImageKey,
           updatedAt: p.updatedAt
         }));

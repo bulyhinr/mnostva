@@ -143,4 +143,18 @@ describe('AdminPage', () => {
             expect(productService.deleteProduct).toHaveBeenCalled();
         });
     });
+    it('handles products with null galleryImages without crashing', async () => {
+        (productService.getAllProducts as any).mockResolvedValue({ 
+            data: [{ id: '99', title: 'Broken Asset', price: 1000, category: 'Prop', galleryImages: null }], 
+            total: 1 
+        });
+
+        render(
+            <MemoryRouter>
+                <AdminPage />
+            </MemoryRouter>
+        );
+
+        expect(await screen.findByText(/Broken Asset/i)).toBeInTheDocument();
+    });
 });

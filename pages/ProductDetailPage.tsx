@@ -150,7 +150,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
     youtubeEmbedUrl,
     modelViewerUrl,
     mainImageUrl,
-    ...(product.galleryImages || []).map(key => getStorageUrl(key))
+    ...(Array.isArray(product.galleryImages) ? product.galleryImages : []).map(key => getStorageUrl(key))
   ].filter(Boolean) as string[];
 
   const [isSparkling, setIsSparkling] = useState(false);

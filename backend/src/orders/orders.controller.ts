@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Get, InternalServerErrorException, Param } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, InternalServerErrorException, Param, BadRequestException } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -17,6 +17,14 @@ export class OrdersController {
     @Post()
     async create(@Request() req, @Body() orderData: { userId?: string, items: { productId: string, quantity: number, price: number, licenseType?: string }[], total: number }) {
         const userId = req.user?.userId || orderData.userId;
+
+        if (!orderData.items || orderData.items.length === 0) {
+            throw new BadRequestException('Order items are required');
+        }
+
+        if (typeof orderData.total !== 'number') {
+            throw new BadRequestException('Order total is required and must be a number');
+        }
 
         // Transform items for TypeORM (relation by ID) and convert prices to cents
         const items = orderData.items.map(item => ({

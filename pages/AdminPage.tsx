@@ -91,7 +91,7 @@ const AdminPage: React.FC = () => {
                 externalLinks: p.externalLinks || {},
                 discount: p.discount, // discount object from relation
                 fileKey: p.fileKey, // Add fileKey mapping
-                galleryImages: p.galleryImages || [],
+                galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
                 previewImageKey: p.previewImageKey,
                 previewModelKey: p.previewModelKey
             }));
@@ -117,7 +117,7 @@ const AdminPage: React.FC = () => {
         setCurrentProduct({
             ...product,
             discountId: product.discount?.id || '', // Set initial selection
-            galleryImages: product.galleryImages || []
+            galleryImages: Array.isArray(product.galleryImages) ? product.galleryImages : []
         });
         setIsEditingProduct(true);
     };
@@ -207,7 +207,7 @@ const AdminPage: React.FC = () => {
                 previewModelKey = await uploadFile(selectedModel, true);
             }
 
-            let galleryImages = [...(currentProduct.galleryImages || [])];
+            let galleryImages = Array.isArray(currentProduct.galleryImages) ? [...currentProduct.galleryImages] : [];
             if (selectedGalleryFiles) {
                 for (let i = 0; i < selectedGalleryFiles.length; i++) {
                     const key = await uploadFile(selectedGalleryFiles[i], true);

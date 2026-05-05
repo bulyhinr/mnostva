@@ -112,7 +112,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
     youtubeEmbedUrl,
     modelViewerUrl,
     mainImageUrl,
-    ...(product.galleryImages || []).map(key => getStorageUrl(key))
+    ...(Array.isArray(product.galleryImages) ? product.galleryImages : []).map(key => getStorageUrl(key))
   ].filter(Boolean) as string[];
  
   useEffect(() => {

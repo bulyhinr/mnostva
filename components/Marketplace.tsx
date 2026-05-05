@@ -45,7 +45,7 @@ const Marketplace: React.FC<MarketplaceProps> = ({
             technicalSpecs: p.technicalSpecs || {},
             externalLinks: p.externalLinks || {},
             discount: p.discount,
-            galleryImages: p.galleryImages || [],
+            galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
             previewImageKey: p.previewImageKey,
             previewModelKey: p.previewModelKey
           }));

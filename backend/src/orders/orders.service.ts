@@ -29,11 +29,11 @@ export class OrdersService {
 
     async createOrder(userId: string, itemsData: { productId: string, licenseType?: string }[], couponCode?: string, paymentMethod: string = 'stripe') {
         if (!itemsData || itemsData.length === 0) {
-            throw new Error('No products in order');
+            throw new BadRequestException('No products in order');
         }
 
         if (paymentMethod !== 'stripe' && paymentMethod !== 'paypal') {
-            throw new Error('Invalid payment method string');
+            throw new BadRequestException('Invalid payment method string');
         }
 
         // 1. Fetch products to get current prices
@@ -82,7 +82,7 @@ export class OrdersService {
                 }
             } catch (e) {
                 // Ignore invalid coupon or throw error if strict
-                throw new Error(e.message || 'Invalid coupon code');
+                throw new BadRequestException(e.message || 'Invalid coupon code');
             }
         }
 
@@ -163,7 +163,7 @@ export class OrdersService {
             throw new NotFoundException('Order not found or access denied');
         }
         if (order.status !== 'pending') {
-            throw new Error('Only pending orders can be cancelled');
+            throw new BadRequestException('Only pending orders can be cancelled');
         }
 
         order.status = 'cancelled';
@@ -192,9 +192,7 @@ export class OrdersService {
         }
 
         if (order.status === 'paid') {
-            // Just return whatever, but ideally frontend shouldn't call this
-            // returning empty or error depending on flow
-            throw new Error('Order is already paid');
+            throw new BadRequestException('Order is already paid');
         }
 
         if (order.paymentMethod === 'paypal') {
