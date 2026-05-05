@@ -12,10 +12,9 @@ export class CouponsService {
     
     async onModuleInit() {
         try {
-            await this.couponsRepository.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
             await this.couponsRepository.query(`
                 CREATE TABLE IF NOT EXISTS "coupons" (
-                    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                    "id" uuid NOT NULL DEFAULT gen_random_uuid(),
                     "code" character varying NOT NULL,
                     "discountPercentage" integer NOT NULL,
                     "maxUses" integer,

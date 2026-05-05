@@ -19,13 +19,10 @@ export class ReviewsService {
     
     async onModuleInit() {
         try {
-            // Ensure uuid extension exists
-            await this.reviewsRepository.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
-            
             // Check if reviews table exists and create if missing (since synchronize: false on prod)
             await this.reviewsRepository.query(`
                 CREATE TABLE IF NOT EXISTS "reviews" (
-                    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                    "id" uuid NOT NULL DEFAULT gen_random_uuid(),
                     "rating" integer NOT NULL,
                     "comment" text NOT NULL,
                     "createdAt" TIMESTAMP NOT NULL DEFAULT now(),

@@ -22,6 +22,19 @@ export class OrdersService {
         private couponsService: CouponsService,
     ) { }
 
+    async onModuleInit() {
+        try {
+            await this.ordersRepository.query(`
+                ALTER TABLE "orders" 
+                ADD COLUMN IF NOT EXISTS "coupon_code" varchar,
+                ADD COLUMN IF NOT EXISTS "coupon_discount" integer;
+            `);
+            console.log('Orders table schema ensured (coupon_code, coupon_discount).');
+        } catch (e) {
+            console.warn('Failed to ensure orders table schema:', (e as Error).message);
+        }
+    }
+
     async create(orderData: Partial<Order>): Promise<Order> {
         const order = this.ordersRepository.create(orderData);
         return this.ordersRepository.save(order);

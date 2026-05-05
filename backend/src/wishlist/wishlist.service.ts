@@ -16,10 +16,9 @@ export class WishlistService {
     
     async onModuleInit() {
         try {
-            await this.wishlistRepository.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
             await this.wishlistRepository.query(`
                 CREATE TABLE IF NOT EXISTS "wishlist_items" (
-                    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                    "id" uuid NOT NULL DEFAULT gen_random_uuid(),
                     "addedAt" TIMESTAMP NOT NULL DEFAULT now(),
                     "userId" uuid,
                     "productId" uuid,
