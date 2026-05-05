@@ -9,26 +9,6 @@ export class CouponsService {
         @InjectRepository(Coupon)
         private couponsRepository: Repository<Coupon>,
     ) { }
-    
-    async onModuleInit() {
-        try {
-            await this.couponsRepository.query(`
-                CREATE TABLE IF NOT EXISTS "coupons" (
-                    "id" uuid NOT NULL DEFAULT gen_random_uuid(),
-                    "code" character varying NOT NULL,
-                    "discountPercentage" integer NOT NULL,
-                    "maxUses" integer,
-                    "currentUses" integer NOT NULL DEFAULT 0,
-                    "isActive" boolean NOT NULL DEFAULT true,
-                    "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                    CONSTRAINT "PK_coupons_id" PRIMARY KEY ("id"),
-                    CONSTRAINT "UQ_coupons_code" UNIQUE ("code")
-                )
-            `);
-        } catch (e) {
-            console.warn('Failed to ensure coupons table:', (e as Error).message);
-        }
-    }
 
     async create(createData: { code: string; discountPercentage: number; maxUses?: number }): Promise<Coupon> {
         const code = createData.code.toUpperCase().trim();

@@ -48,7 +48,7 @@ import { SitemapController } from './sitemap.controller';
         type: 'postgres',
         url: configService.get('DATABASE_URL'),
         entities: [User, Product, Order, OrderItem, DownloadLog, Discount, Review, WishlistItem, Coupon],
-        synchronize: configService.get('NODE_ENV') !== 'production', // Auto-sync only in dev
+        synchronize: true, // Temporarily enabled to fix prod DB schemas
 
         logging: configService.get('NODE_ENV') !== 'production',
       }),

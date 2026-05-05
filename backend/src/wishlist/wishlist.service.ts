@@ -13,24 +13,6 @@ export class WishlistService {
         @InjectRepository(Product)
         private productRepository: Repository<Product>,
     ) { }
-    
-    async onModuleInit() {
-        try {
-            await this.wishlistRepository.query(`
-                CREATE TABLE IF NOT EXISTS "wishlist_items" (
-                    "id" uuid NOT NULL DEFAULT gen_random_uuid(),
-                    "addedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                    "userId" uuid,
-                    "productId" uuid,
-                    CONSTRAINT "PK_wishlist_items_id" PRIMARY KEY ("id"),
-                    CONSTRAINT "FK_wishlist_items_user" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE,
-                    CONSTRAINT "FK_wishlist_items_product" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE
-                )
-            `);
-        } catch (e) {
-            console.warn('Failed to ensure wishlist table:', (e as Error).message);
-        }
-    }
 
     async toggle(userId: string, productId: string): Promise<{ status: 'added' | 'removed' }> {
         const product = await this.productRepository.findOneBy({ id: productId });

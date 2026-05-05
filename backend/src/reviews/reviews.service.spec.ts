@@ -51,14 +51,6 @@ describe('ReviewsService', () => {
         expect(service).toBeDefined();
     });
 
-    describe('onModuleInit', () => {
-        it('should call query to ensure table exists', async () => {
-            reviewsRepository.query = jest.fn().mockResolvedValue([]);
-            await service.onModuleInit();
-            expect(reviewsRepository.query).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS "reviews"'));
-        });
-    });
-
     describe('create', () => {
         const dto = { productId: '1', rating: 5, comment: 'Great' };
 
