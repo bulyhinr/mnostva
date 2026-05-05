@@ -85,10 +85,9 @@ describe('OrdersController', () => {
 
         it('should handle generic error', async () => {
             const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-            (service.create as jest.Mock).mockRejectedValueOnce(new Error('Gen Error'));
-
             const req = { user: { userId: 'user-1' } };
-            const orderData = { items: [], total: 0 };
+            const orderData = { items: [{ productId: 'p1', quantity: 1, price: 10 }], total: 10 };
+            (service.create as jest.Mock).mockRejectedValueOnce(new Error('Gen Error'));
 
             await expect(controller.create(req, orderData)).rejects.toThrow('Gen Error');
             consoleSpy.mockRestore();
@@ -101,7 +100,7 @@ describe('OrdersController', () => {
             (err as any).detail = 'user';
             (service.create as jest.Mock).mockRejectedValueOnce(err);
 
-            await expect(controller.create({ user: { userId: 'u1' } }, { items: [], total: 0 })).rejects.toThrow('User not found (Foreign Key Violation). ID: u1');
+            await expect(controller.create({ user: { userId: 'u1' } }, { items: [{ productId: 'p1', quantity: 1, price: 10 }], total: 10 })).rejects.toThrow('User not found (Foreign Key Violation). ID: u1');
             consoleSpy.mockRestore();
         });
 
@@ -112,8 +111,21 @@ describe('OrdersController', () => {
             (err as any).detail = 'product';
             (service.create as jest.Mock).mockRejectedValueOnce(err);
 
-            await expect(controller.create({ user: { userId: 'u1' } }, { items: [], total: 0 })).rejects.toThrow('Product not found (Foreign Key Violation). Check cart items.');
+            await expect(controller.create({ user: { userId: 'u1' } }, { items: [{ productId: 'p1', quantity: 1, price: 10 }], total: 10 })).rejects.toThrow('Product not found (Foreign Key Violation). Check cart items.');
             consoleSpy.mockRestore();
+        });
+        it('should throw BadRequestException if items are missing', async () => {
+            const req = { user: { userId: 'user-1' } };
+            const orderData = { total: 21 } as any;
+
+            await expect(controller.create(req, orderData)).rejects.toThrow('Order items are required');
+        });
+
+        it('should throw BadRequestException if total is missing', async () => {
+            const req = { user: { userId: 'user-1' } };
+            const orderData = { items: [{ productId: 'p1', quantity: 1, price: 10 }] } as any;
+
+            await expect(controller.create(req, orderData)).rejects.toThrow('Order total is required and must be a number');
         });
     });
 

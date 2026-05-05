@@ -48,9 +48,9 @@ describe('ProductsService', () => {
     describe('onModuleInit', () => {
         it('should patch schema', async () => {
             const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-            repoMock.query.mockResolvedValue();
+            repoMock.query.mockResolvedValue([{ exists: true }]);
             await service.onModuleInit();
-            expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Schema patched'));
+            expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Schema patches checked/applied safely.'));
             consoleSpy.mockRestore();
         });
 
@@ -109,8 +109,9 @@ describe('ProductsService', () => {
         });
 
         it('should return paginated products sorting default', async () => {
-            const result = [[{ id: '1' }], 1];
-            expect(await service.findAll({ page: 1, limit: 10 })).toEqual(result);
+            const [products, count] = await service.findAll({ page: 1, limit: 10 });
+            expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
+            expect(count).toBe(1);
             expect(repoMock.createQueryBuilder).toHaveBeenCalledWith('product');
             expect(qbMock.skip).toHaveBeenCalledWith(0);
             expect(qbMock.take).toHaveBeenCalledWith(10);
@@ -118,40 +119,40 @@ describe('ProductsService', () => {
         });
 
         it('should return paginated products sorting by price-asc', async () => {
-            const result = [[{ id: '1' }], 1];
-            expect(await service.findAll({ page: 1, limit: 10, sortBy: 'price-asc', category: 'Testing' })).toEqual(result);
+            const [products, count] = await service.findAll({ page: 1, limit: 10, sortBy: 'price-asc', category: 'Testing' });
+            expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
             expect(qbMock.andWhere).toHaveBeenCalledWith('product.category = :category', { category: 'Testing' });
             expect(qbMock.orderBy).toHaveBeenCalledWith('product.price', 'ASC');
         });
 
         it('should return paginated products sorting by price-desc', async () => {
-            const result = [[{ id: '1' }], 1];
-            expect(await service.findAll({ page: 1, limit: 10, sortBy: 'price-desc' })).toEqual(result);
+            const [products, count] = await service.findAll({ page: 1, limit: 10, sortBy: 'price-desc' });
+            expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
             expect(qbMock.orderBy).toHaveBeenCalledWith('product.price', 'DESC');
         });
 
         it('should return paginated products sorting by newest', async () => {
-            const result = [[{ id: '1' }], 1];
-            expect(await service.findAll({ page: 1, limit: 10, sortBy: 'newest' })).toEqual(result);
+            const [products, count] = await service.findAll({ page: 1, limit: 10, sortBy: 'newest' });
+            expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
             expect(qbMock.orderBy).toHaveBeenCalledWith('product.createdAt', 'DESC');
         });
 
         it('should return paginated products sorting by unknown field', async () => {
-            const result = [[{ id: '1' }], 1];
-            expect(await service.findAll({ page: 1, limit: 10, sortBy: 'unknown' })).toEqual(result);
+            const [products, count] = await service.findAll({ page: 1, limit: 10, sortBy: 'unknown' });
+            expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
             expect(qbMock.orderBy).toHaveBeenCalledWith('product.unknown', 'DESC');
         });
 
         it('should add filters for technicalSpecs when provided', async () => {
-            const result = [[{ id: '1' }], 1];
-            expect(await service.findAll({
+            const [products, count] = await service.findAll({
                 page: 1,
                 limit: 10,
                 polyCount: 'Low',
                 rigged: 'Yes',
                 animated: 'No',
                 textures: 'Included'
-            })).toEqual(result);
+            });
+            expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
             expect(qbMock.andWhere).toHaveBeenCalledWith(`product."technicalSpecs"->>'polyCount' = :polyCount`, { polyCount: 'Low' });
             expect(qbMock.andWhere).toHaveBeenCalledWith(`product."technicalSpecs"->>'rigged' = :rigged`, { rigged: 'Yes' });
             expect(qbMock.andWhere).toHaveBeenCalledWith(`product."technicalSpecs"->>'animated' = :animated`, { animated: 'No' });
@@ -159,12 +160,12 @@ describe('ProductsService', () => {
         });
 
         it('should filter by search text using ILIKE', async () => {
-            const result = [[{ id: '1' }], 1];
-            expect(await service.findAll({
+            const [products, count] = await service.findAll({
                 page: 1,
                 limit: 10,
                 search: 'Low Poly'
-            })).toEqual(result);
+            });
+            expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
             expect(qbMock.andWhere).toHaveBeenCalledWith('(product.title ILIKE :search OR product.description ILIKE :search)', { search: '%Low Poly%' });
         });
     });
@@ -172,7 +173,8 @@ describe('ProductsService', () => {
     describe('findAllProducts', () => {
         it('should return all products array', async () => {
             repoMock.find.mockResolvedValue([{ id: '1' }]);
-            expect(await service.findAllProducts()).toEqual([{ id: '1' }]);
+            const products = await service.findAllProducts();
+            expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
         });
     });
 
@@ -187,7 +189,7 @@ describe('ProductsService', () => {
                 externalLinks: { superhive: 'sh-new', youtube: 'yt-new' }
             } as any;
  
-            expect(await service.update('1', updateDto)).toEqual({ id: '1', title: 'New' });
+            expect(await service.update('1', updateDto)).toEqual(expect.objectContaining({ id: '1', title: 'New' }));
             expect(repoMock.update).toHaveBeenCalledWith('1', expect.objectContaining({
                 externalLinks: { superhive: 'sh-new', youtube: 'yt-new' }
             }));
@@ -197,7 +199,7 @@ describe('ProductsService', () => {
             repoMock.update.mockResolvedValue({ affected: 1 });
             repoMock.findOne.mockResolvedValue({ id: '1', title: 'New' });
 
-            expect(await service.update('1', { discountId: null } as any)).toEqual({ id: '1', title: 'New' });
+            expect(await service.update('1', { discountId: null } as any)).toEqual(expect.objectContaining({ id: '1', title: 'New' }));
             expect(repoMock.update).toHaveBeenCalledWith('1', { discount: null });
         });
 
@@ -215,6 +217,38 @@ describe('ProductsService', () => {
             repoMock.findOne.mockResolvedValue(product);
 
             expect(await service.findOne('1')).toEqual(product);
+        });
+
+        it('should sanitize string-encoded JSON arrays from DB', async () => {
+            const rawProduct = {
+                id: '1',
+                features: '["f1", "f2"]',
+                packContent: '["p1"]',
+                compatibility: '["c1"]',
+                galleryImages: '["img1.jpg"]'
+            };
+            repoMock.findOne.mockResolvedValue(rawProduct);
+
+            const result = await service.findOne('1');
+            expect(result!.features).toEqual(['f1', 'f2']);
+            expect(result!.packContent).toEqual(['p1']);
+            expect(result!.compatibility).toEqual(['c1']);
+            expect(result!.galleryImages).toEqual(['img1.jpg']);
+        });
+
+        it('should sanitize malformed comma-separated strings with brackets', async () => {
+            const rawProduct = {
+                id: '1',
+                features: '[f1, f2]', // Invalid JSON but should be handled
+                packContent: 'item1, item2',
+                compatibility: '["comp1"]'
+            };
+            repoMock.findOne.mockResolvedValue(rawProduct);
+
+            const result = await service.findOne('1');
+            expect(result!.features).toEqual(['f1', 'f2']);
+            expect(result!.packContent).toEqual(['item1', 'item2']);
+            expect(result!.compatibility).toEqual(['comp1']);
         });
     });
 

@@ -51,6 +51,14 @@ describe('ReviewsService', () => {
         expect(service).toBeDefined();
     });
 
+    describe('onModuleInit', () => {
+        it('should call query to ensure table exists', async () => {
+            reviewsRepository.query = jest.fn().mockResolvedValue([]);
+            await service.onModuleInit();
+            expect(reviewsRepository.query).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS "reviews"'));
+        });
+    });
+
     describe('create', () => {
         const dto = { productId: '1', rating: 5, comment: 'Great' };
 
@@ -59,30 +67,30 @@ describe('ReviewsService', () => {
         });
 
         it('should throw if product not found', async () => {
-            productsRepository.findOneBy.mockResolvedValue(null);
+            (productsRepository.findOneBy as any).mockResolvedValue(null);
             await expect(service.create('1', dto)).rejects.toThrow(NotFoundException);
         });
 
         it('should throw if user did not purchase', async () => {
-            productsRepository.findOneBy.mockResolvedValue({} as any);
-            orderItemsRepository.findOne.mockResolvedValue(null);
+            (productsRepository.findOneBy as any).mockResolvedValue({} as any);
+            (orderItemsRepository.findOne as any).mockResolvedValue(null);
             await expect(service.create('1', dto)).rejects.toThrow(BadRequestException);
         });
 
         it('should throw if already reviewed', async () => {
-            productsRepository.findOneBy.mockResolvedValue({} as any);
-            orderItemsRepository.findOne.mockResolvedValue({} as any);
-            reviewsRepository.findOne.mockResolvedValue({} as any);
+            (productsRepository.findOneBy as any).mockResolvedValue({} as any);
+            (orderItemsRepository.findOne as any).mockResolvedValue({} as any);
+            (reviewsRepository.findOne as any).mockResolvedValue({} as any);
             await expect(service.create('1', dto)).rejects.toThrow(BadRequestException);
         });
 
         it('should create a review', async () => {
-            productsRepository.findOneBy.mockResolvedValue({} as any);
-            orderItemsRepository.findOne.mockResolvedValue({} as any);
-            reviewsRepository.findOne.mockResolvedValue(null);
+            (productsRepository.findOneBy as any).mockResolvedValue({} as any);
+            (orderItemsRepository.findOne as any).mockResolvedValue({} as any);
+            (reviewsRepository.findOne as any).mockResolvedValue(null);
 
-            reviewsRepository.create.mockReturnValue('new-review' as any);
-            reviewsRepository.save.mockResolvedValue('saved-review' as any);
+            (reviewsRepository.create as any).mockReturnValue('new-review' as any);
+            (reviewsRepository.save as any).mockResolvedValue('saved-review' as any);
 
             expect(await service.create('1', dto)).toBe('saved-review');
         });
@@ -90,7 +98,7 @@ describe('ReviewsService', () => {
 
     describe('findAllByProduct', () => {
         it('should return reviews', async () => {
-            reviewsRepository.find.mockResolvedValue(['r'] as any);
+            (reviewsRepository.find as any).mockResolvedValue(['r'] as any);
             expect(await service.findAllByProduct('1')).toEqual(['r']);
         });
     });
