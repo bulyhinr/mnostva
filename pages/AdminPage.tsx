@@ -84,9 +84,9 @@ const AdminPage: React.FC = () => {
                 imageUrl: p.previewImageKey ? `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/public/${p.previewImageKey}` : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
                 description: p.description,
                 tags: [p.category || 'Asset', '3D Model'],
-                features: Array.isArray(p.features) ? p.features : [],
-                packContent: Array.isArray(p.packContent) ? p.packContent : [],
-                compatibility: Array.isArray(p.compatibility) ? p.compatibility : [],
+                features: Array.isArray(p.features) ? p.features : (typeof p.features === 'string' && p.features.startsWith('[') ? JSON.parse(p.features) : []),
+                packContent: Array.isArray(p.packContent) ? p.packContent : (typeof p.packContent === 'string' && p.packContent.startsWith('[') ? JSON.parse(p.packContent) : []),
+                compatibility: Array.isArray(p.compatibility) ? p.compatibility : (typeof p.compatibility === 'string' && p.compatibility.startsWith('[') ? JSON.parse(p.compatibility) : []),
                 technicalSpecs: p.technicalSpecs || {},
                 externalLinks: p.externalLinks || {},
                 discount: p.discount, // discount object from relation

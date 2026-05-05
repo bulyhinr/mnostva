@@ -107,12 +107,25 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
     }, 800);
   };
 
+  const ensureArray = (data: any): any[] => {
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'string') {
+      try {
+        const parsed = JSON.parse(data);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  };
+
   const galleryImages = [
     sketchfabEmbedUrl,
     youtubeEmbedUrl,
     modelViewerUrl,
     mainImageUrl,
-    ...(Array.isArray(product.galleryImages) ? product.galleryImages : []).map(key => getStorageUrl(key))
+    ...ensureArray(product.galleryImages).map(key => getStorageUrl(key))
   ].filter(Boolean) as string[];
  
   useEffect(() => {
@@ -270,13 +283,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {product.packContent && (
+                {product.packContent && ensureArray(product.packContent).length > 0 && (
                   <div className="bg-pink-50/50 p-6 rounded-[2rem] border-2 border-pink-100 shadow-inner">
                     <h4 className="text-sm font-black text-pink-600 uppercase tracking-widest mb-4 flex items-center gap-2">
                       📦 Pack Content
                     </h4>
                     <ul className="space-y-2">
-                      {product.packContent.map((item, idx) => (
+                      {ensureArray(product.packContent).map((item, idx) => (
                         <li key={idx} className="text-gray-700 font-medium text-sm flex gap-2">
                           <span className="text-pink-300">•</span> {item}
                         </li>
@@ -284,13 +297,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
                     </ul>
                   </div>
                 )}
-                {product.compatibility && (
+                {product.compatibility && ensureArray(product.compatibility).length > 0 && (
                   <div className="bg-[#8a7db3]/5 p-6 rounded-[2rem] border-2 border-[#8a7db3]/10 shadow-inner">
                     <h4 className="text-sm font-black text-[#8a7db3] uppercase tracking-widest mb-4 flex items-center gap-2">
                       🎮 Compatibility
                     </h4>
                     <div className="flex flex-wrap gap-2">
-                      {product.compatibility.map((engine, idx) => (
+                      {ensureArray(product.compatibility).map((engine, idx) => (
                         <span key={idx} className="bg-white px-3 py-1 rounded-full text-[10px] font-black text-gray-500 border border-gray-100 shadow-sm uppercase tracking-tighter">
                           {engine}
                         </span>
@@ -328,11 +341,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
               </div>
 
               <div className="space-y-8 flex-grow">
-                {product.features && (
+                {product.features && ensureArray(product.features).length > 0 && (
                   <div>
                     <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Key Features</h4>
                     <ul className="space-y-2">
-                      {product.features.map((f, i) => (
+                      {ensureArray(product.features).map((f, i) => (
                         <li key={i} className="flex items-start gap-2 text-gray-700 font-bold text-sm">
                           <span className="text-[#a2c367] text-xl leading-none">✓</span>
                           {f}
