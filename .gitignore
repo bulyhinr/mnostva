@@ -26,7 +26,7 @@ dist-ssr
 *.sw?
 
 # Documentation
-*.md
+# (Previously ignored *.md, now allowed)
 
 # Scraped Data
 scraped_items/
