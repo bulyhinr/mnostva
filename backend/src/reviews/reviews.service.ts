@@ -16,6 +16,31 @@ export class ReviewsService {
         @InjectRepository(Product)
         private productsRepository: Repository<Product>,
     ) { }
+    
+    async onModuleInit() {
+        try {
+            // Ensure uuid extension exists
+            await this.reviewsRepository.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
+            
+            // Check if reviews table exists and create if missing (since synchronize: false on prod)
+            await this.reviewsRepository.query(`
+                CREATE TABLE IF NOT EXISTS "reviews" (
+                    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                    "rating" integer NOT NULL,
+                    "comment" text NOT NULL,
+                    "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                    "user_id" uuid,
+                    "product_id" uuid,
+                    CONSTRAINT "PK_reviews_id" PRIMARY KEY ("id"),
+                    CONSTRAINT "FK_reviews_user" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE,
+                    CONSTRAINT "FK_reviews_product" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE
+                )
+            `);
+            console.log('Reviews table ensured.');
+        } catch (e) {
+            console.warn('Failed to ensure reviews table:', (e as Error).message);
+        }
+    }
 
     async create(userId: string, createReviewDto: CreateReviewDto): Promise<Review> {
         const { productId, rating, comment } = createReviewDto;
