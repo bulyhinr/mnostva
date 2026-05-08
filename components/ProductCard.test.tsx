@@ -50,7 +50,8 @@ describe('ProductCard', () => {
             </MemoryRouter>
         );
 
-        fireEvent.click(screen.getByRole('heading', { name: /Test Asset/i }));
+        // Find the title link specifically. The name also appears in image alt.
+        fireEvent.click(screen.getByRole('link', { name: new RegExp(`^${mockProduct.name}$`, 'i') }));
         expect(mockOnOpen).toHaveBeenCalledWith(mockProduct);
     });
 

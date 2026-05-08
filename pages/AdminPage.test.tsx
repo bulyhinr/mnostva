@@ -157,4 +157,14 @@ describe('AdminPage', () => {
 
         expect(await screen.findByText(/Broken Asset/i)).toBeInTheDocument();
     });
+
+    it('opens the edit form automatically if edit query param is present', async () => {
+        render(
+            <MemoryRouter initialEntries={['/admin?edit=1']}>
+                <AdminPage />
+            </MemoryRouter>
+        );
+
+        expect(await screen.findByText(/Edit Asset/i)).toBeInTheDocument();
+    });
 });

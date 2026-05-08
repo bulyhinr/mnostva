@@ -91,12 +91,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
     }
   }, [product, sketchfabEmbedUrl, youtubeEmbedUrl, modelViewerUrl, mainImageUrl]);
 
-  if (!product) return null;
-
-  const isInCart = cart.some(item => item.id === product.id);
+  const isInCart = product ? cart.some(item => item.id === product.id) : false;
 
   const handleAddToCart = () => {
-    if (isInCart) return;
+    if (!product || isInCart) return;
 
     setIsSparkling(true);
     addToCart(product, quantity);
@@ -130,13 +128,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
     return [];
   };
 
-  const galleryImages = [
+  const galleryImages = product ? [
     sketchfabEmbedUrl,
     youtubeEmbedUrl,
     modelViewerUrl,
     mainImageUrl,
     ...ensureArray(product.galleryImages).map(key => getStorageUrl(key))
-  ].filter(Boolean) as string[];
+  ].filter(Boolean) as string[] : [];
  
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -167,7 +165,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
     }
   };
 
-  const hasExternalLinks = Object.entries(product.externalLinks || {}).some(([key, url]) => !!url && key !== 'youtube');
+  const hasExternalLinks = product ? Object.entries(product.externalLinks || {}).some(([key, url]) => !!url && key !== 'youtube') : false;
+
+  if (!product) return null;
 
   return (
     <>
@@ -188,7 +188,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
           <div className="flex flex-col lg:flex-row">
             <div className="lg:w-3/5 p-8 lg:p-12">
               <div
-                className="relative rounded-[2.5rem] overflow-hidden shadow-2xl aspect-video lg:aspect-square mb-8 group bg-gray-50 cursor-zoom-in border-4 border-white"
+                className="relative rounded-t-[2.5rem] overflow-hidden shadow-2xl aspect-[3/2] mb-8 group bg-gray-50 cursor-zoom-in"
                 onClick={() => setIsLightboxOpen(true)}
               >
                 {activeImage === sketchfabEmbedUrl ? (
@@ -253,12 +253,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-3 gap-4 mb-8">
                 {galleryImages.map((imgUrl, idx) => (
                   <div
                     key={idx}
                     onClick={() => setActiveImage(imgUrl)}
-                    className={`aspect-square rounded-2xl overflow-hidden bg-gray-100 border-4 transition-all cursor-pointer group hover:scale-105 active:scale-95 flex items-center justify-center ${activeImage === imgUrl ? 'border-[#8a7db3] shadow-lg shadow-[#8a7db3]/20' : 'border-white hover:border-pink-200'
+                    className={`aspect-video rounded-2xl overflow-hidden bg-gray-100 border-2 transition-all cursor-pointer group hover:scale-105 active:scale-95 flex items-center justify-center ${activeImage === imgUrl ? 'border-[#8a7db3] shadow-lg shadow-[#8a7db3]/20' : 'border-transparent hover:border-pink-200'
                       }`}
                   >
                     {imgUrl === sketchfabEmbedUrl ? (
@@ -321,6 +321,59 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
                     </div>
                   </div>
                 )}
+                {product.features && ensureArray(product.features).length > 0 && (
+                  <div className="bg-[#a2c367]/5 p-6 rounded-[2rem] border-2 border-[#a2c367]/10 shadow-inner">
+                    <h4 className="text-sm font-black text-[#a2c367] uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <span className="text-xl">✨</span> Key Features
+                    </h4>
+                    <ul className="space-y-2">
+                      {ensureArray(product.features).map((f, i) => (
+                        <li key={i} className="flex items-start gap-2 text-gray-700 font-bold text-sm">
+                          <span className="text-[#a2c367] text-xl leading-none">✓</span>
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {product.technicalSpecs && (
+                  (product.technicalSpecs.polyCount && String(product.technicalSpecs.polyCount).trim() !== '') ||
+                  (product.technicalSpecs.textures && String(product.technicalSpecs.textures).trim() !== '') ||
+                  product.technicalSpecs.rigged ||
+                  product.technicalSpecs.animated
+                ) && (
+                  <div className="bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-inner">
+                    <h4 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <span className="text-xl">⚙️</span> Technical Specs
+                    </h4>
+                    <div className="grid grid-cols-2 gap-y-4 text-sm">
+                      {product.technicalSpecs.polyCount && (
+                        <div>
+                          <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Poly Count</span>
+                          <span className="font-black text-gray-800">{product.technicalSpecs.polyCount}</span>
+                        </div>
+                      )}
+                      {product.technicalSpecs.textures && (
+                        <div>
+                          <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Textures</span>
+                          <span className="font-black text-gray-800">{product.technicalSpecs.textures}</span>
+                        </div>
+                      )}
+                      {product.technicalSpecs.rigged !== undefined && (
+                        <div>
+                          <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Rigged</span>
+                          <span className="font-black text-gray-800">{product.technicalSpecs.rigged ? 'Yes' : 'No'}</span>
+                        </div>
+                      )}
+                      {product.technicalSpecs.animated !== undefined && (
+                        <div>
+                          <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Animated</span>
+                          <span className="font-black text-gray-800">{product.technicalSpecs.animated ? 'Yes' : 'No'}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -350,45 +403,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
                 />
               </div>
 
-              <div className="space-y-8 flex-grow">
-                {product.features && ensureArray(product.features).length > 0 && (
-                  <div>
-                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Key Features</h4>
-                    <ul className="space-y-2">
-                      {ensureArray(product.features).map((f, i) => (
-                        <li key={i} className="flex items-start gap-2 text-gray-700 font-bold text-sm">
-                          <span className="text-[#a2c367] text-xl leading-none">✓</span>
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
 
-                {product.technicalSpecs && (
-                  <div className="bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm">
-                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Technical Specs</h4>
-                    <div className="grid grid-cols-2 gap-y-4 text-sm">
-                      <div>
-                        <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Poly Count</span>
-                        <span className="font-black text-gray-800">{product.technicalSpecs.polyCount}</span>
-                      </div>
-                      <div>
-                        <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Textures</span>
-                        <span className="font-black text-gray-800">{product.technicalSpecs.textures}</span>
-                      </div>
-                      <div>
-                        <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Rigged</span>
-                        <span className="font-black text-gray-800">{product.technicalSpecs.rigged ? 'Yes' : 'No'}</span>
-                      </div>
-                      <div>
-                        <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Animated</span>
-                        <span className="font-black text-gray-800">{product.technicalSpecs.animated ? 'Yes' : 'No'}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
 
               {/* Interaction Bar */}
               <div className="mt-8 flex items-center justify-between gap-2 p-4 md:p-5 bg-white rounded-3xl border-2 border-gray-100 shadow-sm">

@@ -53,4 +53,41 @@ describe('ProductModal Robustness', () => {
 
     expect(screen.getByText(/Test Product/i)).toBeInTheDocument();
   });
+
+  it('renders Key Features and Technical Specs when data is provided', () => {
+    const productWithData = {
+      ...mockProduct,
+      features: ['Cool feature'],
+      technicalSpecs: {
+        polyCount: '5k',
+        textures: '2k'
+      }
+    };
+
+    render(
+      <MemoryRouter>
+        <ProductModal product={productWithData as any} onClose={() => {}} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/Key Features/i)).toBeInTheDocument();
+    expect(screen.getByText(/Cool feature/i)).toBeInTheDocument();
+    expect(screen.getByText(/Technical Specs/i)).toBeInTheDocument();
+    expect(screen.getByText(/5k/i)).toBeInTheDocument();
+  });
+
+  it('hides Technical Specs when empty', () => {
+    const productNoSpecs = {
+      ...mockProduct,
+      technicalSpecs: {}
+    };
+
+    render(
+      <MemoryRouter>
+        <ProductModal product={productNoSpecs as any} onClose={() => {}} />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText(/Technical Specs/i)).not.toBeInTheDocument();
+  });
 });

@@ -63,7 +63,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
       <div className="relative bg-white/90 backdrop-blur-xl rounded-[2.6rem] overflow-hidden flex flex-col h-full border border-white/40 shadow-xl group-hover:bg-white/95 transition-colors duration-500">
         <Link
           to={`/product/${product.id}`}
-          className="relative h-64 overflow-hidden block"
+          className="relative aspect-video overflow-hidden block"
           onClick={(e) => {
             // Standard left click opens modal/handles navigation via onOpen
             if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
@@ -76,7 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
           <ImageWithFallback
             src={imageUrl}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-active:scale-125"
+            className="w-full h-full object-cover object-bottom transition-transform duration-700 group-hover:scale-110 group-active:scale-125"
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500 flex items-center justify-center">
             <div className="bg-white/90 text-[#8a7db3] p-4 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all shadow-2xl scale-75 group-hover:scale-100">

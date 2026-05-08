@@ -172,6 +172,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
     }
   };
 
+  // console.log('ProfilePage rendering:', { userId: user?.id, userName: user?.name, activeTab });
+
   return (
     <div className="min-h-screen pt-10 pb-20 px-4">
       <Toaster position="top-center" reverseOrder={false} />
@@ -202,7 +204,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
         isProcessing={isCancelling}
       />
 
-      <ScrollReveal className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center mb-8 gap-4">
           <button
             onClick={onBack}
@@ -220,7 +222,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                 className="w-24 h-24 rounded-full border-4 border-[#8a7db3] mx-auto mb-4 overflow-hidden bg-white shadow-xl relative group cursor-pointer"
                 onClick={() => activeTab === 'settings' && fileInputRef.current?.click()}
               >
-                <img src={activeAvatar} alt={user.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                <img src={activeAvatar} alt={user.name || 'User'} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                 {activeTab === 'settings' && (
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <span className="text-white text-[8px] font-black uppercase">Change</span>
@@ -234,7 +236,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                 accept="image/*"
                 onChange={handleAvatarSelect}
               />
-              <h2 className="text-2xl font-black text-gray-900 truncate">{user.name}</h2>
+              <h2 className="text-2xl font-black text-gray-900 truncate">{user.name || 'User'}</h2>
             </div>
 
             <nav className="space-y-3 flex-grow">
@@ -281,7 +283,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
           <div className="lg:w-3/4 p-8 lg:p-14">
             {activeTab === 'dashboard' && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-10 tracking-tight">Hello, <span className="text-[#8a7db3]">{user.name.split(' ')[0]}</span>!</h1>
+                <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-10 tracking-tight">Hello, <span className="text-[#8a7db3]">{user.name ? user.name.split(' ')[0] : 'Explorer'}</span>!</h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                   <div className="bg-pink-50 p-7 rounded-[2.5rem] border-2 border-pink-100 shadow-sm group hover:scale-[1.02] transition-transform">
@@ -799,7 +801,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
             )}
           </div>
         </div>
-      </ScrollReveal >
+      </div>
     </div >
   );
 };

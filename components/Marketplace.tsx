@@ -12,13 +12,15 @@ interface MarketplaceProps {
   limit?: number;
   onSeeAll?: () => void;
   onNavigateToLicense?: () => void;
+  onSelectProduct?: (product: Product) => void;
 }
 
 const Marketplace: React.FC<MarketplaceProps> = ({
   title = "The Marketplace",
   limit,
   onSeeAll,
-  onNavigateToLicense
+  onNavigateToLicense,
+  onSelectProduct
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filter, setFilter] = useState('All');
@@ -111,7 +113,7 @@ const Marketplace: React.FC<MarketplaceProps> = ({
             <ScrollReveal key={product.id} delay={index * 100}>
               <ProductCard
                 product={product}
-                onOpen={(p) => setSelectedProduct(p)}
+                onOpen={(p) => onSelectProduct ? onSelectProduct(p) : setSelectedProduct(p)}
               />
             </ScrollReveal>
           ))}

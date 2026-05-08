@@ -153,4 +153,51 @@ describe('ProductDetailPage', () => {
         fireEvent.keyDown(window, { key: 'Escape' });
         expect(screen.queryByText(/1 \/ 3 — PREVIEW/i)).not.toBeInTheDocument();
     });
+ 
+    it('renders Key Features and Technical Specs when data is provided', () => {
+        const productWithSpecs = {
+            ...mockProduct,
+            technicalSpecs: {
+                polyCount: '10k',
+                textures: '4k',
+                rigged: true,
+                animated: false
+            }
+        };
+
+        render(
+            <MemoryRouter>
+                <ProductDetailPage 
+                    product={productWithSpecs as any} 
+                    onBack={mockOnBack} 
+                    onNavigateToLicense={vi.fn()}
+                />
+            </MemoryRouter>
+        );
+
+        expect(screen.getByText(/Key Features/i)).toBeInTheDocument();
+        expect(screen.getByText(/Feature 1/i)).toBeInTheDocument();
+        expect(screen.getByText(/Technical Specs/i)).toBeInTheDocument();
+        expect(screen.getByText(/10k/i)).toBeInTheDocument();
+        expect(screen.getByText(/Rigged/i)).toBeInTheDocument();
+    });
+
+    it('does not render Technical Specs when data is empty', () => {
+        const productNoSpecs = {
+            ...mockProduct,
+            technicalSpecs: {} // Empty object
+        };
+
+        render(
+            <MemoryRouter>
+                <ProductDetailPage 
+                    product={productNoSpecs as any} 
+                    onBack={mockOnBack} 
+                    onNavigateToLicense={vi.fn()}
+                />
+            </MemoryRouter>
+        );
+
+        expect(screen.queryByText(/Technical Specs/i)).not.toBeInTheDocument();
+    });
 });

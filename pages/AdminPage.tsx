@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Product, Discount, Coupon } from '../types';
 import { productService } from '../services/productService';
 import { discountService } from '../services/discountService';
@@ -18,6 +18,7 @@ const AdminPage: React.FC = () => {
     const [coupons, setCoupons] = useState<Coupon[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'products' | 'discounts' | 'coupons'>('products');
+    const [searchParams, setSearchParams] = useSearchParams();
 
     // Product Editing State
     const [isEditingProduct, setIsEditingProduct] = useState(false);
@@ -110,6 +111,21 @@ const AdminPage: React.FC = () => {
     useEffect(() => {
         fetchData();
     }, [page, debouncedSearchQuery]);
+
+    // Handle 'edit' query parameter
+    useEffect(() => {
+        const editId = searchParams.get('edit');
+        if (editId && products.length > 0 && !isEditingProduct) {
+            const productToEdit = products.find(p => p.id === editId);
+            if (productToEdit) {
+                handleEditProduct(productToEdit);
+            }
+        }
+    }, [searchParams, products, isEditingProduct]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [activeTab, isEditingProduct]);
 
     // --- Product Handlers ---
 
@@ -402,7 +418,7 @@ const AdminPage: React.FC = () => {
     return (
         <div className="min-h-screen pt-10 pb-20 px-4 bg-gray-50">
             <Toaster position="top-right" reverseOrder={false} />
-            <ScrollReveal className="max-w-6xl mx-auto">
+            <div className="max-w-6xl mx-auto">
                 {!isEditingAny && (
                     <>
                         <div className="flex justify-between items-center mb-8">
@@ -525,15 +541,19 @@ const AdminPage: React.FC = () => {
                                                 </td>
                                                 <td className="px-8 py-6 text-right">
                                                     <div className="flex justify-end gap-2">
-                                                        <button
-                                                            onClick={() => handleEditProduct(product)}
-                                                            className="p-2 border-2 border-gray-100 rounded-xl text-gray-400 hover:text-[#8a7db3] hover:border-[#8a7db3]/30 transition-all"
+                                                        <Link
+                                                            to={`/admin?edit=${product.id}`}
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleEditProduct(product);
+                                                            }}
+                                                            className="p-2 border-2 border-gray-100 rounded-xl text-gray-400 hover:text-[#8a7db3] hover:border-[#8a7db3]/30 transition-all flex items-center justify-center"
                                                             aria-label={`Edit ${product.name}`}
                                                         >
                                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                             </svg>
-                                                        </button>
+                                                        </Link>
                                                         <button
                                                             onClick={() => handleDeleteProduct(product.id)}
                                                             className="p-2 border-2 border-gray-100 rounded-xl text-gray-400 hover:text-pink-500 hover:border-pink-100 transition-all"
@@ -1055,7 +1075,7 @@ const AdminPage: React.FC = () => {
                     </div>
                 )}
 
-            </ScrollReveal>
+            </div>
         </div >
     );
 };

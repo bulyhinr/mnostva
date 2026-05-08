@@ -293,7 +293,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
       <div className="absolute top-0 right-0 w-96 h-96 bg-pink-100/30 rounded-full blur-3xl -z-10 animate-pulse"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl -z-10"></div>
 
-      <ScrollReveal className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <button
           onClick={onBack}
           className="mb-8 flex items-center gap-2 text-[#8a7db3] font-black uppercase tracking-widest hover:translate-x-[-4px] transition-transform"
@@ -612,6 +612,20 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                           <li className="text-gray-400 italic text-sm">No items details available</li>
                         )}
                       </ul>
+                      {appliedCoupon && (
+                        <div className="mt-6 pt-4 border-t-2 border-white/50">
+                          <div className="flex justify-between items-center bg-pink-500/10 p-3 rounded-2xl border border-pink-500/20">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl">🎟️</span>
+                              <div>
+                                <p className="text-[10px] font-black text-pink-500 uppercase tracking-widest">Coupon Applied</p>
+                                <p className="text-xs font-black text-gray-700 uppercase tracking-tighter">{couponCode}</p>
+                              </div>
+                            </div>
+                            <span className="bg-pink-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">-{appliedCoupon.discountPercentage}% OFF</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                 </div>
 
@@ -710,7 +724,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
             )}
           </div>
         </div>
-      </ScrollReveal>
+      </div>
 
       {/* Custom Error Modal */}
       {showErrorModal && (

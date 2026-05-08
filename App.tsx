@@ -8,6 +8,7 @@ import WhyUs from './components/WhyUs';
 import Platforms from './components/Platforms';
 import MascotContact from './components/MascotContact';
 import AICurator from './components/AICurator';
+import ScrollToTop from './components/ScrollToTop';
 import MarketplacePage from './pages/MarketplacePage';
 import LicensePage from './pages/LicensePage';
 import ProductDetailPage from './pages/ProductDetailPage';
@@ -44,6 +45,7 @@ const HomePage: React.FC = () => {
         limit={3}
         onSeeAll={() => navigate('/marketplace')}
         onNavigateToLicense={() => navigate('/license')}
+        onSelectProduct={(p) => navigate(`/product/${p.id}`)}
       />
 
       <Platforms />
@@ -222,6 +224,7 @@ const App: React.FC = () => {
   return (
     <PayPalScriptProvider options={initialOptions}>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <CartProvider>
             <AppContent />
