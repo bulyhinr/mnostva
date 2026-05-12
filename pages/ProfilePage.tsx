@@ -8,6 +8,8 @@ import { wishlistService } from '../services/wishlistService';
 import { useCart } from '../context/CartContext';
 import ConfirmationModal from '../components/ConfirmationModal';
 import ReviewModal from '../components/ReviewModal';
+import { DOWNLOADS_ENABLED } from '../constants';
+
 
 interface ProfilePageProps {
   onBack: () => void;
@@ -501,6 +503,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                               <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full mt-2">
                                 <button
                                   onClick={async () => {
+                                    if (!DOWNLOADS_ENABLED) {
+                                      toast.error('Downloads are temporarily paused. Please check back later!', {
+                                        style: { borderRadius: '1rem', background: '#333', color: '#fff', fontSize: '12px' }
+                                      });
+                                      return;
+                                    }
                                     const productId = item.productId || item.product?.id;
 
                                     if (isDeleted || !productId) {
@@ -546,11 +554,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                       toast.error('Network error during download.');
                                     }
                                   }}
-                                  className={`w-full sm:w-auto bg-white text-gray-800 border-2 border-gray-100 px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted
+                                  className={`w-full sm:w-auto bg-white text-gray-800 border-2 border-gray-100 px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted || !DOWNLOADS_ENABLED
                                     ? 'cursor-not-allowed opacity-50 hover:bg-gray-100'
                                     : 'hover:bg-[#8a7db3] hover:text-white hover:border-[#8a7db3]'
                                     }`}>
-                                  {isDeleted ? 'Unavailable 🚫' : 'Download Files'}
+                                  {isDeleted ? 'Unavailable 🚫' : !DOWNLOADS_ENABLED ? 'Downloads Paused ⏸' : 'Download Files'}
                                 </button>
 
                                 {!isDeleted && (

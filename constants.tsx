@@ -9,3 +9,5 @@ export const NAV_ITEMS: NavItem[] = [
 ];
 
 export const PRODUCTS: Product[] = [];
+
+export const DOWNLOADS_ENABLED = false;
