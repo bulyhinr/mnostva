@@ -1,6 +1,7 @@
-import { Controller, Post, Body, Req, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, UnauthorizedException, Get } from '@nestjs/common';
 import { DownloadsService } from './downloads.service';
 import { AuthGuard } from '@nestjs/passport';
+import { AdminGuard } from '../auth/admin.guard';
 import { OrdersService } from '../orders/orders.service';
 import { ProductsService } from '../products/products.service';
 
@@ -11,6 +12,12 @@ export class DownloadsController {
         private readonly ordersService: OrdersService,
         private readonly productsService: ProductsService,
     ) { }
+
+    @UseGuards(AuthGuard('jwt'), AdminGuard)
+    @Get('logs')
+    async findAll() {
+        return this.downloadsService.findAll();
+    }
 
     @UseGuards(AuthGuard('jwt'))
     @Post('generate')

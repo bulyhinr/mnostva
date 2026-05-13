@@ -55,4 +55,11 @@ export class DownloadsService {
         const log = this.logsRepository.create(logData);
         return this.logsRepository.save(log);
     }
+
+    async findAll(): Promise<DownloadLog[]> {
+        return this.logsRepository.find({
+            relations: ['user', 'product'],
+            order: { downloadedAt: 'DESC' }
+        });
+    }
 }

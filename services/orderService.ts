@@ -59,11 +59,17 @@ export const orderService = {
         return response.data;
     },
 
-    async getMyOrders(token: string) {
-        const response = await axios.get<any[]>(`${API_URL}/orders/my-orders`, {
+    async getMyOrders(token: string): Promise<any[]> {
+        const response = await axios.get(`${API_URL}/orders/my-orders`, {
             headers: { Authorization: `Bearer ${token}` }
         });
+        return response.data.map(mapOrderToFrontend);
+    },
 
+    async getAllOrders(token: string): Promise<any[]> {
+        const response = await axios.get(`${API_URL}/orders`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         return response.data.map(mapOrderToFrontend);
     },
 

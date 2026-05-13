@@ -1,10 +1,17 @@
 import { Controller, Post, Body, UseGuards, Request, Get, InternalServerErrorException, Param, BadRequestException } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { AuthGuard } from '@nestjs/passport';
+import { AdminGuard } from '../auth/admin.guard';
 
 @Controller('orders')
 export class OrdersController {
     constructor(private readonly ordersService: OrdersService) { }
+
+    @UseGuards(AuthGuard('jwt'), AdminGuard)
+    @Get()
+    async findAll() {
+        return this.ordersService.findAll();
+    }
 
     @UseGuards(AuthGuard('jwt'))
     @Post('checkout')

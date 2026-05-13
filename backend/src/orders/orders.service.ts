@@ -276,4 +276,11 @@ export class OrdersService {
             throw new Error(`Payment capture failed, status: ${captureResult.status}`);
         }
     }
+
+    async findAll(): Promise<Order[]> {
+        return this.ordersRepository.find({
+            relations: ['user', 'items', 'items.product'],
+            order: { createdAt: 'DESC' }
+        });
+    }
 }

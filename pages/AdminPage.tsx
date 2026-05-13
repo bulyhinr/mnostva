@@ -6,6 +6,8 @@ import { productService } from '../services/productService';
 import { discountService } from '../services/discountService';
 import { couponService } from '../services/couponService';
 import { authService } from '../services/authService';
+import { orderService } from '../services/orderService';
+import { downloadsService } from '../services/downloadsService';
 import ScrollReveal from '../components/ScrollReveal';
 import ImageWithFallback from '../components/ImageWithFallback';
 import { Toaster, toast } from 'react-hot-toast';
@@ -17,7 +19,9 @@ const AdminPage: React.FC = () => {
     const [discounts, setDiscounts] = useState<Discount[]>([]);
     const [coupons, setCoupons] = useState<Coupon[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'products' | 'discounts' | 'coupons'>('products');
+    const [activeTab, setActiveTab] = useState<'products' | 'discounts' | 'coupons' | 'purchases' | 'downloads'>('products');
+    const [allOrders, setAllOrders] = useState<any[]>([]);
+    const [downloadLogs, setDownloadLogs] = useState<any[]>([]);
     const [searchParams, setSearchParams] = useSearchParams();
 
     // Product Editing State
@@ -60,6 +64,10 @@ const AdminPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
+    // Reporting Filters
+    const [purchaseMonth, setPurchaseMonth] = useState('');
+    const [downloadSearch, setDownloadSearch] = useState({ title: '', email: '' });
+
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedSearchQuery(searchQuery);
@@ -71,10 +79,12 @@ const AdminPage: React.FC = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [backendProductsResponse, backendDiscounts, backendCoupons] = await Promise.all([
+            const [backendProductsResponse, backendDiscounts, backendCoupons, backendOrders, backendLogs] = await Promise.all([
                 productService.getAllProducts({ page, limit: itemsPerPage, search: debouncedSearchQuery }),
                 discountService.getAllDiscounts(authService.getAccessToken() || ''),
-                couponService.getAllCoupons(authService.getAccessToken() || '')
+                couponService.getAllCoupons(authService.getAccessToken() || ''),
+                orderService.getAllOrders(authService.getAccessToken() || ''),
+                downloadsService.getDownloadLogs(authService.getAccessToken() || '')
             ]);
 
             const mappedProducts: Product[] = (backendProductsResponse.data || []).map((p: any) => ({
@@ -101,6 +111,8 @@ const AdminPage: React.FC = () => {
             setTotalPages(Math.ceil((backendProductsResponse.total || 0) / itemsPerPage));
             setDiscounts(backendDiscounts);
             setCoupons(backendCoupons);
+            setAllOrders(backendOrders);
+            setDownloadLogs(backendLogs);
         } catch (error) {
             console.error('Failed to fetch data:', error);
         } finally {
@@ -448,6 +460,18 @@ const AdminPage: React.FC = () => {
                     >
                         Coupons
                     </button>
+                    <button
+                        onClick={() => setActiveTab('purchases')}
+                        className={`px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${activeTab === 'purchases' ? 'bg-[#8a7db3] text-white shadow-lg' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        Purchases
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('downloads')}
+                        className={`px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${activeTab === 'downloads' ? 'bg-[#8a7db3] text-white shadow-lg' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        Downloads
+                    </button>
                 </div>
 
                 {/* Products View */}
@@ -706,6 +730,155 @@ const AdminPage: React.FC = () => {
                     </>
                 )}
                 </>
+            )}
+
+            {/* Purchases View */}
+            {activeTab === 'purchases' && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Purchase History</h2>
+                            <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Track all sales and transactions</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Filter by Month:</label>
+                            <input 
+                                type="month" 
+                                value={purchaseMonth}
+                                onChange={(e) => setPurchaseMonth(e.target.value)}
+                                className="bg-white border-2 border-gray-100 focus:border-[#8a7db3] rounded-xl px-4 py-2 font-bold outline-none transition-all shadow-sm"
+                            />
+                            {purchaseMonth && (
+                                <button onClick={() => setPurchaseMonth('')} className="text-[#8a7db3] font-black text-[10px] uppercase tracking-widest hover:underline">Clear</button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-[3rem] shadow-xl border-4 border-white overflow-hidden">
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50 border-b-2 border-gray-100">
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Order ID</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Customer</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Items</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Total</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {allOrders
+                                    .filter(order => !purchaseMonth || order.createdAt.startsWith(purchaseMonth))
+                                    .map(order => (
+                                    <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-8 py-6 font-mono text-[10px] text-gray-400">{order.id.split('-')[0]}...</td>
+                                        <td className="px-8 py-6">
+                                            <p className="font-bold text-gray-800">{order.user?.name || 'Guest'}</p>
+                                            <p className="text-[10px] text-gray-400 font-bold">{order.user?.email}</p>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <div className="flex flex-col gap-1">
+                                                {order.items.map((item: any, idx: number) => (
+                                                    <span key={idx} className="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full w-fit">
+                                                        {item.name}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6 font-black text-[#8a7db3]">${order.total.toFixed(2)}</td>
+                                        <td className="px-8 py-6 text-[10px] font-bold text-gray-500">
+                                            {new Date(order.createdAt).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${order.status === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
+                                                {order.status}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {allOrders.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} className="px-8 py-12 text-center text-gray-400 font-bold">No orders found.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Downloads View */}
+            {activeTab === 'downloads' && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Download Logs</h2>
+                            <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Monitor asset distribution</p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4">
+                            <div className="relative">
+                                <input 
+                                    type="text" 
+                                    placeholder="Filter by Product Title..." 
+                                    value={downloadSearch.title}
+                                    onChange={(e) => setDownloadSearch({ ...downloadSearch, title: e.target.value })}
+                                    className="bg-white border-2 border-gray-100 focus:border-[#8a7db3] rounded-xl px-4 py-2 text-xs font-bold outline-none transition-all shadow-sm w-48"
+                                />
+                            </div>
+                            <div className="relative">
+                                <input 
+                                    type="text" 
+                                    placeholder="Filter by User Email..." 
+                                    value={downloadSearch.email}
+                                    onChange={(e) => setDownloadSearch({ ...downloadSearch, email: e.target.value })}
+                                    className="bg-white border-2 border-gray-100 focus:border-[#8a7db3] rounded-xl px-4 py-2 text-xs font-bold outline-none transition-all shadow-sm w-48"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-[3rem] shadow-xl border-4 border-white overflow-hidden">
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50 border-b-2 border-gray-100">
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Product</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">User</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">IP Address</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Date & Time</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {downloadLogs
+                                    .filter(log => {
+                                        const matchesTitle = !downloadSearch.title || (log.product?.title || '').toLowerCase().includes(downloadSearch.title.toLowerCase());
+                                        const matchesEmail = !downloadSearch.email || (log.user?.email || '').toLowerCase().includes(downloadSearch.email.toLowerCase());
+                                        return matchesTitle && matchesEmail;
+                                    })
+                                    .map(log => (
+                                    <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-8 py-6">
+                                            <p className="font-bold text-gray-800">{log.product?.title || 'Unknown Product'}</p>
+                                            <p className="text-[9px] text-[#8a7db3] font-black uppercase tracking-widest">{log.product?.category}</p>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <p className="font-bold text-gray-800">{log.user?.name || 'Guest'}</p>
+                                            <p className="text-[10px] text-gray-400 font-bold">{log.user?.email}</p>
+                                        </td>
+                                        <td className="px-8 py-6 font-mono text-[10px] text-gray-500">{log.ipAddress || 'Unknown'}</td>
+                                        <td className="px-8 py-6 text-[10px] font-bold text-gray-500">
+                                            {new Date(log.downloadedAt).toLocaleString()}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {downloadLogs.length === 0 && (
+                                    <tr>
+                                        <td colSpan={4} className="px-8 py-12 text-center text-gray-400 font-bold">No download logs found.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             )}
 
             {/* Modals */}
