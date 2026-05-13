@@ -1156,9 +1156,15 @@ const AdminPage: React.FC = () => {
                                 {/* Tech Specs */}
                                 <div className="space-y-6 pt-4 border-t-2 border-gray-100">
                                     <h3 className="font-black text-gray-400 uppercase tracking-widest text-xs">Technical Specs</h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input type="text" placeholder="Poly Count" value={currentProduct.technicalSpecs?.polyCount || ''} onChange={e => setCurrentProduct({ ...currentProduct, technicalSpecs: { ...currentProduct.technicalSpecs, polyCount: e.target.value } })} className="bg-gray-50 rounded-xl px-4 py-3 font-bold text-sm outline-none focus:bg-white border-2 border-transparent focus:border-[#8a7db3]" />
-                                        <input type="text" placeholder="Textures" value={currentProduct.technicalSpecs?.textures || ''} onChange={e => setCurrentProduct({ ...currentProduct, technicalSpecs: { ...currentProduct.technicalSpecs, textures: e.target.value } })} className="bg-gray-50 rounded-xl px-4 py-3 font-bold text-sm outline-none focus:bg-white border-2 border-transparent focus:border-[#8a7db3]" />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Poly Count</label>
+                                            <input type="text" placeholder="e.g. 15k Triangles" value={currentProduct.technicalSpecs?.polyCount || ''} onChange={e => setCurrentProduct({ ...currentProduct, technicalSpecs: { ...currentProduct.technicalSpecs, polyCount: e.target.value } })} className="w-full bg-gray-50 rounded-xl px-4 py-3 font-bold text-sm outline-none focus:bg-white border-2 border-transparent focus:border-[#8a7db3] transition-all" />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Textures</label>
+                                            <input type="text" placeholder="e.g. 4K, PBR" value={currentProduct.technicalSpecs?.textures || ''} onChange={e => setCurrentProduct({ ...currentProduct, technicalSpecs: { ...currentProduct.technicalSpecs, textures: e.target.value } })} className="w-full bg-gray-50 rounded-xl px-4 py-3 font-bold text-sm outline-none focus:bg-white border-2 border-transparent focus:border-[#8a7db3] transition-all" />
+                                        </div>
                                     </div>
                                     <div className="flex gap-6">
                                         <label className="flex items-center gap-2 text-sm font-bold text-gray-600"><input type="checkbox" checked={currentProduct.technicalSpecs?.rigged || false} onChange={e => setCurrentProduct({ ...currentProduct, technicalSpecs: { ...currentProduct.technicalSpecs, rigged: e.target.checked } })} /> Rigged</label>

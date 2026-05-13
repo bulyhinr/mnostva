@@ -454,29 +454,29 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                     <h4 className="text-lg font-black text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-3">
                       <span className="text-2xl">⚙️</span> Technical Specs
                     </h4>
-                    <div className="grid grid-cols-2 gap-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-4">
                       {product.technicalSpecs.polyCount && (
-                        <div>
+                        <div className="break-words">
                           <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Poly Count</span>
-                          <span className="font-black text-gray-800 text-lg">{product.technicalSpecs.polyCount}</span>
+                          <span className="font-black text-gray-800 text-base md:text-lg">{product.technicalSpecs.polyCount}</span>
                         </div>
                       )}
                       {product.technicalSpecs.textures && (
-                        <div>
+                        <div className="break-words">
                           <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Textures</span>
-                          <span className="font-black text-gray-800 text-lg">{product.technicalSpecs.textures}</span>
+                          <span className="font-black text-gray-800 text-base md:text-lg">{product.technicalSpecs.textures}</span>
                         </div>
                       )}
                       {product.technicalSpecs.rigged !== undefined && (
                         <div>
                           <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Rigged</span>
-                          <span className="font-black text-gray-800 text-lg">{product.technicalSpecs.rigged ? 'Yes' : 'No'}</span>
+                          <span className="font-black text-gray-800 text-base md:text-lg">{product.technicalSpecs.rigged ? 'Yes' : 'No'}</span>
                         </div>
                       )}
                       {product.technicalSpecs.animated !== undefined && (
                         <div>
                           <span className="block text-[10px] text-gray-400 font-black uppercase mb-1">Animated</span>
-                          <span className="font-black text-gray-800 text-lg">{product.technicalSpecs.animated ? 'Yes' : 'No'}</span>
+                          <span className="font-black text-gray-800 text-base md:text-lg">{product.technicalSpecs.animated ? 'Yes' : 'No'}</span>
                         </div>
                       )}
                     </div>
