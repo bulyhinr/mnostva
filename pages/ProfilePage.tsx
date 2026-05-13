@@ -503,7 +503,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                               <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full mt-2">
                                 <button
                                   onClick={async () => {
-                                    if (!DOWNLOADS_ENABLED) {
+                                    if (!DOWNLOADS_ENABLED && !user?.isAdmin) {
                                       toast.error('Downloads are temporarily paused. Please check back later!', {
                                         style: { borderRadius: '1rem', background: '#333', color: '#fff', fontSize: '12px' }
                                       });
@@ -554,11 +554,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                       toast.error('Network error during download.');
                                     }
                                   }}
-                                  className={`w-full sm:w-auto bg-white text-gray-800 border-2 border-gray-100 px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted || !DOWNLOADS_ENABLED
+                                  className={`w-full sm:w-auto bg-white text-gray-800 border-2 border-gray-100 px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted || (!DOWNLOADS_ENABLED && !user?.isAdmin)
                                     ? 'cursor-not-allowed opacity-50 hover:bg-gray-100'
                                     : 'hover:bg-[#8a7db3] hover:text-white hover:border-[#8a7db3]'
                                     }`}>
-                                  {isDeleted ? 'Unavailable 🚫' : !DOWNLOADS_ENABLED ? 'Downloads Paused ⏸' : 'Download Files'}
+                                  {isDeleted ? 'Unavailable 🚫' : (!DOWNLOADS_ENABLED && !user?.isAdmin) ? 'Downloads Paused ⏸' : 'Download Files'}
                                 </button>
 
                                 {!isDeleted && (

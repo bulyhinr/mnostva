@@ -4,6 +4,9 @@ import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
 import ScrollReveal from '../components/ScrollReveal';
 import { productService } from '../services/productService';
+import { useAuth } from '../context/AuthContext';
+import { MAINTENANCE_MODE } from '../constants';
+
 
 interface MarketplacePageProps {
   onNavigateToLicense: () => void;
@@ -11,6 +14,7 @@ interface MarketplacePageProps {
 }
 
 const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, onSelectProduct }) => {
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -295,7 +299,18 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
           </ScrollReveal>
         )} */}
 
-        {products.length > 0 ? (
+        {MAINTENANCE_MODE && !user?.isAdmin ? (
+          <div className="text-center py-40 animate-in fade-in zoom-in duration-1000">
+            <h2 className="text-6xl md:text-8xl font-black text-gray-900 mb-8 tracking-tighter italic">
+              Coming <span className="text-[#8a7db3]">soon...</span>
+            </h2>
+            <div className="flex justify-center gap-4">
+              <span className="w-3 h-3 bg-[#8a7db3] rounded-full animate-bounce"></span>
+              <span className="w-3 h-3 bg-[#8a7db3] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+              <span className="w-3 h-3 bg-[#8a7db3] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+            </div>
+          </div>
+        ) : products.length > 0 ? (
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
             {products.map((product, index) => (
               <ScrollReveal key={product.id} delay={index * 50}>
@@ -317,8 +332,7 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
               Clear all filters
             </button>
           </div>
-        )
-        }
+        )}
 
         {totalPages > 1 && (
             <div className="mt-12 flex items-center justify-center gap-4">
