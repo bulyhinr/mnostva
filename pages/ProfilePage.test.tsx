@@ -5,6 +5,17 @@ import { MemoryRouter } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { orderService } from '../services/orderService';
 import { useCart } from '../context/CartContext';
+import * as constants from '../constants';
+
+// Mock constants
+vi.mock('../constants', async () => {
+  const actual = await vi.importActual('../constants');
+  return {
+    ...actual,
+    MAINTENANCE_MODE: false,
+    DOWNLOADS_ENABLED: true,
+  };
+});
 
 // Mock AuthContext
 vi.mock('../context/AuthContext', () => ({
@@ -149,5 +160,69 @@ describe('ProfilePage', () => {
         fireEvent.click(backBtn);
 
         expect(mockOnBack).toHaveBeenCalled();
+    });
+
+    describe('Maintenance Mode', () => {
+        it('disables "Pay Now" for regular users when MAINTENANCE_MODE is true', async () => {
+            vi.spyOn(constants, 'MAINTENANCE_MODE', 'get').mockReturnValue(true);
+            (useAuth as any).mockReturnValue({
+                user: { ...mockUser, isAdmin: false },
+                orders: [{ ...mockOrders[0], status: 'pending' }],
+                logs: [],
+                fetchOrders: mockFetchOrders
+            });
+
+            render(
+                <MemoryRouter>
+                    <ProfilePage onBack={mockOnBack} onNavigateToShop={vi.fn()} />
+                </MemoryRouter>
+            );
+
+            expect(screen.getByText(/Payments Paused/i)).toBeInTheDocument();
+            expect(screen.getByText(/Payments Paused/i)).toBeDisabled();
+        });
+
+        it('disables "Download Files" for regular users when DOWNLOADS_ENABLED is false', async () => {
+            vi.spyOn(constants, 'DOWNLOADS_ENABLED', 'get').mockReturnValue(false);
+            (useAuth as any).mockReturnValue({
+                user: { ...mockUser, isAdmin: false },
+                orders: mockOrders,
+                logs: [],
+                fetchOrders: mockFetchOrders
+            });
+
+            render(
+                <MemoryRouter>
+                    <ProfilePage onBack={mockOnBack} onNavigateToShop={vi.fn()} />
+                </MemoryRouter>
+            );
+
+            // Switch to Assets tab
+            fireEvent.click(screen.getByRole('button', { name: /My Assets/i }));
+
+            expect(await screen.findByText(/Downloads Paused/i)).toBeInTheDocument();
+        });
+
+        it('allows "Download Files" for admins even when DOWNLOADS_ENABLED is false', async () => {
+            vi.spyOn(constants, 'DOWNLOADS_ENABLED', 'get').mockReturnValue(false);
+            (useAuth as any).mockReturnValue({
+                user: { ...mockUser, isAdmin: true },
+                orders: mockOrders,
+                logs: [],
+                fetchOrders: mockFetchOrders
+            });
+
+            render(
+                <MemoryRouter>
+                    <ProfilePage onBack={mockOnBack} onNavigateToShop={vi.fn()} />
+                </MemoryRouter>
+            );
+
+            // Switch to Assets tab
+            fireEvent.click(screen.getByRole('button', { name: /My Assets/i }));
+
+            expect(await screen.findByText(/Download Files/i)).toBeInTheDocument();
+            expect(screen.queryByText(/Downloads Paused/i)).not.toBeInTheDocument();
+        });
     });
 });

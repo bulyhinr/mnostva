@@ -420,6 +420,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                         toast.error('Failed to initiate payment');
                                       }
                                     }}
+                                    disabled={MAINTENANCE_MODE && !user?.isAdmin}
                                     className={`px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg ${MAINTENANCE_MODE && !user?.isAdmin
                                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-200'
                                       : 'bg-pink-500 hover:bg-pink-600 text-white animate-pulse hover:shadow-xl hover:translate-y-[-2px]'

@@ -4,6 +4,16 @@ import ProductDetailPage from './ProductDetailPage';
 import { MemoryRouter } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import * as constants from '../constants';
+
+// Mock constants
+vi.mock('../constants', async () => {
+  const actual = await vi.importActual('../constants');
+  return {
+    ...actual,
+    MAINTENANCE_MODE: false,
+  };
+});
 
 // Mock useCart
 vi.mock('../context/CartContext', () => ({
@@ -199,5 +209,51 @@ describe('ProductDetailPage', () => {
         );
 
         expect(screen.queryByText(/Technical Specs/i)).not.toBeInTheDocument();
+    });
+
+    describe('Maintenance Mode', () => {
+        beforeEach(() => {
+            vi.spyOn(constants, 'MAINTENANCE_MODE', 'get').mockReturnValue(true);
+        });
+
+        it('disables "Add to Basket" for regular users during maintenance', () => {
+            (useAuth as any).mockReturnValue({
+                user: { id: '1', name: 'User', isAdmin: false },
+                loading: false
+            });
+
+            render(
+                <MemoryRouter>
+                    <ProductDetailPage 
+                        product={mockProduct as any} 
+                        onBack={mockOnBack} 
+                        onNavigateToLicense={vi.fn()}
+                    />
+                </MemoryRouter>
+            );
+
+            expect(screen.getByText(/Shop Paused/i)).toBeInTheDocument();
+            expect(screen.getByText(/Shop Paused/i)).toBeDisabled();
+        });
+
+        it('allows "Add to Basket" for admins during maintenance', () => {
+            (useAuth as any).mockReturnValue({
+                user: { id: '1', name: 'Admin', isAdmin: true },
+                loading: false
+            });
+
+            render(
+                <MemoryRouter>
+                    <ProductDetailPage 
+                        product={mockProduct as any} 
+                        onBack={mockOnBack} 
+                        onNavigateToLicense={vi.fn()}
+                    />
+                </MemoryRouter>
+            );
+
+            expect(screen.getByText(/Add to Basket/i)).toBeInTheDocument();
+            expect(screen.getByText(/Add to Basket/i)).not.toBeDisabled();
+        });
     });
 });

@@ -3,6 +3,23 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MarketplacePage from './MarketplacePage';
 import { productService } from '../services/productService';
 import { MemoryRouter } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import * as constants from '../constants';
+
+// Mock useAuth
+vi.mock('../context/AuthContext', () => ({
+  __esModule: true,
+  useAuth: vi.fn(),
+}));
+
+// Mock constants
+vi.mock('../constants', async () => {
+  const actual = await vi.importActual('../constants');
+  return {
+    ...actual,
+    MAINTENANCE_MODE: false, // Default for other tests
+  };
+});
 
 // Mock productService
 vi.mock('../services/productService', () => ({
@@ -38,6 +55,7 @@ describe('MarketplacePage', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        (useAuth as any).mockReturnValue({ user: null });
     });
 
     it('renders marketplace title and loading state', async () => {
@@ -150,5 +168,50 @@ describe('MarketplacePage', () => {
         );
 
         expect(await screen.findByText(/Robust Asset/i)).toBeInTheDocument();
+    });
+
+    describe('Maintenance Mode', () => {
+        beforeEach(() => {
+            // Force MAINTENANCE_MODE to true for this block
+            vi.spyOn(constants, 'MAINTENANCE_MODE', 'get').mockReturnValue(true);
+        });
+
+        it('shows "Coming soon..." for regular users', async () => {
+            (useAuth as any).mockReturnValue({ user: { isAdmin: false } });
+            
+            render(
+                <MemoryRouter>
+                    <MarketplacePage 
+                        onSelectProduct={mockOnSelectProduct} 
+                        onNavigateToLicense={mockOnNavigateToLicense} 
+                    />
+                </MemoryRouter>
+            );
+
+            expect(screen.getByText(/Coming/i)).toBeInTheDocument();
+            expect(screen.getByText(/soon/i)).toBeInTheDocument();
+            expect(screen.getByRole('heading', { name: /The Asset Shop/i })).toBeInTheDocument();
+            expect(screen.queryByTestId('product-card')).not.toBeInTheDocument();
+        });
+
+        it('shows products for admin users', async () => {
+            (useAuth as any).mockReturnValue({ user: { isAdmin: true } });
+            (productService.getAllProducts as any).mockResolvedValue({ 
+                data: [{ id: '1', title: 'Admin Asset', price: 1000 }], 
+                total: 1 
+            });
+
+            render(
+                <MemoryRouter>
+                    <MarketplacePage 
+                        onSelectProduct={mockOnSelectProduct} 
+                        onNavigateToLicense={mockOnNavigateToLicense} 
+                    />
+                </MemoryRouter>
+            );
+
+            expect(await screen.findByText(/Admin Asset/i)).toBeInTheDocument();
+            expect(screen.queryByText(/Coming soon\.\.\./i)).not.toBeInTheDocument();
+        });
     });
 });
