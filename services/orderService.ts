@@ -66,11 +66,14 @@ export const orderService = {
         return response.data.map(mapOrderToFrontend);
     },
 
-    async getAllOrders(token: string): Promise<any[]> {
-        const response = await axios.get(`${API_URL}/orders`, {
+    async getAllOrders(token: string, page: number = 1, limit: number = 30): Promise<{ data: any[], total: number }> {
+        const response = await axios.get(`${API_URL}/orders?page=${page}&limit=${limit}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        return response.data.map(mapOrderToFrontend);
+        return {
+            data: response.data.data.map(mapOrderToFrontend),
+            total: response.data.total
+        };
     },
 
     async getPaymentDetails(orderId: string, token: string) {

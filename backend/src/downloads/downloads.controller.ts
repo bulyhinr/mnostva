@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, UseGuards, UnauthorizedException, Get } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, UnauthorizedException, Get, Query } from '@nestjs/common';
 import { DownloadsService } from './downloads.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminGuard } from '../auth/admin.guard';
@@ -15,8 +15,8 @@ export class DownloadsController {
 
     @UseGuards(AuthGuard('jwt'), AdminGuard)
     @Get('logs')
-    async findAll() {
-        return this.downloadsService.findAll();
+    async findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 30) {
+        return this.downloadsService.findAll(Number(page), Number(limit));
     }
 
     @UseGuards(AuthGuard('jwt'))

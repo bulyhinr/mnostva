@@ -59,7 +59,12 @@ const AdminPage: React.FC = () => {
 
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [purchasesPage, setPurchasesPage] = useState(1);
+    const [purchasesTotalPages, setPurchasesTotalPages] = useState(1);
+    const [downloadsPage, setDownloadsPage] = useState(1);
+    const [downloadsTotalPages, setDownloadsTotalPages] = useState(1);
     const itemsPerPage = 20;
+    const reportingItemsPerPage = 30;
 
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
@@ -83,8 +88,8 @@ const AdminPage: React.FC = () => {
                 productService.getAllProducts({ page, limit: itemsPerPage, search: debouncedSearchQuery }),
                 discountService.getAllDiscounts(authService.getAccessToken() || ''),
                 couponService.getAllCoupons(authService.getAccessToken() || ''),
-                orderService.getAllOrders(authService.getAccessToken() || ''),
-                downloadsService.getDownloadLogs(authService.getAccessToken() || '')
+                orderService.getAllOrders(authService.getAccessToken() || '', purchasesPage, reportingItemsPerPage),
+                downloadsService.getDownloadLogs(authService.getAccessToken() || '', downloadsPage, reportingItemsPerPage)
             ]);
 
             const mappedProducts: Product[] = (backendProductsResponse.data || []).map((p: any) => ({
@@ -111,8 +116,10 @@ const AdminPage: React.FC = () => {
             setTotalPages(Math.ceil((backendProductsResponse.total || 0) / itemsPerPage));
             setDiscounts(backendDiscounts);
             setCoupons(backendCoupons);
-            setAllOrders(backendOrders);
-            setDownloadLogs(backendLogs);
+            setAllOrders(backendOrders.data);
+            setPurchasesTotalPages(Math.ceil((backendOrders.total || 0) / reportingItemsPerPage));
+            setDownloadLogs(backendLogs.data);
+            setDownloadsTotalPages(Math.ceil((backendLogs.total || 0) / reportingItemsPerPage));
         } catch (error) {
             console.error('Failed to fetch data:', error);
         } finally {
@@ -122,7 +129,7 @@ const AdminPage: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, [page, debouncedSearchQuery]);
+    }, [page, debouncedSearchQuery, purchasesPage, downloadsPage]);
 
     // Handle 'edit' query parameter
     useEffect(() => {
@@ -803,6 +810,29 @@ const AdminPage: React.FC = () => {
                                 )}
                             </tbody>
                         </table>
+
+                        {/* Pagination for Purchases */}
+                        {purchasesTotalPages > 1 && (
+                            <div className="py-6 flex items-center justify-center gap-4 border-t-2 border-gray-100 bg-white">
+                                <button 
+                                    onClick={() => setPurchasesPage(p => Math.max(1, p - 1))}
+                                    disabled={purchasesPage === 1}
+                                    className="px-6 py-2 font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 transition-all"
+                                >
+                                    Prev
+                                </button>
+                                <div className="font-bold text-gray-500 text-xs uppercase tracking-widest">
+                                    Page {purchasesPage} of {purchasesTotalPages}
+                                </div>
+                                <button 
+                                    onClick={() => setPurchasesPage(p => Math.min(purchasesTotalPages, p + 1))}
+                                    disabled={purchasesPage === purchasesTotalPages}
+                                    className="px-6 py-2 font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 transition-all"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -877,6 +907,29 @@ const AdminPage: React.FC = () => {
                                 )}
                             </tbody>
                         </table>
+
+                        {/* Pagination for Downloads */}
+                        {downloadsTotalPages > 1 && (
+                            <div className="py-6 flex items-center justify-center gap-4 border-t-2 border-gray-100 bg-white">
+                                <button 
+                                    onClick={() => setDownloadsPage(p => Math.max(1, p - 1))}
+                                    disabled={downloadsPage === 1}
+                                    className="px-6 py-2 font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 transition-all"
+                                >
+                                    Prev
+                                </button>
+                                <div className="font-bold text-gray-500 text-xs uppercase tracking-widest">
+                                    Page {downloadsPage} of {downloadsTotalPages}
+                                </div>
+                                <button 
+                                    onClick={() => setDownloadsPage(p => Math.min(downloadsTotalPages, p + 1))}
+                                    disabled={downloadsPage === downloadsTotalPages}
+                                    className="px-6 py-2 font-black text-xs uppercase tracking-widest bg-gray-50 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 transition-all"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

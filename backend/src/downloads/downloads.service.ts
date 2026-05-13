@@ -56,10 +56,13 @@ export class DownloadsService {
         return this.logsRepository.save(log);
     }
 
-    async findAll(): Promise<DownloadLog[]> {
-        return this.logsRepository.find({
+    async findAll(page: number = 1, limit: number = 30): Promise<{ data: DownloadLog[], total: number }> {
+        const [data, total] = await this.logsRepository.findAndCount({
             relations: ['user', 'product'],
-            order: { downloadedAt: 'DESC' }
+            order: { downloadedAt: 'DESC' },
+            skip: (page - 1) * limit,
+            take: limit
         });
+        return { data, total };
     }
 }

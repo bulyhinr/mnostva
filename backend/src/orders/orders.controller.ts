@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Get, InternalServerErrorException, Param, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, InternalServerErrorException, Param, BadRequestException, Query } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminGuard } from '../auth/admin.guard';
@@ -9,8 +9,8 @@ export class OrdersController {
 
     @UseGuards(AuthGuard('jwt'), AdminGuard)
     @Get()
-    async findAll() {
-        return this.ordersService.findAll();
+    async findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 30) {
+        return this.ordersService.findAll(Number(page), Number(limit));
     }
 
     @UseGuards(AuthGuard('jwt'))

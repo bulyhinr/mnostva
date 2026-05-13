@@ -277,10 +277,13 @@ export class OrdersService {
         }
     }
 
-    async findAll(): Promise<Order[]> {
-        return this.ordersRepository.find({
+    async findAll(page: number = 1, limit: number = 30): Promise<{ data: Order[], total: number }> {
+        const [data, total] = await this.ordersRepository.findAndCount({
             relations: ['user', 'items', 'items.product'],
-            order: { createdAt: 'DESC' }
+            order: { createdAt: 'DESC' },
+            skip: (page - 1) * limit,
+            take: limit
         });
+        return { data, total };
     }
 }
