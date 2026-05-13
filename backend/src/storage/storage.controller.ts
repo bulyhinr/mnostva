@@ -6,6 +6,7 @@ import { AdminGuard } from '../auth/admin.guard';
 import { v4 as uuidv4 } from 'uuid';
 import type { Response } from 'express';
 import { ProductsService } from '../products/products.service';
+import { DownloadsService } from '../downloads/downloads.service';
 
 @Controller('storage')
 export class StorageController {
@@ -13,6 +14,7 @@ export class StorageController {
         private readonly storageService: StorageService,
         private readonly ordersService: OrdersService,
         private readonly productsService: ProductsService,
+        private readonly downloadsService: DownloadsService,
     ) { }
 
     @Get('public/*key')
@@ -119,6 +121,18 @@ export class StorageController {
         }
 
         const signedUrl = await this.storageService.generateDownloadUrl(fileKey);
+
+        // Log download
+        try {
+            await this.downloadsService.logDownload({
+                user: { id: req.user.userId } as any,
+                product: { id: productId } as any,
+                ipAddress: req.ip,
+                userAgent: req.headers['user-agent'],
+            });
+        } catch (e) {
+            console.error('Failed to log download:', e.message);
+        }
 
         return { downloadUrl: signedUrl, expiresAt: new Date(Date.now() + 600 * 1000) };
     }
