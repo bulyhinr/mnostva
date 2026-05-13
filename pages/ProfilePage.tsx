@@ -8,7 +8,7 @@ import { wishlistService } from '../services/wishlistService';
 import { useCart } from '../context/CartContext';
 import ConfirmationModal from '../components/ConfirmationModal';
 import ReviewModal from '../components/ReviewModal';
-import { DOWNLOADS_ENABLED } from '../constants';
+import { DOWNLOADS_ENABLED, MAINTENANCE_MODE } from '../constants';
 
 
 interface ProfilePageProps {
@@ -393,6 +393,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                   </button>
                                   <button
                                     onClick={async () => {
+                                      if (MAINTENANCE_MODE && !user?.isAdmin) {
+                                        toast.error('Checkout is temporarily disabled for maintenance. Please check back later!', {
+                                          style: { borderRadius: '1rem', background: '#333', color: '#fff', fontSize: '12px' }
+                                        });
+                                        return;
+                                      }
                                       try {
                                         const token = localStorage.getItem('accessToken');
                                         if (!token) return;
@@ -414,9 +420,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                         toast.error('Failed to initiate payment');
                                       }
                                     }}
-                                    className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg animate-pulse hover:shadow-xl hover:translate-y-[-2px]"
+                                    className={`px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg ${MAINTENANCE_MODE && !user?.isAdmin
+                                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-200'
+                                      : 'bg-pink-500 hover:bg-pink-600 text-white animate-pulse hover:shadow-xl hover:translate-y-[-2px]'
+                                      }`}
                                   >
-                                    Pay Now 💳
+                                    {MAINTENANCE_MODE && !user?.isAdmin ? 'Payments Paused ⏸' : 'Pay Now 💳'}
                                   </button>
                                 </>
                               )}

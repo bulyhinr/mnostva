@@ -8,6 +8,7 @@ import { wishlistService } from '../services/wishlistService';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
+import { MAINTENANCE_MODE } from '../constants';
 
 declare global {
   namespace JSX {
@@ -202,6 +203,12 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
 
   const handleAddToCart = () => {
     if (isInCart) return;
+    if (MAINTENANCE_MODE && !user?.isAdmin) {
+      toast.error('Shop is temporarily paused. Please check back later!', {
+        style: { borderRadius: '1rem', background: '#333', color: '#fff' }
+      });
+      return;
+    }
     setIsSparkling(true);
     addToCart(product, quantity, selectedLicense);
     setTimeout(() => {
@@ -597,13 +604,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
 
                   <button
                     onClick={handleAddToCart}
-                    disabled={isInCart}
-                    className={`w-full inline-flex items-center justify-center py-6 rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all uppercase tracking-tight transform-gpu border-b-8 ${isInCart
+                    disabled={isInCart || (MAINTENANCE_MODE && !user?.isAdmin)}
+                    className={`w-full inline-flex items-center justify-center py-6 rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all uppercase tracking-tight transform-gpu border-b-8 ${isInCart || (MAINTENANCE_MODE && !user?.isAdmin)
                       ? 'bg-gray-100 text-gray-400 cursor-default border-gray-300 shadow-none'
                       : 'bg-[#8a7db3] text-white hover:translate-y-[-4px] active:translate-y-0 hover:shadow-[#8a7db3]/40 border-purple-800/30'
                       } ${isSparkling ? 'animate-wiggle scale-105 brightness-110' : ''}`}
                   >
-                    {isInCart ? 'In Your Basket 🧺' : 'Add to Basket 🛒'}
+                    {isInCart ? 'In Your Basket 🧺' : (MAINTENANCE_MODE && !user?.isAdmin) ? 'Shop Paused ⏸' : 'Add to Basket 🛒'}
                   </button>
 
                   {hasExternalLinks && (
