@@ -49,6 +49,7 @@ export interface Product {
   previewModelKey?: string;
   galleryImages?: string[];
   updatedAt?: string;
+  isActive: boolean;
 }
 
 export interface CartItem extends Product {

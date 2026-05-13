@@ -520,6 +520,14 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                       return;
                                     }
                                     const productId = item.productId || item.product?.id;
+                                    const isActive = item.product?.isActive !== false; // Default to true if not present
+
+                                    if (!isActive && !user?.isAdmin) {
+                                      toast.error('This asset is temporarily unavailable for download.', {
+                                        style: { borderRadius: '1rem', background: '#333', color: '#fff', fontSize: '12px' }
+                                      });
+                                      return;
+                                    }
 
                                     if (isDeleted || !productId) {
                                       toast.error('This asset has been removed from our servers. Please contact support.', {
@@ -564,11 +572,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                       toast.error('Network error during download.');
                                     }
                                   }}
-                                  className={`w-full sm:w-auto bg-white text-gray-800 border-2 border-gray-100 px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted || (!DOWNLOADS_ENABLED && !user?.isAdmin)
+                                  className={`w-full sm:w-auto bg-white text-gray-800 border-2 border-gray-100 px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${isDeleted || (!DOWNLOADS_ENABLED && !user?.isAdmin) || (item.product?.isActive === false)
                                     ? 'cursor-not-allowed opacity-50 hover:bg-gray-100'
                                     : 'hover:bg-[#8a7db3] hover:text-white hover:border-[#8a7db3]'
                                     }`}>
-                                  {isDeleted ? 'Unavailable 🚫' : (!DOWNLOADS_ENABLED && !user?.isAdmin) ? 'Downloads Paused ⏸' : 'Download Files'}
+                                  {isDeleted ? 'Unavailable 🚫' : (!DOWNLOADS_ENABLED && !user?.isAdmin) ? 'Downloads Paused ⏸' : (item.product?.isActive === false) ? 'Unavailable 🚫' : 'Download Files'}
                                 </button>
 
                                 {!isDeleted && (

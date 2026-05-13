@@ -88,9 +88,18 @@ export class ProductsService implements OnModuleInit {
         animated?: string;
         textures?: string;
         search?: string;
+        isActive?: boolean;
+        showAll?: boolean;
     }): Promise<[Product[], number]> {
         const qb = this.productsRepository.createQueryBuilder('product')
             .leftJoinAndSelect('product.discount', 'discount');
+
+        if (options.isActive !== undefined) {
+            qb.andWhere('product.isActive = :isActive', { isActive: options.isActive });
+        } else if (!options.showAll) {
+            // Default to showing only active products for public view unless showAll is true
+            qb.andWhere('product.isActive = true');
+        }
 
         if (options.category && options.category !== 'All') {
             qb.andWhere('product.category = :category', { category: options.category });

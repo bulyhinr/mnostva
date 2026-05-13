@@ -23,6 +23,8 @@ export class ProductsController {
         animated?: string;
         textures?: string;
         search?: string;
+        isActive?: string;
+        showAll?: string;
     }) {
         const page = query.page || 1;
         const limit = query.limit || 10;
@@ -39,6 +41,8 @@ export class ProductsController {
                 animated: query.animated,
                 textures: query.textures,
                 search: query.search,
+                isActive: query.isActive === 'true' ? true : query.isActive === 'false' ? false : undefined,
+                showAll: query.showAll === 'true',
             });
             console.log(`Found ${products.length} products, total=${total}`);
             return { data: products, total, page, limit };

@@ -85,6 +85,11 @@ export class StorageController {
         if (isAdmin) {
             const product = await this.productsService.findOne(productId);
             if (!product) throw new NotFoundException('Product not found');
+            
+            if (!product.isActive) {
+                throw new ForbiddenException('This asset is temporarily unavailable for download (Status: Off).');
+            }
+            
             fileKey = product.fileKey;
         } else {
             // 1. Verify user purchased the product
@@ -96,23 +101,24 @@ export class StorageController {
             );
 
             if (!hasPurchased) {
-                // throw new ForbiddenException('You have not purchased this asset.');
-                // For MVP testing, if checking fail, we might still want to fail if not disabled.
-                // But USER asked "ignore for tests".
-                // Let's just throw for non-admin if he hasn't purchased (and logic wasn't fully commented out effectively before).
                 throw new ForbiddenException('You have not purchased this asset.');
             }
 
             // 2. Get Product File Key from order
             const order = orders.find(o => o.items.some(i => i.product.id === productId));
             if (!order) {
-                // Should not happen if hasPurchased is true
                 throw new NotFoundException('Order not found.');
             }
             const item = order.items.find(i => i.product.id === productId);
             if (!item || !item.product) {
                 throw new NotFoundException('Asset file not found.');
             }
+
+            // Check if product is active
+            if (!item.product.isActive) {
+                throw new ForbiddenException('This asset is temporarily unavailable for download.');
+            }
+
             fileKey = item.product.fileKey;
         }
 

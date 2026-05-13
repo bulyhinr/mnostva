@@ -446,48 +446,44 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                       </div>
                     ))
                   ) : (
-                    cart.map(item => (
-                      <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-[2.5rem] border-2 border-white shadow-sm group hover:border-pink-100 transition-all relative">
-                        <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md relative">
-                          <ImageWithFallback src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
-                          {item.quantity > 1 && (
-                            <div className="absolute top-1 right-1 bg-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg border border-white">
-                              x{item.quantity}
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-grow min-w-0">
-                          <h4 className="font-black text-gray-900 group-hover:text-[#8a7db3] transition-colors text-sm truncate">
-                            {item.name}
-                          </h4>
-                          <p className="text-[10px] text-[#8a7db3] font-black uppercase tracking-widest truncate">{item.category}</p>
-                          {item.quantity > 1 && (
-                            <p className="text-[9px] text-gray-400 font-bold mt-1">
-                              Unit Price: ${item.price.toFixed(2)}
-                            </p>
-                          )}
-                        </div>
-                        <div className="text-right shrink-0">
-                          {item.discount && item.discount.isActive ? (
-                            <>
-                              <p className="text-[10px] font-bold text-gray-400 line-through">
-                                ${(item.price * item.quantity).toFixed(2)}
-                              </p>
+                    cart.map(item => {
+                      const isInactive = item.isActive === false;
+                      return (
+                        <div key={item.id} className={`flex items-center gap-4 p-4 bg-gray-50 rounded-[2.5rem] border-2 shadow-sm group hover:border-pink-100 transition-all relative ${isInactive ? 'opacity-70 grayscale-[0.5] border-red-100' : 'border-white'}`}>
+                          <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md relative">
+                            <ImageWithFallback src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                            {item.quantity > 1 && (
+                              <div className="absolute top-1 right-1 bg-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg border border-white">
+                                x{item.quantity}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-grow min-w-0">
+                            <h4 className="font-black text-gray-900 group-hover:text-[#8a7db3] transition-colors text-sm truncate">
+                              {item.name}
+                            </h4>
+                            <p className="text-[10px] text-[#8a7db3] font-black uppercase tracking-widest truncate">{item.category}</p>
+                            {isInactive && <p className="text-[9px] text-red-500 font-black uppercase tracking-widest mt-1">Temporarily Unavailable</p>}
+                          </div>
+                          <div className="text-right shrink-0">
+                            {item.discount && item.discount.isActive ? (
+                              <>
+                                <p className="text-[10px] font-bold text-gray-400 line-through">
+                                  ${(item.price * item.quantity).toFixed(2)}
+                                </p>
+                                <p className="font-black text-pink-500 text-sm">
+                                  ${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}
+                                </p>
+                              </>
+                            ) : (
                               <p className="font-black text-pink-500 text-sm">
-                                ${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}
+                                {item.price === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}
                               </p>
-                            </>
-                          ) : (
-                            <p className="font-black text-pink-500 text-sm">
-                              {item.price === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}
-                            </p>
-                          )}
-                          {item.quantity > 1 && (
-                            <span className="text-[10px] font-black text-gray-300 block">x{item.quantity}</span>
-                          )}
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
                 <div className="max-w-md mx-auto pt-10 border-t-4 border-gray-50 w-full mt-auto">
@@ -540,7 +536,15 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                     </div>
                   )}
 
-                  <div className="flex gap-4">
+                  {cart.some(item => item.isActive === false) && !user?.isAdmin && (
+                    <div className="mt-8 p-6 bg-pink-50 border-4 border-pink-100 rounded-[2.5rem] flex items-center gap-4 animate-in fade-in duration-500">
+                      <span className="text-3xl">⚠️</span>
+                      <p className="text-pink-600 font-black uppercase tracking-widest text-[10px]">
+                        Your basket contains items that are currently unavailable. Please remove them to proceed.
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex gap-4 mt-8">
                     <button
                       onClick={() => {
                         if (!user) {
@@ -555,9 +559,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                     </button>
                     <button
                       onClick={() => goToStep(3)}
-                      className="flex-[2] bg-pink-500 text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest border-b-8 border-pink-700/30"
+                      disabled={cart.some(item => item.isActive === false) && !user?.isAdmin}
+                      className={`flex-[2] py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest border-b-8 ${
+                        cart.some(item => item.isActive === false) && !user?.isAdmin
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-300'
+                          : 'bg-pink-500 text-white border-pink-700/30'
+                      }`}
                     >
-                      {totalPrice === 0 ? 'Get Free Pack 🎁' : 'Go to Payment 💳'}
+                      {cart.some(item => item.isActive === false) && !user?.isAdmin ? 'Remove Unavailable Items' : (totalPrice === 0 ? 'Get Free Pack 🎁' : 'Go to Payment 💳')}
                     </button>
                   </div>
                 </div>

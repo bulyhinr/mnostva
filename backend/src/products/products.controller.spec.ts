@@ -42,7 +42,7 @@ describe('ProductsController', () => {
             });
         });
 
-        it('should pass technical specs filters to service', async () => {
+        it('should pass technical specs and status filters to service', async () => {
             const result = [[{ id: '1' }], 10];
             service.findAll.mockResolvedValue(result);
 
@@ -52,7 +52,9 @@ describe('ProductsController', () => {
                 polyCount: 'Low',
                 rigged: 'Yes',
                 animated: 'No',
-                textures: 'Included'
+                textures: 'Included',
+                isActive: 'true',
+                showAll: 'false'
             };
             await controller.findAll(query);
             expect(service.findAll).toHaveBeenCalledWith({
@@ -63,7 +65,10 @@ describe('ProductsController', () => {
                 polyCount: 'Low',
                 rigged: 'Yes',
                 animated: 'No',
-                textures: 'Included'
+                textures: 'Included',
+                isActive: true,
+                showAll: false,
+                search: undefined
             });
         });
     });

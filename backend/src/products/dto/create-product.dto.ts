@@ -114,6 +114,10 @@ export class CreateProductDto {
     @IsString()
     @IsOptional()
     discountId?: string;
+
+    @IsBoolean()
+    @IsOptional()
+    isActive?: boolean;
 }
 
 import { PartialType } from '@nestjs/mapped-types';

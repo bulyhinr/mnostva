@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { PRODUCTS } from '../constants';
+import { PRODUCTS, MAINTENANCE_MODE } from '../constants';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 import ScrollReveal from './ScrollReveal';
 import { productService } from '../services/productService';
+import { useAuth } from '../context/AuthContext';
 
 interface MarketplaceProps {
   title?: string;
@@ -22,6 +23,7 @@ const Marketplace: React.FC<MarketplaceProps> = ({
   onNavigateToLicense,
   onSelectProduct
 }) => {
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [filter, setFilter] = useState('All');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -29,6 +31,9 @@ const Marketplace: React.FC<MarketplaceProps> = ({
 
   useEffect(() => {
     const fetchProducts = async () => {
+      // If maintenance mode is on and not an admin, don't even fetch for the home page sections
+      if (MAINTENANCE_MODE && !user?.isAdmin && limit) return;
+
       if (limit) {
         try {
           // Fetch latest products from backend for "Latest Releases"
@@ -49,30 +54,26 @@ const Marketplace: React.FC<MarketplaceProps> = ({
             discount: p.discount,
             galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
             previewImageKey: p.previewImageKey,
-            previewModelKey: p.previewModelKey
+            previewModelKey: p.previewModelKey,
+            isActive: p.isActive
           }));
           setProducts(mappedProducts);
         } catch (error) {
           console.error("Failed to fetch latest products", error);
-          // Fallback to constants if backend fails
           setProducts(PRODUCTS.slice(0, limit));
         }
       } else {
-        // Use constants or fetch all for full marketplace view (assuming full fetch logic is elsewhere or simplified here)
-        // For this component, if no limit (full marketplace page uses its own fetch), let's fallback to passed products or constants for now to not break "MarketplacePage" logic if it reuses this.
-        // Actually MarketplacePage doesn't use this component, it has its own logic. This component is used on Home Page only mainly.
-        // If used without limit, let's just use constants for safety or fetch all as well.
         setProducts(PRODUCTS);
       }
     };
 
     fetchProducts();
-  }, [limit]);
+  }, [limit, user?.isAdmin]);
 
-  // Client-side filtering only applies if NOT unlimited (home page typically doesn't filter, full page does)
-  // But if we fetched limited from backend, they are already "the latest". Filtering might not make sense on Home Page "Latest" section if we just want 3 newest.
-  // If we want filtering on Home Page, we'd need to fetch more or filter nicely.
-  // Current logic for "Latest Releases" is just show 3. Filtering only if user clicks filter buttons (which show only if !limit).
+  // If maintenance mode is on and not an admin, hide the whole section (for home page)
+  if (MAINTENANCE_MODE && !user?.isAdmin && limit) {
+    return null;
+  }
 
   let displayProducts = products;
   if (!limit && filter !== 'All') {

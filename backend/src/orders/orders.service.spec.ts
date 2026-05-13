@@ -28,6 +28,7 @@ describe('OrdersService', () => {
         id: 'prod-1',
         price: 1000,
         title: 'Test Product',
+        isActive: true,
     };
 
     const mockPaymentIntent = {
@@ -104,7 +105,8 @@ describe('OrdersService', () => {
                 id: 'prod-2',
                 price: 1000,
                 title: 'Discounted',
-                discount: { isActive: true, percentage: 10 }
+                discount: { isActive: true, percentage: 10 },
+                isActive: true
             };
             productsService.findAllProducts.mockResolvedValue([mockProductWithDiscount]);
 
@@ -150,7 +152,7 @@ describe('OrdersService', () => {
         });
 
         it('should instantly fulfill a free order and not call Stripe/PayPal', async () => {
-            const mockFreeProduct = { id: 'prod-free', price: 0 };
+            const mockFreeProduct = { id: 'prod-free', price: 0, isActive: true };
             productsService.findAllProducts.mockResolvedValue([mockFreeProduct]);
 
             jest.spyOn(service, 'findOne').mockResolvedValue({ id: 'order-1', user: { email: 'test@test.com' } } as any);
@@ -173,6 +175,7 @@ describe('OrdersService', () => {
                 price: 1000,
                 commercialPrice: 2500,
                 title: 'Commercial Asset',
+                isActive: true
             };
             productsService.findAllProducts.mockResolvedValue([mockProductCommercial]);
             const result = await service.createOrder('user-1', [{ productId: 'prod-3', licenseType: 'commercial' }]);
@@ -180,6 +183,12 @@ describe('OrdersService', () => {
             expect(productsService.findAllProducts).toHaveBeenCalled();
             expect(ordersRepository.save).toHaveBeenCalled();
             expect(paymentsService.createPaymentIntent).toHaveBeenCalledWith(2500, 'usd', expect.anything());
+        });
+
+        it('should throw BadRequestException if product is inactive', async () => {
+            const mockInactiveProduct = { id: 'prod-off', price: 1000, title: 'Offline', isActive: false };
+            productsService.findAllProducts.mockResolvedValue([mockInactiveProduct]);
+            await expect(service.createOrder('user-1', [{ productId: 'prod-off' }])).rejects.toThrow('is currently unavailable for purchase');
         });
     });
 

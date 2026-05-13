@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { EmailService } from '../email/email.service';
@@ -31,6 +32,7 @@ describe('AuthService', () => {
                 { provide: UsersService, useValue: usersService },
                 { provide: JwtService, useValue: jwtService },
                 { provide: EmailService, useValue: { sendWelcomeEmail: jest.fn(), sendPasswordResetEmail: jest.fn() } },
+                { provide: ConfigService, useValue: { get: jest.fn().mockReturnValue('mock-config') } },
             ],
         }).compile();
 

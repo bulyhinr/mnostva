@@ -6,6 +6,8 @@ import { productService } from '../services/productService';
 import { discountService } from '../services/discountService';
 import { couponService } from '../services/couponService';
 import { authService } from '../services/authService';
+import { orderService } from '../services/orderService';
+import { downloadsService } from '../services/downloadsService';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock services
@@ -37,6 +39,20 @@ vi.mock('../services/authService', () => ({
   __esModule: true,
   authService: {
     getAccessToken: vi.fn(),
+  },
+}));
+
+vi.mock('../services/orderService', () => ({
+  __esModule: true,
+  orderService: {
+    getAllOrders: vi.fn(),
+  },
+}));
+
+vi.mock('../services/downloadsService', () => ({
+  __esModule: true,
+  downloadsService: {
+    getDownloadLogs: vi.fn(),
   },
 }));
 
@@ -72,6 +88,8 @@ describe('AdminPage', () => {
         (productService.getAllProducts as any).mockResolvedValue({ data: mockProducts, total: 2 });
         (discountService.getAllDiscounts as any).mockResolvedValue([]);
         (couponService.getAllCoupons as any).mockResolvedValue([]);
+        (orderService.getAllOrders as any).mockResolvedValue({ data: [], total: 0 });
+        (downloadsService.getDownloadLogs as any).mockResolvedValue({ data: [], total: 0 });
         (authService.getAccessToken as any).mockReturnValue('mock-token');
         (productService.deleteProduct as any).mockResolvedValue({ success: true });
     });

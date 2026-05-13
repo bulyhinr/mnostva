@@ -62,6 +62,9 @@ export class Product {
         youtube?: string;
     };
 
+    @Column({ default: true })
+    isActive: boolean;
+
     @ManyToOne(() => Discount, (discount) => discount.products, { nullable: true, eager: true, onDelete: 'SET NULL' })
     discount: Discount;
 

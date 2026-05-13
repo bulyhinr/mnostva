@@ -168,6 +168,22 @@ describe('ProductsService', () => {
             expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
             expect(qbMock.andWhere).toHaveBeenCalledWith('(product.title ILIKE :search OR product.description ILIKE :search)', { search: '%Low Poly%' });
         });
+
+        it('should filter by isActive when provided', async () => {
+            await service.findAll({ page: 1, limit: 10, isActive: false });
+            expect(qbMock.andWhere).toHaveBeenCalledWith('product.isActive = :isActive', { isActive: false });
+        });
+
+        it('should default to isActive=true if not specified and showAll is false', async () => {
+            await service.findAll({ page: 1, limit: 10 });
+            expect(qbMock.andWhere).toHaveBeenCalledWith('product.isActive = true');
+        });
+
+        it('should not add isActive filter if showAll is true', async () => {
+            await service.findAll({ page: 1, limit: 10, showAll: true });
+            expect(qbMock.andWhere).not.toHaveBeenCalledWith('product.isActive = true');
+            expect(qbMock.andWhere).not.toHaveBeenCalledWith('product.isActive = :isActive', expect.anything());
+        });
     });
 
     describe('findAllProducts', () => {

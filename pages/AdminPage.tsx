@@ -36,6 +36,7 @@ const AdminPage: React.FC = () => {
         packContent: [],
         compatibility: [],
         galleryImages: [],
+        isActive: true
     });
 
     // Discount Editing State
@@ -85,7 +86,7 @@ const AdminPage: React.FC = () => {
         try {
             setLoading(true);
             const [backendProductsResponse, backendDiscounts, backendCoupons, backendOrders, backendLogs] = await Promise.all([
-                productService.getAllProducts({ page, limit: itemsPerPage, search: debouncedSearchQuery }),
+                productService.getAllProducts({ page, limit: itemsPerPage, search: debouncedSearchQuery, showAll: true }),
                 discountService.getAllDiscounts(authService.getAccessToken() || ''),
                 couponService.getAllCoupons(authService.getAccessToken() || ''),
                 orderService.getAllOrders(authService.getAccessToken() || '', purchasesPage, reportingItemsPerPage),
@@ -109,6 +110,7 @@ const AdminPage: React.FC = () => {
                 fileKey: p.fileKey, // Add fileKey mapping
                 galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
                 previewImageKey: p.previewImageKey,
+                isActive: p.isActive,
                 previewModelKey: p.previewModelKey
             }));
 
@@ -264,7 +266,8 @@ const AdminPage: React.FC = () => {
                 compatibility: (currentProduct.compatibility || []).filter(s => s.trim() !== ''),
                 technicalSpecs: currentProduct.technicalSpecs || {},
                 externalLinks: currentProduct.externalLinks || {},
-                discountId: currentProduct.discountId || null
+                discountId: currentProduct.discountId || null,
+                isActive: currentProduct.isActive !== undefined ? currentProduct.isActive : true
             };
 
             if (currentProduct.id) {
@@ -286,7 +289,7 @@ const AdminPage: React.FC = () => {
             setSelectedPreview(null);
             setSelectedModel(null);
             setSelectedGalleryFiles(null);
-            setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '' }, galleryImages: [], previewModelKey: '' });
+            setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '' }, galleryImages: [], previewModelKey: '', isActive: true });
             fetchData();
         } catch (error) {
             console.error('Failed to save product:', error);
@@ -294,7 +297,7 @@ const AdminPage: React.FC = () => {
     };
 
     const openNewProductForm = () => {
-        setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '' }, galleryImages: [], previewModelKey: '' });
+        setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '' }, galleryImages: [], previewModelKey: '', isActive: true });
         setIsEditingProduct(true);
     };
 
@@ -524,6 +527,7 @@ const AdminPage: React.FC = () => {
                                         <tr className="bg-gray-50 border-b-2 border-gray-100">
                                             <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Asset</th>
                                             <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Category</th>
+                                            <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
                                             <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Price</th>
                                             <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Discount</th>
                                             <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">Actions</th>
@@ -551,6 +555,11 @@ const AdminPage: React.FC = () => {
                                                 <td className="px-8 py-6">
                                                     <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">
                                                         {product.category}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${product.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-400'}`}>
+                                                        {product.isActive ? 'Active' : 'Draft / Off'}
                                                     </span>
                                                 </td>
                                                 <td className="px-8 py-6">
@@ -1086,19 +1095,21 @@ const AdminPage: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Discount Selection */}
-                                <div>
-                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4 text-pink-500">Apply Discount</label>
-                                    <select
-                                        value={currentProduct.discountId || ''}
-                                        onChange={e => setCurrentProduct({ ...currentProduct, discountId: e.target.value })}
-                                        className="w-full bg-pink-50 border-4 border-transparent focus:border-pink-300 rounded-2xl px-6 py-4 font-bold outline-none transition-all text-pink-600"
-                                    >
-                                        <option value="">No Discount</option>
-                                        {discounts.filter(d => d.isActive).map(d => (
-                                            <option key={d.id} value={d.id}>{d.name} (-{d.percentage}%)</option>
-                                        ))}
-                                    </select>
+                                {/* Status & Discount Selection */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4 text-pink-500">Apply Discount</label>
+                                        <select
+                                            value={currentProduct.discountId || ''}
+                                            onChange={e => setCurrentProduct({ ...currentProduct, discountId: e.target.value })}
+                                            className="w-full bg-pink-50 border-4 border-transparent focus:border-pink-300 rounded-2xl px-6 py-4 font-bold outline-none transition-all text-pink-600"
+                                        >
+                                            <option value="">No Discount</option>
+                                            {discounts.filter(d => d.isActive).map(d => (
+                                                <option key={d.id} value={d.id}>{d.name} (-{d.percentage}%)</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
 
                                 {/* Dynamic Arrays */}
@@ -1230,6 +1241,27 @@ const AdminPage: React.FC = () => {
                                             />
                                         </div>
                                     </div>
+                                </div>
+
+                                <div className="pt-10 border-t-2 border-gray-100">
+                                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Product Status</label>
+                                    <div className="flex items-center gap-4 ml-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setCurrentProduct({ ...currentProduct, isActive: true })}
+                                            className={`px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${currentProduct.isActive ? 'bg-emerald-500 text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                                        >
+                                            Active (On)
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setCurrentProduct({ ...currentProduct, isActive: false })}
+                                            className={`px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${!currentProduct.isActive ? 'bg-gray-800 text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                                        >
+                                            Inactive (Off)
+                                        </button>
+                                    </div>
+                                    <p className="text-[9px] text-gray-400 font-bold mt-2 ml-4">Inactive products are hidden from the marketplace and downloads are blocked.</p>
                                 </div>
 
                                 <button type="submit" className="w-full bg-[#8a7db3] text-white py-6 rounded-[1.5rem] font-black text-xl shadow-xl hover:translate-y-[-4px] transition-all uppercase tracking-widest mt-8">Save Asset Magic 🪄</button>

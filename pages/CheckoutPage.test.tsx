@@ -77,7 +77,7 @@ describe('CheckoutPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useCart as any).mockReturnValue({
-      cart: [{ id: '1', name: 'Asset 1', price: 10, quantity: 1, category: 'Prop' }],
+      cart: [{ id: '1', name: 'Asset 1', price: 10, quantity: 1, category: 'Prop', isActive: true }],
       totalPrice: 10,
       clearCart: vi.fn(),
     });
@@ -85,6 +85,7 @@ describe('CheckoutPage', () => {
       user: null,
       register: vi.fn(),
     });
+    (authService.getAccessToken as any).mockReturnValue('mock-token');
   });
 
   it('starts at identity step for unauthenticated users', () => {
@@ -149,11 +150,29 @@ describe('CheckoutPage', () => {
     });
   });
 
-  it('renders success screen at step 4', () => {
-    // We can't easily trigger the state transition through complex UI interactions in a unit test easily
-    // but we can check if it renders if step was hypothetically 4. 
-    // Actually, let's test if clicking "My Assets" calls the navigate function.
-    
-    // For now, let's verify if initial fetch of checkout session is called when at step 3.
+  it('blocks "Go to Payment" if cart contains inactive products', () => {
+    (useAuth as any).mockReturnValue({
+      user: { id: 'u1', name: 'John', email: 'john@example.com' },
+    });
+    (useCart as any).mockReturnValue({
+      cart: [{ id: '1', name: 'Asset 1', price: 10, quantity: 1, category: 'Prop', isActive: false }],
+      totalPrice: 10,
+      clearCart: vi.fn(),
+    });
+
+    render(
+      <MemoryRouter>
+        <CheckoutPage 
+          onSuccess={mockOnSuccess} 
+          onBack={mockOnBack} 
+          onNavigateToProfile={mockOnNavigateToProfile} 
+          onNavigateToLogin={mockOnNavigateToLogin} 
+        />
+      </MemoryRouter>
+    );
+
+    const removeBtn = screen.getByRole('button', { name: /Remove Unavailable Items/i });
+    expect(removeBtn).toBeDisabled();
+    expect(screen.getByText(/contains items that are currently unavailable/i)).toBeInTheDocument();
   });
 });

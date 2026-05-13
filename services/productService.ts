@@ -29,6 +29,7 @@ export interface Product {
     previewModelKey?: string;
     updatedAt?: string;
     discount?: any;
+    isActive: boolean;
 }
 
 export const productService = {

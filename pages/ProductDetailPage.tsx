@@ -350,6 +350,11 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                       ANIMATED
                     </span>
                   )}
+                  {product.isActive === false && (
+                    <span className="bg-gray-800 text-white px-4 py-2 rounded-[1rem] text-[10px] md:text-xs font-black shadow-xl uppercase tracking-widest shrink-0">
+                      UNLISTED / OFF
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -604,13 +609,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
 
                   <button
                     onClick={handleAddToCart}
-                    disabled={isInCart || (MAINTENANCE_MODE && !user?.isAdmin)}
-                    className={`w-full inline-flex items-center justify-center py-6 rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all uppercase tracking-tight transform-gpu border-b-8 ${isInCart || (MAINTENANCE_MODE && !user?.isAdmin)
+                    disabled={isInCart || (MAINTENANCE_MODE && !user?.isAdmin) || (product.isActive === false)}
+                    className={`w-full inline-flex items-center justify-center py-6 rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all uppercase tracking-tight transform-gpu border-b-8 ${isInCart || (MAINTENANCE_MODE && !user?.isAdmin) || (product.isActive === false)
                       ? 'bg-gray-100 text-gray-400 cursor-default border-gray-300 shadow-none'
                       : 'bg-[#8a7db3] text-white hover:translate-y-[-4px] active:translate-y-0 hover:shadow-[#8a7db3]/40 border-purple-800/30'
                       } ${isSparkling ? 'animate-wiggle scale-105 brightness-110' : ''}`}
                   >
-                    {isInCart ? 'In Your Basket 🧺' : (MAINTENANCE_MODE && !user?.isAdmin) ? 'Shop Paused ⏸' : 'Add to Basket 🛒'}
+                    {isInCart ? 'In Your Basket 🧺' : (MAINTENANCE_MODE && !user?.isAdmin) ? 'Shop Paused ⏸' : (product.isActive === false) ? 'Unavailable 🚫' : 'Add to Basket 🛒'}
                   </button>
 
                   {hasExternalLinks && (

@@ -49,6 +49,10 @@ export class OrdersService {
                 throw new NotFoundException(`Product ${productId} not found`);
             }
 
+            if (!product.isActive) {
+                throw new BadRequestException(`Product "${product.title}" is currently unavailable for purchase.`);
+            }
+
             const item = new OrderItem();
             item.product = product;
             item.licenseType = licenseType;
