@@ -131,7 +131,7 @@ describe('LoginPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Create Account/i }));
 
     await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalledWith('New Artist', 'new@example.com', 'password123', true);
+      expect(mockRegister).toHaveBeenCalledWith('New Artist', 'new@example.com', 'password123', true, 'regular');
       expect(mockOnSuccess).toHaveBeenCalled();
     });
   });

@@ -22,11 +22,17 @@ export class Product {
     @Column({ name: 'file_key' })
     fileKey: string; // Cloudflare R2 object key (NOT URL)
 
+    @Column({ name: 'file_name', nullable: true })
+    fileName: string; // Original filename of the uploaded asset zip
+
     @Column({ name: 'preview_image_key', nullable: true })
     previewImageKey: string;
 
     @Column({ name: 'preview_model_key', nullable: true })
     previewModelKey: string; // Cloudflare R2 key for the .glb/.gltf model
+
+    @Column({ name: 'preview_model_name', nullable: true })
+    previewModelName: string; // Original filename of the 3D model
 
     @Column({ name: 'gallery_images', type: 'jsonb', nullable: true })
     galleryImages: string[];

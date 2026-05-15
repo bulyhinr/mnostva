@@ -21,6 +21,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [userType, setUserType] = useState('regular');
   
   const { login, register, forgotPassword, resetPassword } = useAuth();
   const [searchParams] = useSearchParams();
@@ -74,7 +75,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
           setLoading(false);
           return;
         }
-        await register(name, email, password, acceptedTerms);
+        await register(name, email, password, acceptedTerms, userType);
         onSuccess();
       } else {
         const success = await login(email, password);
@@ -215,6 +216,22 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
                 <label htmlFor="terms" className="text-xs font-bold text-gray-500 leading-tight cursor-pointer">
                   I agree to the <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-[#8a7db3] hover:underline">Terms and Privacy Policy</a>.
                 </label>
+              </div>
+            )}
+
+            {isSignup && !isForgotPassword && !isResetPassword && (
+              <div className="text-left animate-in fade-in mt-2 mb-2">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4">Account Type</label>
+                <div className="flex gap-4 px-2">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-600">
+                    <input type="radio" name="userType" value="regular" checked={userType === 'regular'} onChange={(e) => setUserType(e.target.value)} className="accent-[#8a7db3] w-4 h-4" />
+                    Regular User
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-600">
+                    <input type="radio" name="userType" value="company" checked={userType === 'company'} onChange={(e) => setUserType(e.target.value)} className="accent-[#8a7db3] w-4 h-4" />
+                    Company
+                  </label>
+                </div>
               </div>
             )}
 

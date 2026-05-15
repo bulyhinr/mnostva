@@ -45,8 +45,10 @@ export interface Product {
   };
   discount?: Discount;
   fileKey?: string;
+  fileName?: string;
   previewImageKey?: string;
   previewModelKey?: string;
+  previewModelName?: string;
   galleryImages?: string[];
   updatedAt?: string;
   isActive: boolean;
@@ -77,6 +79,7 @@ export interface User {
   bio?: string;
   joinedAt: string;
   isAdmin?: boolean;
+  userType?: 'regular' | 'company';
 }
 
 export interface Order {

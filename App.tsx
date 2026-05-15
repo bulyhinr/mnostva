@@ -98,7 +98,8 @@ const ProductDetailWrapper: React.FC = () => {
             galleryImages: Array.isArray(backendProduct.galleryImages) ? backendProduct.galleryImages : [],
             previewImageKey: backendProduct.previewImageKey,
             previewModelKey: backendProduct.previewModelKey,
-            updatedAt: backendProduct.updatedAt
+            updatedAt: backendProduct.updatedAt,
+            commercialPrice: backendProduct.commercialPrice ? backendProduct.commercialPrice / 100 : undefined
           };
           setProduct(mappedProduct);
         } else {
@@ -193,10 +194,9 @@ const AppContent: React.FC = () => {
 
       <footer className="text-center py-12 text-gray-500 relative">
         <div className="mb-6 flex flex-wrap justify-center items-center gap-6">
-          <a href="https://www.instagram.com/mnostva" target="_blank" className="hover:text-pink-500 transition-colors font-bold">Instagram</a>
+          <a href="https://www.instagram.com/mnostva_art" target="_blank" className="hover:text-pink-500 transition-colors font-bold">Instagram</a>
           <a href="https://www.artstation.com/mnostva" target="_blank" className="hover:text-pink-500 transition-colors font-bold">ArtStation</a>
-          <a href="https://x.com/mnostva" target="_blank" className="hover:text-pink-500 transition-colors font-bold">X (Twitter)</a>
-          <a href="https://superhivemarket.com/creators/mnostva" target="_blank" className="hover:text-pink-500 transition-colors font-bold">Superhive</a>
+          <a href="https://www.youtube.com/@mnostva3d" target="_blank" className="hover:text-pink-500 transition-colors font-bold">YouTube</a>
 
           <button
             onClick={() => navigate('/legal')}

@@ -7,7 +7,9 @@ export interface Product {
     title: string;
     description: string;
     price: number;
+    commercialPrice?: number;
     fileKey: string;
+    fileName?: string;
     category: string;
     previewImageKey?: string;
     features?: string[];
@@ -27,6 +29,7 @@ export interface Product {
     };
     galleryImages?: string[];
     previewModelKey?: string;
+    previewModelName?: string;
     updatedAt?: string;
     discount?: any;
     isActive: boolean;

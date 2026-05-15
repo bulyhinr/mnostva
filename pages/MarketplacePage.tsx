@@ -75,7 +75,8 @@ const MarketplacePage: React.FC<MarketplacePageProps> = ({ onNavigateToLicense, 
           discount: p.discount,
           galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
           previewImageKey: p.previewImageKey,
-          updatedAt: p.updatedAt
+          updatedAt: p.updatedAt,
+          commercialPrice: p.commercialPrice ? p.commercialPrice / 100 : undefined
         }));
 
         setProducts(mappedProducts);

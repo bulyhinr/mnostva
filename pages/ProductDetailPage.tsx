@@ -176,7 +176,8 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
     window.scrollTo(0, 0);
   }, [product, sketchfabEmbedUrl, modelViewerUrl, mainImageUrl]);
 
-  const [selectedLicense, setSelectedLicense] = useState<'standard' | 'commercial'>('standard');
+  const derivedLicense = user?.userType === 'company' && product.commercialPrice ? 'commercial' : 'standard';
+  const basePrice = derivedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price;
  
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -199,7 +200,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isLightboxOpen, activeImage, galleryImages]);
  
-  const isInCart = cart.some(item => item.id === product.id && (item.licenseType || 'standard') === selectedLicense);
+  const isInCart = cart.some(item => item.id === product.id && (item.licenseType || 'standard') === derivedLicense);
 
   const handleAddToCart = () => {
     if (isInCart) return;
@@ -210,7 +211,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
       return;
     }
     setIsSparkling(true);
-    addToCart(product, quantity, selectedLicense);
+    addToCart(product, quantity, derivedLicense);
     setTimeout(() => {
       setIsSparkling(false);
     }, 800);
@@ -420,14 +421,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                     <div className="flex flex-wrap gap-3">
                       {product.compatibility.map((engine, idx) => (
                         <span key={idx} className="inline-flex items-center gap-1.5 bg-white px-4 py-2.5 md:px-5 md:py-2 rounded-[1.25rem] text-xs md:text-sm font-black text-gray-600 border-2 border-gray-50 shadow-sm uppercase tracking-tight">
-                          {engine.toLowerCase().includes('unity') && (
-                            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-[#222c37]">
-                              <path d="M12 1.5L2 7.23v10.54L12 23.5l10-5.73V7.23L12 1.5zm0 2.29l8.03 4.6L12 13.01 3.97 8.39 12 3.79zM3.97 10.7l7.03 4.02v8.13l-7.03-4.04V10.7zM13 22.85v-8.13l7.03-4.02v8.11L13 22.85z" />
-                            </svg>
-                          )}
-                          {engine.toLowerCase().includes('unreal') && (
-                            <span className="text-lg">🎮</span>
-                          )}
                           {engine}
                         </span>
                       ))}
@@ -525,16 +518,16 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                 <div className="flex items-center gap-4 mb-6">
                   <span className="text-4xl font-black text-pink-500">
                     {(product.discount && product.discount.isActive
-                      ? (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price) * (1 - product.discount.percentage / 100)
-                      : (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price)) === 0
+                      ? basePrice * (1 - product.discount.percentage / 100)
+                      : basePrice) === 0
                       ? 'Free Pack'
                       : `$${(product.discount && product.discount.isActive
-                        ? (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price) * (1 - product.discount.percentage / 100)
-                        : (selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price)).toFixed(2)}`}
+                        ? basePrice * (1 - product.discount.percentage / 100)
+                        : basePrice).toFixed(2)}`}
                   </span>
                   {product.discount && product.discount.isActive && (
                     <>
-                      <span className="text-gray-400 font-bold line-through text-xl opacity-50">${(selectedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price).toFixed(2)}</span>
+                      <span className="text-gray-400 font-bold line-through text-xl opacity-50">${basePrice.toFixed(2)}</span>
                       <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider animate-pulse">
                         -{product.discount.percentage}%
                       </span>
@@ -580,23 +573,17 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                 </div>
 
                 <div className="relative space-y-4">
-                  {/* License Selector */}
+                  {/* License info */}
                   {product.commercialPrice && (
                     <div className="mb-6 bg-gray-50/80 p-6 rounded-3xl border-2 border-gray-100/50">
-                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Select License</h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        <label className={`cursor-pointer rounded-2xl border-2 p-4 transition-all ${selectedLicense === 'standard' ? 'border-[#8a7db3] bg-white shadow-md' : 'border-gray-200 hover:border-gray-300'}`}>
-                          <input type="radio" className="sr-only" name="licenseType" value="standard" checked={selectedLicense === 'standard'} onChange={() => setSelectedLicense('standard')} />
-                          <div className="font-black text-[#8a7db3] text-sm mb-1 uppercase tracking-widest">Standard</div>
-                          <div className="text-[11px] text-gray-500 font-bold leading-tight">Personal & Indie projects</div>
-                          <div className="mt-2 text-sm font-black text-gray-800">${product.price.toFixed(2)}</div>
-                        </label>
-                        <label className={`cursor-pointer rounded-2xl border-2 p-4 transition-all ${selectedLicense === 'commercial' ? 'border-[#8a7db3] bg-white shadow-md' : 'border-gray-200 hover:border-gray-300'}`}>
-                          <input type="radio" className="sr-only" name="licenseType" value="commercial" checked={selectedLicense === 'commercial'} onChange={() => setSelectedLicense('commercial')} />
-                          <div className="font-black text-[#8a7db3] text-sm mb-1 uppercase tracking-widest">Commercial</div>
-                          <div className="text-[11px] text-gray-500 font-bold leading-tight">Studio & Corporate</div>
-                          <div className="mt-2 text-sm font-black text-gray-800">${product.commercialPrice.toFixed(2)}</div>
-                        </label>
+                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Applied License</h4>
+                      <div className="bg-white rounded-2xl border-2 border-[#8a7db3] p-4 shadow-md">
+                        <div className="font-black text-[#8a7db3] text-sm mb-1 uppercase tracking-widest">
+                          {derivedLicense === 'commercial' ? 'Commercial' : 'Standard'}
+                        </div>
+                        <div className="text-[11px] text-gray-500 font-bold leading-tight">
+                          {derivedLicense === 'commercial' ? 'Studio & Corporate' : 'Personal & Indie projects'}
+                        </div>
                       </div>
                     </div>
                   )}

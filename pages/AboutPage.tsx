@@ -145,7 +145,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                 <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Follow us for weekly updates and art studies</p>
               </div>
               <div className="flex gap-4">
-                <a href="https://www.instagram.com/mnostva" target="_blank" className="p-4 bg-gray-50 rounded-2xl hover:bg-pink-100 hover:text-pink-500 transition-all font-black text-sm uppercase tracking-widest">Instagram</a>
+                <a href="https://www.instagram.com/mnostva_art" target="_blank" className="p-4 bg-gray-50 rounded-2xl hover:bg-pink-100 hover:text-pink-500 transition-all font-black text-sm uppercase tracking-widest">Instagram</a>
                 <a href="https://www.artstation.com/mnostva" target="_blank" className="p-4 bg-gray-50 rounded-2xl hover:bg-blue-100 hover:text-blue-500 transition-all font-black text-sm uppercase tracking-widest">ArtStation</a>
               </div>
             </div>

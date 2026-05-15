@@ -60,7 +60,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
     email: user?.email || '',
     password: '',
     createAccount: true,
-    acceptedTerms: false
+    acceptedTerms: false,
+    userType: 'regular'
   });
 
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -197,7 +198,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
           alert("You must agree to the Terms and Privacy Policy to create an account.");
           return;
         }
-        await register(form.name, form.email, form.password, form.acceptedTerms);
+        await register(form.name, form.email, form.password, form.acceptedTerms, form.userType);
       } catch (error: any) {
         console.error("Registration during checkout failed:", error);
 
@@ -385,6 +386,19 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                       I agree to the <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-[#8a7db3] hover:underline">Terms and Privacy Policy</a>.
                     </label>
                   </div>
+                  <div className="text-left animate-in fade-in">
+                    <label className="block text-[11px] font-black text-gray-600 uppercase tracking-widest mb-3 ml-4">Account Type</label>
+                    <div className="flex gap-4 px-4">
+                      <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-600">
+                        <input type="radio" name="checkoutUserType" value="regular" checked={form.userType === 'regular'} onChange={(e) => setForm({ ...form, userType: e.target.value })} className="accent-[#8a7db3] w-4 h-4" />
+                        Regular User
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-600">
+                        <input type="radio" name="checkoutUserType" value="company" checked={form.userType === 'company'} onChange={(e) => setForm({ ...form, userType: e.target.value })} className="accent-[#8a7db3] w-4 h-4" />
+                        Company
+                      </label>
+                    </div>
+                  </div>
 
                   <button
                     type="submit"
@@ -448,8 +462,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   ) : (
                     cart.map(item => {
                       const isInactive = item.isActive === false;
+                      const basePrice = item.licenseType === 'commercial' && item.commercialPrice ? item.commercialPrice : item.price;
                       return (
-                        <div key={item.id} className={`flex items-center gap-4 p-4 bg-gray-50 rounded-[2.5rem] border-2 shadow-sm group hover:border-pink-100 transition-all relative ${isInactive ? 'opacity-70 grayscale-[0.5] border-red-100' : 'border-white'}`}>
+                        <div key={`${item.id}-${item.licenseType}`} className={`flex items-center gap-4 p-4 bg-gray-50 rounded-[2.5rem] border-2 shadow-sm group hover:border-pink-100 transition-all relative ${isInactive ? 'opacity-70 grayscale-[0.5] border-red-100' : 'border-white'}`}>
                           <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md relative">
                             <ImageWithFallback src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                             {item.quantity > 1 && (
@@ -462,22 +477,22 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                             <h4 className="font-black text-gray-900 group-hover:text-[#8a7db3] transition-colors text-sm truncate">
                               {item.name}
                             </h4>
-                            <p className="text-[10px] text-[#8a7db3] font-black uppercase tracking-widest truncate">{item.category}</p>
+                            <p className="text-[10px] text-[#8a7db3] font-black uppercase tracking-widest truncate">{item.category} • {item.licenseType === 'commercial' ? 'COMMERCIAL' : 'STANDARD'}</p>
                             {isInactive && <p className="text-[9px] text-red-500 font-black uppercase tracking-widest mt-1">Temporarily Unavailable</p>}
                           </div>
                           <div className="text-right shrink-0">
                             {item.discount && item.discount.isActive ? (
                               <>
                                 <p className="text-[10px] font-bold text-gray-400 line-through">
-                                  ${(item.price * item.quantity).toFixed(2)}
+                                  ${(basePrice * item.quantity).toFixed(2)}
                                 </p>
                                 <p className="font-black text-pink-500 text-sm">
-                                  ${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}
+                                  ${((basePrice * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}
                                 </p>
                               </>
                             ) : (
                               <p className="font-black text-pink-500 text-sm">
-                                {item.price === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}
+                                {basePrice === 0 ? 'Free Pack' : `$${(basePrice * item.quantity).toFixed(2)}`}
                               </p>
                             )}
                           </div>

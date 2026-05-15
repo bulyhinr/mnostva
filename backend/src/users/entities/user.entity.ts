@@ -37,6 +37,9 @@ export class User {
     @Column({ type: 'timestamp', nullable: true })
     termsAcceptedAt: Date | null;
 
+    @Column({ default: 'regular' })
+    userType: string;
+
     @CreateDateColumn()
     createdAt: Date;
 

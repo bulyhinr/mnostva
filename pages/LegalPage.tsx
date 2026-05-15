@@ -4,124 +4,113 @@ import { useNavigate } from 'react-router-dom';
 const sections = [
   {
     id: 'licenses',
-    title: 'Type of Licenses',
+    title: 'Types of Licenses',
     content: (
       <div className="space-y-6 text-gray-600 font-medium leading-relaxed text-sm">
-        <p>We offer two types of licenses:</p>
+        <p>We provide clear, game-ready licensing options for all our 3D assets. Our Standard License follows a 2-tier revenue-based system:</p>
         
-        <div>
-          <h4 className="font-black text-gray-900 text-base mb-2 uppercase tracking-wide">1. One-Time Purchase License</h4>
-          <p className="mb-2">This license applies to all paid asset packs. As the name suggests, it is granted upon the one-time purchase of individual assets. Under this license, you receive:</p>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Perpetual rights to use the purchased asset packs</li>
-            <li>Permission to use the assets in commercial projects</li>
-            <li>The right to include the assets in an unlimited number of your projects</li>
-          </ul>
-          <p className="mt-2 text-xs text-gray-400 italic">By purchasing and/or downloading these assets, you agree to the terms of our One-Time Purchase License Agreement.</p>
+        <div className="space-y-4">
+          <div className="bg-blue-50/50 p-6 rounded-2xl border-2 border-blue-100 shadow-sm">
+            <h4 className="font-black text-blue-600 uppercase tracking-widest text-xs mb-3">1. Standard License - Personal</h4>
+            <p className="text-[11px] mb-2 text-gray-700">Required for individuals or entities with <strong>annual gross revenue less than $100,000 USD</strong>.</p>
+            <ul className="list-disc pl-5 space-y-1 text-[11px]">
+              <li>Perpetual rights to use the purchased assets in personal or indie projects</li>
+              <li>Unlimited number of final commercial products (games, apps, videos)</li>
+              <li>Right to modify assets for your project's specific needs</li>
+            </ul>
+          </div>
+
+          <div className="bg-purple-50/50 p-6 rounded-2xl border-2 border-purple-100 shadow-sm">
+            <h4 className="font-black text-purple-600 uppercase tracking-widest text-xs mb-3">2. Standard License - Professional</h4>
+            <p className="text-[11px] mb-2 text-gray-700">Required for entities with <strong>annual gross revenue exceeding $100,000 USD</strong>.</p>
+            <ul className="list-disc pl-5 space-y-1 text-[11px]">
+              <li>All benefits of the Personal tier for professional studio environments</li>
+              <li>Enterprise-level usage rights for large-scale commercial productions</li>
+              <li>Corporate-wide project integration permissions</li>
+            </ul>
+          </div>
         </div>
 
         <div>
-          <h4 className="font-black text-gray-900 text-base mb-2 uppercase tracking-wide">2. Free Asset Usage Policy</h4>
-          <p className="mb-2">This license applies to all assets in the Free category. By downloading free assets, you receive:</p>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>A perpetual, worldwide, non-exclusive license to use the assets</li>
-            <li>The right to create an unlimited number of Final Products</li>
-            <li>Permission to include the assets in both personal and commercial projects</li>
-          </ul>
-          <p className="mt-3 font-bold text-pink-500 uppercase tracking-wide text-xs">However, the following is strictly prohibited:</p>
-          <ul className="list-disc pl-5 space-y-1 mt-1 text-gray-500">
-            <li>Redistributing the assets "as-is" (even for free)</li>
-            <li>Modifying and distributing derivative works outside of a Final Product</li>
-            <li>Using the assets in on-demand or do-it-yourself services</li>
-          </ul>
-          <p className="mt-2 text-xs text-gray-400 italic">By downloading these assets, you agree to the terms of our Free Asset Usage Policy.</p>
+          <h4 className="font-black text-gray-900 text-base mb-2 uppercase tracking-wide">3. Free Asset Usage Policy</h4>
+          <p className="mb-2">Assets in the Free category come with a perpetual, worldwide license but are restricted to "Final Product" use only. Redistribution as standalone files is strictly prohibited.</p>
         </div>
 
         <div className="pt-4 border-t border-gray-100">
-          <p className="text-xs text-gray-400">If you have any questions about our licenses or need additional information, please contact our support team at <a href="mailto:support@mnostva.art" className="text-pink-500 hover:underline">support@mnostva.art</a>.</p>
+          <p className="text-xs text-gray-400 italic">By purchasing or downloading any asset from Mnostva Art, you agree to the specific License Agreement associated with that asset's category and your revenue tier.</p>
         </div>
       </div>
     )
   },
   {
     id: 'privacy',
-    title: 'Privacy Policy',
+    title: 'Privacy & Data Protection',
     content: (
       <div className="space-y-6 text-gray-600 font-medium leading-relaxed text-sm">
         <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">Who we are</h4>
-          <p>Our website address is: <a href="https://mnostva.art" className="text-pink-500 hover:underline font-bold">https://mnostva.art</a>.</p>
+          <h4 className="font-black text-gray-900 text-base mb-1">Data Collection</h4>
+          <p>We collect only the necessary data to provide our services: account information (email, name), transaction history, and download logs. We do not sell your personal data to third parties.</p>
         </div>
 
         <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">Comments</h4>
-          <p>When visitors leave comments on the site we collect the data shown in the comments form, and also the visitor’s IP address and browser user agent string to help spam detection.</p>
-          <p className="mt-2">An anonymized string created from your email address (also called a hash) may be provided to the Gravatar service to see if you are using it. The Gravatar service privacy policy is available here: https://automattic.com/privacy/.</p>
+          <h4 className="font-black text-gray-900 text-base mb-1">Payment Security</h4>
+          <p>Payment processing is handled securely via PayPal. Mnostva Art does not store your full credit card or financial account details on our servers.</p>
         </div>
 
         <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">Cookies</h4>
-          <p>If you visit our login page, we will set a temporary cookie to determine if your browser accepts cookies. This cookie contains no personal data and is discarded when you close your browser.</p>
-          <p className="mt-2">When you log in, we will also set up several cookies to save your login information and your screen display choices. Login cookies last for two days, and screen options cookies last for a year. If you select "Remember Me", your login will persist for two weeks.</p>
-        </div>
-
-        <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">Data Collection & E-commerce</h4>
-          <p>We collect information about you during the checkout process on our store. This includes your name, email address, payment details, and browsing history. We use this to fulfill orders, prevent fraud, and comply with tax laws.</p>
-        </div>
-
-        <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">Account Deletion</h4>
-          <p>In accordance with the General Data Protection Regulation (GDPR), you have the right to request the deletion of your account and all associated personal data.</p>
-          <p className="mt-2">Please send your account deletion request to <a href="mailto:support@mnostva.art" className="text-pink-500 font-bold hover:underline">support@mnostva.art</a>. We process requests within 7 business days.</p>
+          <h4 className="font-black text-gray-900 text-base mb-1">Your Rights (GDPR/CCPA)</h4>
+          <p>You have the right to access, correct, or delete your personal data. You can request a full data export or account deletion by contacting <a href="mailto:legal@mnostva.art" className="text-pink-500 font-bold hover:underline">legal@mnostva.art</a>.</p>
         </div>
       </div>
     )
   },
   {
-    id: 'tos',
-    title: 'Terms of Service',
+    id: 'cookies',
+    title: 'Cookie Policy',
     content: (
       <div className="space-y-6 text-gray-600 font-medium leading-relaxed text-sm">
+        <p>We use cookies to improve your experience and ensure the security of our platform.</p>
+        <ul className="list-disc pl-5 space-y-3">
+          <li><strong>Essential Cookies:</strong> Required for login authentication, cart persistence, and secure checkout.</li>
+          <li><strong>Functional Cookies:</strong> Used to remember your preferences, such as language or display settings.</li>
+          <li><strong>Analytics:</strong> Anonymized usage data to help us understand which assets are popular and how we can improve the site.</li>
+        </ul>
+        <p className="text-xs text-gray-400">You can manage or disable cookies in your browser settings, though some site features may become unavailable.</p>
+      </div>
+    )
+  },
+  {
+    id: 'intellectual-property',
+    title: 'Intellectual Property',
+    content: (
+      <div className="space-y-6 text-gray-600 font-medium leading-relaxed text-sm">
+        <p>All assets, designs, 3D models, textures, and custom shaders available on Mnostva Art are the exclusive intellectual property of <strong>Mnostva Art Studio</strong> unless otherwise specified.</p>
         <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">Overview</h4>
-          <p>This website is operated by Mnostva Art. Throughout the site, the terms "we", "us" and "our" refer to Mnostva Art. By visiting our site and/or purchasing from us, you engage in our "Service" and agree to be bound by the following terms and conditions.</p>
+          <h4 className="font-black text-gray-900 text-base mb-1">Ownership</h4>
+          <p>Purchasing a license grants you the right to <strong>use</strong> the assets, not <strong>ownership</strong> of the original IP. All rights not expressly granted are reserved by Mnostva Art.</p>
         </div>
-
         <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">1. Account and Registration</h4>
-          <p>You must be at least 13 years old to create an account. You are responsible for all activities that occur under your account credentials and for keeping them confidential.</p>
-        </div>
-
-        <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">2. Prohibited Activities</h4>
-          <p>You are prohibited from using the site or its content for any unlawful purpose, to infringe upon intellectual property rights, to distribute malware, or to scrape site data.</p>
-        </div>
-
-        <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">3. Modifications to Service</h4>
-          <p>Prices for our products are subject to change without notice. We reserve the right to modify or discontinue the Service at any time without liability.</p>
-        </div>
-
-        <div>
-          <h4 className="font-black text-gray-900 text-base mb-1">4. Governing Law</h4>
-          <p>These Terms of Service shall be governed by and construed in accordance with local consumer protection guidelines.</p>
+          <h4 className="font-black text-gray-900 text-base mb-1">Copyright Infringement</h4>
+          <p>We take IP protection seriously. If you believe your work has been copied in a way that constitutes copyright infringement, please submit a DMCA notice to <a href="mailto:dmca@mnostva.art" className="text-pink-500 font-bold hover:underline">dmca@mnostva.art</a>.</p>
         </div>
       </div>
     )
   },
   {
     id: 'refund',
-    title: 'Refund Policy',
+    title: 'Refund & Cancellation',
     content: (
       <div className="space-y-6 text-gray-600 font-medium leading-relaxed text-sm">
-        <p className="font-bold text-gray-900">We stand behind our products and it is important to us that you are satisfied with them. However, because our products are digital goods delivered online, we do not normally issue refunds.</p>
+        <p className="font-bold text-gray-900">Digital Good Policy: Due to the nature of digital assets, all sales are final once a download has been initiated.</p>
         
-        <p>If you change your mind about your purchase and have not downloaded our product, we will gladly refund your money upon your request.</p>
+        <p>Refunds are only issued if:</p>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>The asset has not been downloaded from our servers.</li>
+          <li>The asset file is technically corrupt and cannot be fixed by our team.</li>
+          <li>The asset description was demonstrably misleading.</li>
+        </ul>
 
-        <p>Refund requests made after you have downloaded our product are handled on a case-by-case basis and issued at our sole discretion. When evaluating a solution, we check whether the available assets, animations, and file formats match the product description in the store.</p>
-
-        <p className="text-pink-500 font-black text-xs uppercase tracking-wider">Refund requests must be submitted within thirty (30) days of the original purchase.</p>
+        <p className="text-pink-500 font-black text-xs uppercase tracking-wider border-t border-pink-100 pt-4">Requests must be submitted within 30 days of purchase.</p>
       </div>
     )
   }

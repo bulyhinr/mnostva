@@ -10,7 +10,7 @@ interface AuthContextType {
   logs: ActivityLog[];
   loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string, acceptedTerms: boolean) => Promise<void>;
+  register: (name: string, email: string, password: string, acceptedTerms: boolean, userType?: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (token: string, newPassword: string) => Promise<void>;
   logout: () => void;
@@ -101,7 +101,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         avatar: response.user.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${response.user.name}`,
         bio: response.user.bio || 'Explorer of stylized worlds!',
         joinedAt: new Date().toISOString(), // In real app, this should come from backend
-        isAdmin: response.user.isAdmin
+        isAdmin: response.user.isAdmin,
+        userType: response.user.userType || 'regular'
       };
 
       setUser(newUser);
@@ -131,13 +132,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (name: string, email: string, password: string, acceptedTerms: boolean) => {
+  const register = async (name: string, email: string, password: string, acceptedTerms: boolean, userType: string = 'regular') => {
     try {
       setLoading(true);
 
       // Try real API registration
       try {
-        const response = await authService.register({ name, email, password, acceptedTerms });
+        const response = await authService.register({ name, email, password, acceptedTerms, userType });
         const newUser: User = {
           id: response.user.id,
           email: response.user.email,
@@ -145,7 +146,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           avatar: response.user.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${name}`,
           bio: 'New explorer of stylized worlds!',
           joinedAt: new Date().toISOString(),
-          isAdmin: response.user.isAdmin
+          isAdmin: response.user.isAdmin,
+          userType: response.user.userType || 'regular'
         };
 
         setUser(newUser);

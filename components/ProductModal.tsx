@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import ImageWithFallback from './ImageWithFallback';
 
 interface ProductModalProps {
@@ -40,6 +41,7 @@ const StoreIcons = {
 
 const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigateToLicense }) => {
   const { addToCart, cart } = useCart();
+  const { user } = useAuth();
   const [isSparkling, setIsSparkling] = useState(false);
   const [activeImage, setActiveImage] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
@@ -91,13 +93,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
     }
   }, [product, sketchfabEmbedUrl, youtubeEmbedUrl, modelViewerUrl, mainImageUrl]);
 
-  const isInCart = product ? cart.some(item => item.id === product.id) : false;
+  const derivedLicense = user?.userType === 'company' && product?.commercialPrice ? 'commercial' : 'standard';
+  const basePrice = (derivedLicense === 'commercial' && product?.commercialPrice) ? product.commercialPrice : (product?.price || 0);
+
+  const isInCart = product ? cart.some(item => item.id === product.id && (item.licenseType || 'standard') === derivedLicense) : false;
 
   const handleAddToCart = () => {
     if (!product || isInCart) return;
 
     setIsSparkling(true);
-    addToCart(product, quantity);
+    addToCart(product, quantity, derivedLicense);
 
     setTimeout(() => {
       setIsSparkling(false);
@@ -391,10 +396,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
                 )}
                 <div className="flex items-center gap-4 mb-6">
                   <span className="text-4xl font-black text-pink-500">
-                    {product.price === 0 ? 'Free Pack' : `$${product.price.toFixed(2)}`}
+                    {basePrice === 0 ? 'Free Pack' : `$${basePrice.toFixed(2)}`}
                   </span>
-                  {product.price > 0 && (
-                    <span className="text-gray-400 font-bold line-through text-lg opacity-50">${(product.price * 1.5).toFixed(2)}</span>
+                  {basePrice > 0 && (
+                    <span className="text-gray-400 font-bold line-through text-lg opacity-50">${(basePrice * 1.5).toFixed(2)}</span>
                   )}
                 </div>
                 <div 

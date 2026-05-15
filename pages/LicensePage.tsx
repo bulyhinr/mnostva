@@ -6,24 +6,52 @@ interface LicensePageProps {
 
 const sections = [
   {
-    id: 'one-time',
-    title: '1. One-Time Purchase License',
+    id: 'standard-license',
+    title: '1. Standard License (One-Time Purchase)',
     content: (
-      <div className="space-y-4 text-gray-600 font-medium leading-relaxed text-sm">
-        <p>This license applies to all paid asset packs. As the name suggests, it is granted upon the one-time purchase of individual assets. Under this license, you receive:</p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li>Perpetual, worldwide rights to use the purchased asset packs</li>
-          <li>Permission to use the assets in an unlimited number of commercial and personal projects (games, software, interactive media, etc.)</li>
-          <li>The right to modify the Product to fit your project's technical or aesthetic requirements.</li>
-          <li>Permission to distribute the Product integrated in binary form as part of your final compiled product.</li>
-        </ul>
-        <p className="mt-3 font-bold text-pink-500 uppercase tracking-wide text-xs">Restrictions:</p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li>Sell, rent, or distribute the Product as standalone files or in an asset library.</li>
-          <li>Claim the Product as your own original creation.</li>
-          <li>Sub-license the original raw files to third parties.</li>
-        </ul>
-        <p className="mt-2 text-xs text-gray-400 italic">By purchasing and/or downloading these assets, you agree to the terms of our One-Time Purchase License Agreement.</p>
+      <div className="space-y-6 text-gray-600 font-medium leading-relaxed text-sm">
+        <p>Our Standard License is a one-time purchase that grants you perpetual rights to use the assets. We offer two tiers based on your annual revenue:</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div className="bg-blue-50/50 p-6 rounded-2xl border-2 border-blue-100 shadow-sm">
+            <h4 className="font-black text-blue-600 uppercase tracking-widest text-xs mb-3">Personal Tier</h4>
+            <p className="text-[11px] mb-3">For individuals or small teams with <strong>annual gross revenue less than $100,000 USD</strong> in the last 12 months.</p>
+            <ul className="list-disc pl-4 space-y-1 text-[10px]">
+              <li>Personal projects</li>
+              <li>Small commercial games</li>
+              <li>Indie software development</li>
+            </ul>
+          </div>
+          <div className="bg-purple-50/50 p-6 rounded-2xl border-2 border-purple-100 shadow-sm">
+            <h4 className="font-black text-purple-600 uppercase tracking-widest text-xs mb-3">Professional Tier</h4>
+            <p className="text-[11px] mb-3">For companies or entities with <strong>annual gross revenue over $100,000 USD</strong> in the last 12 months.</p>
+            <ul className="list-disc pl-4 space-y-1 text-[10px]">
+              <li>Large studio projects</li>
+              <li>Enterprise applications</li>
+              <li>Corporate marketing assets</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="pt-4">
+          <p className="font-bold text-gray-800">Under both tiers, you receive:</p>
+          <ul className="list-disc pl-5 mt-2 space-y-2">
+            <li>Perpetual, worldwide rights to use the purchased asset packs</li>
+            <li>Permission to use the assets in an unlimited number of projects</li>
+            <li>The right to modify the Product to fit your project's requirements</li>
+            <li>Permission to distribute the Product integrated in binary form (as part of a game/app)</li>
+          </ul>
+        </div>
+
+        <div className="pt-4">
+          <p className="font-bold text-pink-500 uppercase tracking-wide text-xs">Restrictions:</p>
+          <ul className="list-disc pl-5 mt-2 space-y-2">
+            <li>Sell, rent, or distribute the Product as standalone files</li>
+            <li>Claim the Product as your own original creation</li>
+            <li>Sub-license the original raw files to third parties</li>
+          </ul>
+        </div>
+        <p className="mt-4 text-xs text-gray-400 italic border-t border-gray-100 pt-4">By purchasing and/or downloading these assets, you agree to the terms of the Standard License Agreement corresponding to your revenue tier.</p>
       </div>
     )
   },
@@ -40,11 +68,11 @@ const sections = [
         </ul>
         <p className="mt-3 font-bold text-pink-500 uppercase tracking-wide text-xs">However, the following is strictly prohibited:</p>
         <ul className="list-disc pl-5 space-y-2 text-gray-500">
-          <li>Redistributing the assets "as-is" (even for free) on any platform.</li>
-          <li>Modifying and distributing derivative works outside of an integrated Final Product.</li>
-          <li>Using the assets in on-demand or do-it-yourself online building services.</li>
+          <li>Redistributing the assets "as-is" (even for free) on any platform</li>
+          <li>Modifying and distributing derivative works outside of an integrated Final Product</li>
+          <li>Using the assets in on-demand or do-it-yourself online building services</li>
         </ul>
-        <p className="mt-2 text-xs text-gray-400 italic">By downloading these assets, you agree to the terms of our Free Asset Usage Policy.</p>
+        <p className="mt-2 text-xs text-gray-400 italic border-t border-gray-100 pt-4">By downloading these assets, you agree to the terms of our Free Asset Usage Policy.</p>
       </div>
     )
   }

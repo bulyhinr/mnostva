@@ -14,6 +14,9 @@ import { Toaster, toast } from 'react-hot-toast';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
+const DEFAULT_PACK_CONTENT = ['FBX', 'OBJ', 'Blender', 'GLTF (glb)', 'STL', 'MAYA', 'Unity Package', 'Unreal Engine', 'Tuanjie Engine'];
+const DEFAULT_COMPATIBILITY = ['Unreal Engine 4.26 - 4.27 and 5.0+', 'Unity 2021.3+', 'Unity 6000+', 'Tuanjie Engine 1.8.1+', 'Blender 3.5+', 'Godot 3.4+', 'Roblox'];
+
 const AdminPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [discounts, setDiscounts] = useState<Discount[]>([]);
@@ -32,11 +35,16 @@ const AdminPage: React.FC = () => {
         price: 0,
         category: 'Prop',
         imageUrl: '',
+        fileKey: '',
+        fileName: '',
         features: [],
         packContent: [],
         compatibility: [],
         galleryImages: [],
-        isActive: true
+        previewModelKey: '',
+        previewModelName: '',
+        isActive: true,
+        commercialPrice: undefined
     });
 
     // Discount Editing State
@@ -108,10 +116,13 @@ const AdminPage: React.FC = () => {
                 externalLinks: p.externalLinks || {},
                 discount: p.discount, // discount object from relation
                 fileKey: p.fileKey, // Add fileKey mapping
+                fileName: p.fileName,
                 galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
                 previewImageKey: p.previewImageKey,
                 isActive: p.isActive,
-                previewModelKey: p.previewModelKey
+                previewModelKey: p.previewModelKey,
+                previewModelName: p.previewModelName,
+                commercialPrice: p.commercialPrice ? p.commercialPrice / 100 : undefined
             }));
 
             setProducts(mappedProducts);
@@ -154,7 +165,8 @@ const AdminPage: React.FC = () => {
         setCurrentProduct({
             ...product,
             discountId: product.discount?.id || '', // Set initial selection
-            galleryImages: Array.isArray(product.galleryImages) ? product.galleryImages : []
+            galleryImages: Array.isArray(product.galleryImages) ? product.galleryImages : [],
+            commercialPrice: product.commercialPrice
         });
         setIsEditingProduct(true);
     };
@@ -227,8 +239,10 @@ const AdminPage: React.FC = () => {
             if (!token) throw new Error("No token");
 
             let fileKey = currentProduct.fileKey;
+            let fileName = currentProduct.fileName;
             if (selectedFile) {
                 fileKey = await uploadFile(selectedFile, false);
+                fileName = selectedFile.name;
             }
 
             let previewImageKey = currentProduct.previewImageKey;
@@ -240,8 +254,10 @@ const AdminPage: React.FC = () => {
             }
 
             let previewModelKey = currentProduct.previewModelKey;
+            let previewModelName = currentProduct.previewModelName;
             if (selectedModel) {
                 previewModelKey = await uploadFile(selectedModel, true);
+                previewModelName = selectedModel.name;
             }
 
             let galleryImages = Array.isArray(currentProduct.galleryImages) ? [...currentProduct.galleryImages] : [];
@@ -258,8 +274,10 @@ const AdminPage: React.FC = () => {
                 price: Math.round((currentProduct.price || 0) * 100),
                 category: currentProduct.category,
                 fileKey: fileKey || 'products/placeholder.zip',
+                fileName: fileName,
                 previewImageKey: previewImageKey,
                 previewModelKey: previewModelKey,
+                previewModelName: previewModelName,
                 galleryImages: galleryImages,
                 features: (currentProduct.features || []).filter(s => s.trim() !== ''),
                 packContent: (currentProduct.packContent || []).filter(s => s.trim() !== ''),
@@ -267,7 +285,8 @@ const AdminPage: React.FC = () => {
                 technicalSpecs: currentProduct.technicalSpecs || {},
                 externalLinks: currentProduct.externalLinks || {},
                 discountId: currentProduct.discountId || null,
-                isActive: currentProduct.isActive !== undefined ? currentProduct.isActive : true
+                isActive: currentProduct.isActive !== undefined ? currentProduct.isActive : true,
+                commercialPrice: currentProduct.commercialPrice ? Math.round(currentProduct.commercialPrice * 100) : null
             };
 
             if (currentProduct.id) {
@@ -289,7 +308,26 @@ const AdminPage: React.FC = () => {
             setSelectedPreview(null);
             setSelectedModel(null);
             setSelectedGalleryFiles(null);
-            setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '' }, galleryImages: [], previewModelKey: '', isActive: true });
+            setCurrentProduct({ 
+                name: '', 
+                description: '', 
+                price: 0, 
+                commercialPrice: undefined, 
+                category: 'Prop', 
+                imageUrl: '', 
+                fileKey: '', 
+                fileName: '', 
+                features: [], 
+                packContent: DEFAULT_PACK_CONTENT, 
+                compatibility: DEFAULT_COMPATIBILITY, 
+                discountId: '', 
+                technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, 
+                externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '', sketchfab: '' }, 
+                galleryImages: [], 
+                previewModelKey: '', 
+                previewModelName: '', 
+                isActive: true 
+            });
             fetchData();
         } catch (error) {
             console.error('Failed to save product:', error);
@@ -297,8 +335,42 @@ const AdminPage: React.FC = () => {
     };
 
     const openNewProductForm = () => {
-        setCurrentProduct({ name: '', description: '', price: 0, commercialPrice: undefined, category: 'Prop', imageUrl: '', fileKey: '', features: [], packContent: [], compatibility: [], discountId: '', technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '' }, galleryImages: [], previewModelKey: '', isActive: true });
         setIsEditingProduct(true);
+        setCurrentProduct({
+            name: '',
+            description: '',
+            price: 0,
+            commercialPrice: undefined,
+            category: 'Prop',
+            imageUrl: '',
+            fileKey: '',
+            fileName: '',
+            features: [],
+            packContent: DEFAULT_PACK_CONTENT,
+            compatibility: DEFAULT_COMPATIBILITY,
+            discountId: '',
+            technicalSpecs: {
+                polyCount: '',
+                textures: '',
+                rigged: false,
+                animated: false
+            },
+            externalLinks: {
+                unity: '',
+                fab: '',
+                cgtrader: '',
+                artstation: '',
+                superhive: '',
+                youtube: '',
+                sketchfab: ''
+            },
+            galleryImages: [],
+            previewModelKey: '',
+            previewModelName: '',
+            isActive: true
+        });
+        setSelectedFile(null);
+        setSelectedGalleryFiles(null);
     };
 
     // Helper for Arrays
@@ -1028,7 +1100,11 @@ const AdminPage: React.FC = () => {
                                             onChange={e => setSelectedModel(e.target.files ? e.target.files[0] : null)}
                                             className="w-full bg-emerald-50 border-4 border-transparent focus:border-emerald-300 rounded-2xl px-6 py-4 font-bold outline-none transition-all text-emerald-700"
                                         />
-                                        {currentProduct.previewModelKey && <p className="text-xs text-emerald-400 mt-2 ml-4">Current Key: {currentProduct.previewModelKey.split('/').pop()}</p>}
+                                        {currentProduct.previewModelName ? (
+                                            <p className="text-xs text-emerald-500 mt-2 ml-4 font-bold">Current: {currentProduct.previewModelName}</p>
+                                        ) : currentProduct.previewModelKey && (
+                                            <p className="text-xs text-emerald-400 mt-2 ml-4">Current Key: {currentProduct.previewModelKey.split('/').pop()}</p>
+                                        )}
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-[11px] font-black text-red-500 uppercase tracking-widest mb-3 ml-4">YouTube Video URL (For Gallery)</label>
@@ -1091,7 +1167,11 @@ const AdminPage: React.FC = () => {
                                             onChange={e => setSelectedFile(e.target.files ? e.target.files[0] : null)}
                                             className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all"
                                         />
-                                        {currentProduct.fileKey && <p className="text-xs text-gray-400 mt-2 ml-4">Current Key: {currentProduct.fileKey}</p>}
+                                        {currentProduct.fileName ? (
+                                            <p className="text-xs text-[#8a7db3] mt-2 ml-4 font-bold">Current: {currentProduct.fileName}</p>
+                                        ) : currentProduct.fileKey && (
+                                            <p className="text-xs text-gray-400 mt-2 ml-4">Current Key: {currentProduct.fileKey}</p>
+                                        )}
                                     </div>
                                 </div>
 

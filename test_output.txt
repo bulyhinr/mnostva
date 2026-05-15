@@ -1,35 +1,35 @@
+
+> mnostva-art---3d-cartoon-world-marketplace-ver1@0.0.0 test
+> vitest --run
+
  DEPRECATED  `test.poolOptions` was removed in Vitest 4. All previous `poolOptions` are now top-level options. Please, refer to the migration guide: https://vitest.dev/guide/migration#pool-rework
 
  RUN  v4.1.5 /Users/romanbulyhin/mnostva/mnostva-art
 
-stderr | components/CartDrawer.test.tsx > CartDrawer > calls removeFromCart when delete button clicked
-Warning: An update to CartDrawer inside a test was not wrapped in act(...).
+stderr | components/ProductModal.test.tsx > ProductModal Robustness > renders without crashing even if galleryImages is null
+The above error occurred in the <ProductModal> component:
 
-When testing, code that causes React state updates should be wrapped into act(...):
-
-act(() => {
-  /* fire events that update state */
-});
-/* assert on the output */
-
-This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at CartDrawer (/Users/romanbulyhin/mnostva/mnostva-art/components/CartDrawer.tsx:6:23)
+    at ProductModal (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductModal.tsx:54:25)
     at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
     at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
 
- ✓ components/CartDrawer.test.tsx (4 tests) 115ms
- ❯ components/ProductCard.test.tsx (4 tests | 1 failed) 147ms
-     ✓ renders product information 69ms
-     × calls onOpen when clicking on image or title 45ms
-     ✓ calls addToCart when "Add to Basket" is clicked 24ms
-     ✓ shows "In Basket" when product is already in cart 6ms
- ✓ pages/LoginPage.test.tsx (5 tests) 218ms
-stderr | components/Marketplace.test.tsx > Marketplace Component > renders title and products
-The above error occurred in the <ProductModal> component:
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
-    at ProductModal (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductModal.tsx:53:25)
-    at section
-    at Marketplace (/Users/romanbulyhin/mnostva/mnostva-art/components/Marketplace.tsx:10:3)
+stderr | components/ProductCard.test.tsx > ProductCard > renders product information
+The above error occurred in the <ProductCard> component:
+
+    at ProductCard (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductCard.tsx:55:24)
+    at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
+    at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | components/Marketplace.test.tsx > Marketplace Component > renders title and products
+The above error occurred in the <Marketplace> component:
+
+    at Marketplace (/Users/romanbulyhin/mnostva/mnostva-art/components/Marketplace.tsx:11:3)
     at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
     at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
 
@@ -37,11 +37,9 @@ Consider adding an error boundary to your tree to customize error handling behav
 Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
 stderr | components/Marketplace.test.tsx > Marketplace Component > calls onSelectProduct when a product is clicked
-The above error occurred in the <ProductModal> component:
+The above error occurred in the <Marketplace> component:
 
-    at ProductModal (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductModal.tsx:53:25)
-    at section
-    at Marketplace (/Users/romanbulyhin/mnostva/mnostva-art/components/Marketplace.tsx:10:3)
+    at Marketplace (/Users/romanbulyhin/mnostva/mnostva-art/components/Marketplace.tsx:11:3)
     at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
     at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
 
@@ -49,22 +47,84 @@ Consider adding an error boundary to your tree to customize error handling behav
 Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
 stderr | components/Marketplace.test.tsx > Marketplace Component > opens modal if onSelectProduct is not provided
-The above error occurred in the <ProductModal> component:
+The above error occurred in the <Marketplace> component:
 
-    at ProductModal (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductModal.tsx:53:25)
-    at section
-    at Marketplace (/Users/romanbulyhin/mnostva/mnostva-art/components/Marketplace.tsx:10:3)
+    at Marketplace (/Users/romanbulyhin/mnostva/mnostva-art/components/Marketplace.tsx:11:3)
     at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
     at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
 
 Consider adding an error boundary to your tree to customize error handling behavior.
 Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
- ❯ components/Marketplace.test.tsx (3 tests | 3 failed) 45ms
-     × renders title and products 34ms
-     × calls onSelectProduct when a product is clicked 5ms
-     × opens modal if onSelectProduct is not provided 3ms
- ✓ pages/CheckoutPage.test.tsx (4 tests) 151ms
+stderr | components/ProductModal.test.tsx > ProductModal Robustness > handles galleryImages being a string (unexpected data type)
+The above error occurred in the <ProductModal> component:
+
+    at ProductModal (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductModal.tsx:54:25)
+    at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
+    at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+ ❯ components/Marketplace.test.tsx (3 tests | 3 failed) 25ms
+     × renders title and products 18ms
+     × calls onSelectProduct when a product is clicked 2ms
+     × opens modal if onSelectProduct is not provided 1ms
+stderr | components/ProductModal.test.tsx > ProductModal Robustness > renders Key Features and Technical Specs when data is provided
+The above error occurred in the <ProductModal> component:
+
+    at ProductModal (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductModal.tsx:54:25)
+    at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
+    at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | components/ProductModal.test.tsx > ProductModal Robustness > hides Technical Specs when empty
+The above error occurred in the <ProductModal> component:
+
+    at ProductModal (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductModal.tsx:54:25)
+    at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
+    at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | components/ProductCard.test.tsx > ProductCard > calls onOpen when clicking on image or title
+The above error occurred in the <ProductCard> component:
+
+    at ProductCard (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductCard.tsx:55:24)
+    at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
+    at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | components/ProductCard.test.tsx > ProductCard > calls addToCart when "Add to Basket" is clicked
+The above error occurred in the <ProductCard> component:
+
+    at ProductCard (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductCard.tsx:55:24)
+    at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
+    at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | components/ProductCard.test.tsx > ProductCard > shows "In Basket" when product is already in cart
+The above error occurred in the <ProductCard> component:
+
+    at ProductCard (/Users/romanbulyhin/mnostva/mnostva-art/components/ProductCard.tsx:55:24)
+    at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
+    at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+ ❯ components/ProductModal.test.tsx (4 tests | 4 failed) 38ms
+     × renders without crashing even if galleryImages is null 24ms
+     × handles galleryImages being a string (unexpected data type) 3ms
+     × renders Key Features and Technical Specs when data is provided 6ms
+     × hides Technical Specs when empty 3ms
 stderr | pages/AdminPage.test.tsx > AdminPage > opens the product edit form and shows new store fields
 Warning: findDOMNode is deprecated and will be removed in the next major release. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-find-node
     at ReactQuill (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-quill/lib/index.js:47:28)
@@ -73,14 +133,126 @@ Warning: findDOMNode is deprecated and will be removed in the next major release
     at form
     at div
     at div
-    at default (/Users/romanbulyhin/mnostva/mnostva-art/pages/AdminPage.test.tsx:37:15)
     at div
-    at AdminPage (/Users/romanbulyhin/mnostva/mnostva-art/pages/AdminPage.tsx:15:69)
+    at AdminPage (/Users/romanbulyhin/mnostva/mnostva-art/pages/AdminPage.tsx:18:69)
     at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
     at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
 
- ✓ pages/AdminPage.test.tsx (5 tests) 674ms
-     ✓ opens the product edit form and shows new store fields  345ms
+stderr | pages/CheckoutPage.test.tsx > CheckoutPage > allows moving from review to payment
+Failed to fetch order details TypeError: Cannot read properties of undefined (reading 'find')
+    at fetchOrderDetails (/Users/romanbulyhin/mnostva/mnostva-art/pages/CheckoutPage.tsx:83:34)
+
+ ❯ components/ProductCard.test.tsx (4 tests | 4 failed) 49ms
+     × renders product information 34ms
+     × calls onOpen when clicking on image or title 6ms
+     × calls addToCart when "Add to Basket" is clicked 1ms
+     × shows "In Basket" when product is already in cart 4ms
+ ✓ pages/CheckoutPage.test.tsx (4 tests) 140ms
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
+    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
+    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
+    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
+    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
+    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
+    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.getByProduct (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:18:26) {
+  isAxiosError: true,
+  code: 'ERR_NETWORK',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined
+    },
+    method: 'get',
+    url: 'http://localhost:3001/api/reviews/product/1',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest [EventTarget] {
+    upload: XMLHttpRequestUpload [EventTarget] {
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: Map(0) {}
+    },
+    withCredentials: false,
+    timeout: 0,
+    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(propertyEventListeners)]: Map(4) {
+      'onloadend' => [Function: onloadend],
+      'onabort' => [Function: handleAbort],
+      'onerror' => [Function: handleError],
+      'ontimeout' => [Function: handleTimeout]
+    }
+  },
+  event: ErrorEvent {
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    detail: 0,
+    layerX: 0,
+    layerY: 0,
+    pageX: 0,
+    pageY: 0,
+    view: null,
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001',
+    filename: '',
+    lineno: 0,
+    colno: 0,
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
+        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
+        at ClientRequest.emit (node:events:517:28)
+        at Socket.socketErrorListener (node:_http_client:501:9)
+        at Socket.emit (node:events:517:28)
+        at emitErrorNT (node:internal/streams/destroy:151:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+        at processTicksAndRejections (node:internal/process/task_queues:82:21),
+    [Symbol(composed)]: false,
+    [Symbol(bubbles)]: false,
+    [Symbol(cancelable)]: false,
+    [Symbol(defaultPrevented)]: false,
+    [Symbol(eventPhase)]: 0,
+    [Symbol(timeStamp)]: 1418.181583404541,
+    [Symbol(type)]: 'error',
+    [Symbol(dispatching)]: false,
+    [Symbol(immediatePropagationStopped)]: false,
+    [Symbol(propagationStopped)]: false,
+    [Symbol(target)]: XMLHttpRequest [EventTarget] {
+      upload: [XMLHttpRequestUpload [EventTarget]],
+      withCredentials: false,
+      timeout: 0,
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: [Map]
+    },
+    [Symbol(currentTarget)]: null,
+    [Symbol(isInPassiveEventListener)]: false
+  }
+}
+
 DOMException [AbortError]: The operation was aborted.
     at Fetch.onAsyncTaskManagerAbort (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:546:23)
     at Object.<anonymous> (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:416:101)
@@ -98,8 +270,6 @@ DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "h
     at _destroy (node:_http_client:882:13)
     at onSocketNT (node:_http_client:902:5)
     at processTicksAndRejections (node:internal/process/task_queues:83:21)
- ✓ pages/ProductDetailPage.test.tsx (6 tests) 673ms
-     ✓ handles keyboard navigation in lightbox  360ms
 Error: connect ECONNREFUSED ::1:3001
     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
   errno: -61,
@@ -108,111 +278,6 @@ Error: connect ECONNREFUSED ::1:3001
   address: '::1',
   port: 3001
 }
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
-AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
-    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
-    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
-    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
-    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
-    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
-    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
-    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
-    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Object.getByProduct (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:18:26) {
-  isAxiosError: true,
-  code: 'ERR_NETWORK',
-  config: {
-    transitional: {
-      silentJSONParsing: true,
-      forcedJSONParsing: true,
-      clarifyTimeoutError: false,
-      legacyInterceptorReqResOrdering: true
-    },
-    adapter: [ 'xhr', 'http', 'fetch' ],
-    transformRequest: [ [Function: transformRequest] ],
-    transformResponse: [ [Function: transformResponse] ],
-    timeout: 0,
-    xsrfCookieName: 'XSRF-TOKEN',
-    xsrfHeaderName: 'X-XSRF-TOKEN',
-    maxContentLength: -1,
-    maxBodyLength: -1,
-    env: { FormData: [Function], Blob: [class Blob] },
-    validateStatus: [Function: validateStatus],
-    headers: Object [AxiosHeaders] {
-      Accept: 'application/json, text/plain, */*',
-      'Content-Type': undefined
-    },
-    method: 'get',
-    url: 'http://localhost:3001/api/reviews/product/1',
-    allowAbsoluteUrls: true,
-    data: undefined
-  },
-  request: XMLHttpRequest [EventTarget] {
-    upload: XMLHttpRequestUpload [EventTarget] {
-      [Symbol(listeners)]: [Object],
-      [Symbol(listenerOptions)]: [Object],
-      [Symbol(propertyEventListeners)]: Map(0) {}
-    },
-    withCredentials: false,
-    timeout: 0,
-    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
-    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
-    [Symbol(propertyEventListeners)]: Map(4) {
-      'onloadend' => [Function: onloadend],
-      'onabort' => [Function: handleAbort],
-      'onerror' => [Function: handleError],
-      'ontimeout' => [Function: handleTimeout]
-    }
-  },
-  event: ErrorEvent {
-    NONE: 0,
-    CAPTURING_PHASE: 1,
-    AT_TARGET: 2,
-    BUBBLING_PHASE: 3,
-    detail: 0,
-    layerX: 0,
-    layerY: 0,
-    pageX: 0,
-    pageY: 0,
-    view: null,
-    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001',
-    filename: '',
-    lineno: 0,
-    colno: 0,
-    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
-        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
-        at ClientRequest.emit (node:events:517:28)
-        at Socket.socketErrorListener (node:_http_client:501:9)
-        at Socket.emit (node:events:517:28)
-        at emitErrorNT (node:internal/streams/destroy:151:8)
-        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
-        at processTicksAndRejections (node:internal/process/task_queues:82:21),
-    [Symbol(composed)]: false,
-    [Symbol(bubbles)]: false,
-    [Symbol(cancelable)]: false,
-    [Symbol(defaultPrevented)]: false,
-    [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2274.224708557129,
-    [Symbol(type)]: 'error',
-    [Symbol(dispatching)]: false,
-    [Symbol(immediatePropagationStopped)]: false,
-    [Symbol(propagationStopped)]: false,
-    [Symbol(target)]: XMLHttpRequest [EventTarget] {
-      upload: [XMLHttpRequestUpload [EventTarget]],
-      withCredentials: false,
-      timeout: 0,
-      [Symbol(listeners)]: [Object],
-      [Symbol(listenerOptions)]: [Object],
-      [Symbol(propertyEventListeners)]: [Map]
-    },
-    [Symbol(currentTarget)]: null,
-    [Symbol(isInPassiveEventListener)]: false
-  }
-}
-
 Error: connect ECONNREFUSED ::1:3001
     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
   errno: -61,
@@ -221,7 +286,184 @@ Error: connect ECONNREFUSED ::1:3001
   address: '::1',
   port: 3001
 }
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+ ✓ pages/AdminPage.test.tsx (6 tests) 269ms
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '::1',
+  port: 3001
+}
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -308,7 +550,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2279.742166519165,
+    [Symbol(timeStamp)]: 1429.888500213623,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -326,17 +568,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
- ✓ pages/ProfilePage.test.tsx (5 tests) 667ms
-     ✓ switches to Settings tab and allows updating name  419ms
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -424,7 +656,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2282.0460414886475,
+    [Symbol(timeStamp)]: 1431.1647911071777,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -442,16 +674,8 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
-AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
     at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
@@ -463,7 +687,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
     at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Object.getStats (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:23:26) {
+    at Object.getByProduct (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:18:26) {
   isAxiosError: true,
   code: 'ERR_NETWORK',
   config: {
@@ -488,7 +712,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
       'Content-Type': undefined
     },
     method: 'get',
-    url: 'http://localhost:3001/api/reviews/product/1/stats',
+    url: 'http://localhost:3001/api/reviews/product/1',
     allowAbsoluteUrls: true,
     data: undefined
   },
@@ -520,11 +744,11 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     pageX: 0,
     pageY: 0,
     view: null,
-    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001',
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001',
     filename: '',
     lineno: 0,
     colno: 0,
-    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
         at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
         at ClientRequest.emit (node:events:517:28)
         at Socket.socketErrorListener (node:_http_client:501:9)
@@ -537,7 +761,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2283.146041870117,
+    [Symbol(timeStamp)]: 1433.0851249694824,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -555,15 +779,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -651,7 +867,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2284.4930419921875,
+    [Symbol(timeStamp)]: 1434.0405406951904,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -669,15 +885,112 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
+    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
+    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
+    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
+    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
+    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.getStats (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:23:26) {
+  isAxiosError: true,
+  code: 'ERR_NETWORK',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined
+    },
+    method: 'get',
+    url: 'http://localhost:3001/api/reviews/product/1/stats',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest [EventTarget] {
+    upload: XMLHttpRequestUpload [EventTarget] {
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: Map(0) {}
+    },
+    withCredentials: false,
+    timeout: 0,
+    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(propertyEventListeners)]: Map(4) {
+      'onloadend' => [Function: onloadend],
+      'onabort' => [Function: handleAbort],
+      'onerror' => [Function: handleError],
+      'ontimeout' => [Function: handleTimeout]
+    }
+  },
+  event: ErrorEvent {
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    detail: 0,
+    layerX: 0,
+    layerY: 0,
+    pageX: 0,
+    pageY: 0,
+    view: null,
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001',
+    filename: '',
+    lineno: 0,
+    colno: 0,
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
+        at ClientRequest.emit (node:events:517:28)
+        at Socket.socketErrorListener (node:_http_client:501:9)
+        at Socket.emit (node:events:517:28)
+        at emitErrorNT (node:internal/streams/destroy:151:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+        at processTicksAndRejections (node:internal/process/task_queues:82:21),
+    [Symbol(composed)]: false,
+    [Symbol(bubbles)]: false,
+    [Symbol(cancelable)]: false,
+    [Symbol(defaultPrevented)]: false,
+    [Symbol(eventPhase)]: 0,
+    [Symbol(timeStamp)]: 1435.2728328704834,
+    [Symbol(type)]: 'error',
+    [Symbol(dispatching)]: false,
+    [Symbol(immediatePropagationStopped)]: false,
+    [Symbol(propagationStopped)]: false,
+    [Symbol(target)]: XMLHttpRequest [EventTarget] {
+      upload: [XMLHttpRequestUpload [EventTarget]],
+      withCredentials: false,
+      timeout: 0,
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: [Map]
+    },
+    [Symbol(currentTarget)]: null,
+    [Symbol(isInPassiveEventListener)]: false
+  }
 }
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -764,7 +1077,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2285.9633750915527,
+    [Symbol(timeStamp)]: 1436.076457977295,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -782,16 +1095,8 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
-AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
     at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
@@ -803,7 +1108,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
     at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Object.getByProduct (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:18:26) {
+    at Object.getStats (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:23:26) {
   isAxiosError: true,
   code: 'ERR_NETWORK',
   config: {
@@ -828,7 +1133,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
       'Content-Type': undefined
     },
     method: 'get',
-    url: 'http://localhost:3001/api/reviews/product/1',
+    url: 'http://localhost:3001/api/reviews/product/1/stats',
     allowAbsoluteUrls: true,
     data: undefined
   },
@@ -860,11 +1165,11 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     pageX: 0,
     pageY: 0,
     view: null,
-    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001',
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001',
     filename: '',
     lineno: 0,
     colno: 0,
-    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
         at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
         at ClientRequest.emit (node:events:517:28)
         at Socket.socketErrorListener (node:_http_client:501:9)
@@ -877,7 +1182,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2286.8491249084473,
+    [Symbol(timeStamp)]: 1438.2106657028198,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -895,15 +1200,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -991,7 +1288,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2288.517541885376,
+    [Symbol(timeStamp)]: 1440.5610828399658,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -1009,15 +1306,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -1104,7 +1393,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2290.088041305542,
+    [Symbol(timeStamp)]: 1442.8431253433228,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -1122,241 +1411,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
-AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
-    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
-    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
-    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
-    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
-    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
-    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
-    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
-    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Object.getByProduct (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:18:26) {
-  isAxiosError: true,
-  code: 'ERR_NETWORK',
-  config: {
-    transitional: {
-      silentJSONParsing: true,
-      forcedJSONParsing: true,
-      clarifyTimeoutError: false,
-      legacyInterceptorReqResOrdering: true
-    },
-    adapter: [ 'xhr', 'http', 'fetch' ],
-    transformRequest: [ [Function: transformRequest] ],
-    transformResponse: [ [Function: transformResponse] ],
-    timeout: 0,
-    xsrfCookieName: 'XSRF-TOKEN',
-    xsrfHeaderName: 'X-XSRF-TOKEN',
-    maxContentLength: -1,
-    maxBodyLength: -1,
-    env: { FormData: [Function], Blob: [class Blob] },
-    validateStatus: [Function: validateStatus],
-    headers: Object [AxiosHeaders] {
-      Accept: 'application/json, text/plain, */*',
-      'Content-Type': undefined
-    },
-    method: 'get',
-    url: 'http://localhost:3001/api/reviews/product/1',
-    allowAbsoluteUrls: true,
-    data: undefined
-  },
-  request: XMLHttpRequest [EventTarget] {
-    upload: XMLHttpRequestUpload [EventTarget] {
-      [Symbol(listeners)]: [Object],
-      [Symbol(listenerOptions)]: [Object],
-      [Symbol(propertyEventListeners)]: Map(0) {}
-    },
-    withCredentials: false,
-    timeout: 0,
-    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
-    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
-    [Symbol(propertyEventListeners)]: Map(4) {
-      'onloadend' => [Function: onloadend],
-      'onabort' => [Function: handleAbort],
-      'onerror' => [Function: handleError],
-      'ontimeout' => [Function: handleTimeout]
-    }
-  },
-  event: ErrorEvent {
-    NONE: 0,
-    CAPTURING_PHASE: 1,
-    AT_TARGET: 2,
-    BUBBLING_PHASE: 3,
-    detail: 0,
-    layerX: 0,
-    layerY: 0,
-    pageX: 0,
-    pageY: 0,
-    view: null,
-    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001',
-    filename: '',
-    lineno: 0,
-    colno: 0,
-    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
-        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
-        at ClientRequest.emit (node:events:517:28)
-        at Socket.socketErrorListener (node:_http_client:501:9)
-        at Socket.emit (node:events:517:28)
-        at emitErrorNT (node:internal/streams/destroy:151:8)
-        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
-        at processTicksAndRejections (node:internal/process/task_queues:82:21),
-    [Symbol(composed)]: false,
-    [Symbol(bubbles)]: false,
-    [Symbol(cancelable)]: false,
-    [Symbol(defaultPrevented)]: false,
-    [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2291.736249923706,
-    [Symbol(type)]: 'error',
-    [Symbol(dispatching)]: false,
-    [Symbol(immediatePropagationStopped)]: false,
-    [Symbol(propagationStopped)]: false,
-    [Symbol(target)]: XMLHttpRequest [EventTarget] {
-      upload: [XMLHttpRequestUpload [EventTarget]],
-      withCredentials: false,
-      timeout: 0,
-      [Symbol(listeners)]: [Object],
-      [Symbol(listenerOptions)]: [Object],
-      [Symbol(propertyEventListeners)]: [Map]
-    },
-    [Symbol(currentTarget)]: null,
-    [Symbol(isInPassiveEventListener)]: false
-  }
-}
-
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
-AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
-    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
-    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
-    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
-    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
-    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
-    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
-    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
-    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Object.getStats (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:23:26) {
-  isAxiosError: true,
-  code: 'ERR_NETWORK',
-  config: {
-    transitional: {
-      silentJSONParsing: true,
-      forcedJSONParsing: true,
-      clarifyTimeoutError: false,
-      legacyInterceptorReqResOrdering: true
-    },
-    adapter: [ 'xhr', 'http', 'fetch' ],
-    transformRequest: [ [Function: transformRequest] ],
-    transformResponse: [ [Function: transformResponse] ],
-    timeout: 0,
-    xsrfCookieName: 'XSRF-TOKEN',
-    xsrfHeaderName: 'X-XSRF-TOKEN',
-    maxContentLength: -1,
-    maxBodyLength: -1,
-    env: { FormData: [Function], Blob: [class Blob] },
-    validateStatus: [Function: validateStatus],
-    headers: Object [AxiosHeaders] {
-      Accept: 'application/json, text/plain, */*',
-      'Content-Type': undefined
-    },
-    method: 'get',
-    url: 'http://localhost:3001/api/reviews/product/1/stats',
-    allowAbsoluteUrls: true,
-    data: undefined
-  },
-  request: XMLHttpRequest [EventTarget] {
-    upload: XMLHttpRequestUpload [EventTarget] {
-      [Symbol(listeners)]: [Object],
-      [Symbol(listenerOptions)]: [Object],
-      [Symbol(propertyEventListeners)]: Map(0) {}
-    },
-    withCredentials: false,
-    timeout: 0,
-    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
-    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
-    [Symbol(propertyEventListeners)]: Map(4) {
-      'onloadend' => [Function: onloadend],
-      'onabort' => [Function: handleAbort],
-      'onerror' => [Function: handleError],
-      'ontimeout' => [Function: handleTimeout]
-    }
-  },
-  event: ErrorEvent {
-    NONE: 0,
-    CAPTURING_PHASE: 1,
-    AT_TARGET: 2,
-    BUBBLING_PHASE: 3,
-    detail: 0,
-    layerX: 0,
-    layerY: 0,
-    pageX: 0,
-    pageY: 0,
-    view: null,
-    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001',
-    filename: '',
-    lineno: 0,
-    colno: 0,
-    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
-        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
-        at ClientRequest.emit (node:events:517:28)
-        at Socket.socketErrorListener (node:_http_client:501:9)
-        at Socket.emit (node:events:517:28)
-        at emitErrorNT (node:internal/streams/destroy:151:8)
-        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
-        at processTicksAndRejections (node:internal/process/task_queues:82:21),
-    [Symbol(composed)]: false,
-    [Symbol(bubbles)]: false,
-    [Symbol(cancelable)]: false,
-    [Symbol(defaultPrevented)]: false,
-    [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2292.6193742752075,
-    [Symbol(type)]: 'error',
-    [Symbol(dispatching)]: false,
-    [Symbol(immediatePropagationStopped)]: false,
-    [Symbol(propagationStopped)]: false,
-    [Symbol(target)]: XMLHttpRequest [EventTarget] {
-      upload: [XMLHttpRequestUpload [EventTarget]],
-      withCredentials: false,
-      timeout: 0,
-      [Symbol(listeners)]: [Object],
-      [Symbol(listenerOptions)]: [Object],
-      [Symbol(propertyEventListeners)]: [Map]
-    },
-    [Symbol(currentTarget)]: null,
-    [Symbol(isInPassiveEventListener)]: false
-  }
-}
-
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -1444,7 +1499,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2293.664750099182,
+    [Symbol(timeStamp)]: 1446.0677499771118,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -1462,15 +1517,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -1557,7 +1604,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2294.173833847046,
+    [Symbol(timeStamp)]: 1475.8823747634888,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -1575,15 +1622,112 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
+    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
+    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
+    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
+    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
+    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
+    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.getByProduct (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:18:26) {
+  isAxiosError: true,
+  code: 'ERR_NETWORK',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined
+    },
+    method: 'get',
+    url: 'http://localhost:3001/api/reviews/product/1',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest [EventTarget] {
+    upload: XMLHttpRequestUpload [EventTarget] {
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: Map(0) {}
+    },
+    withCredentials: false,
+    timeout: 0,
+    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(propertyEventListeners)]: Map(4) {
+      'onloadend' => [Function: onloadend],
+      'onabort' => [Function: handleAbort],
+      'onerror' => [Function: handleError],
+      'ontimeout' => [Function: handleTimeout]
+    }
+  },
+  event: ErrorEvent {
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    detail: 0,
+    layerX: 0,
+    layerY: 0,
+    pageX: 0,
+    pageY: 0,
+    view: null,
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001',
+    filename: '',
+    lineno: 0,
+    colno: 0,
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
+        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
+        at ClientRequest.emit (node:events:517:28)
+        at Socket.socketErrorListener (node:_http_client:501:9)
+        at Socket.emit (node:events:517:28)
+        at emitErrorNT (node:internal/streams/destroy:151:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+        at processTicksAndRejections (node:internal/process/task_queues:82:21),
+    [Symbol(composed)]: false,
+    [Symbol(bubbles)]: false,
+    [Symbol(cancelable)]: false,
+    [Symbol(defaultPrevented)]: false,
+    [Symbol(eventPhase)]: 0,
+    [Symbol(timeStamp)]: 1477.0989999771118,
+    [Symbol(type)]: 'error',
+    [Symbol(dispatching)]: false,
+    [Symbol(immediatePropagationStopped)]: false,
+    [Symbol(propagationStopped)]: false,
+    [Symbol(target)]: XMLHttpRequest [EventTarget] {
+      upload: [XMLHttpRequestUpload [EventTarget]],
+      withCredentials: false,
+      timeout: 0,
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: [Map]
+    },
+    [Symbol(currentTarget)]: null,
+    [Symbol(isInPassiveEventListener)]: false
+  }
 }
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -1670,7 +1814,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2294.8696250915527,
+    [Symbol(timeStamp)]: 1488.6447496414185,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -1688,15 +1832,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -1784,7 +1920,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2295.3562088012695,
+    [Symbol(timeStamp)]: 1489.1284580230713,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -1802,16 +1938,8 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
-AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
     at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
@@ -1823,7 +1951,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
     at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Object.getStats (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:23:26) {
+    at Object.getByProduct (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:18:26) {
   isAxiosError: true,
   code: 'ERR_NETWORK',
   config: {
@@ -1848,7 +1976,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
       'Content-Type': undefined
     },
     method: 'get',
-    url: 'http://localhost:3001/api/reviews/product/1/stats',
+    url: 'http://localhost:3001/api/reviews/product/1',
     allowAbsoluteUrls: true,
     data: undefined
   },
@@ -1880,11 +2008,11 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     pageX: 0,
     pageY: 0,
     view: null,
-    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001',
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001',
     filename: '',
     lineno: 0,
     colno: 0,
-    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
         at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
         at ClientRequest.emit (node:events:517:28)
         at Socket.socketErrorListener (node:_http_client:501:9)
@@ -1897,7 +2025,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2295.7583751678467,
+    [Symbol(timeStamp)]: 1489.482707977295,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -1915,15 +2043,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
-}
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -2011,7 +2131,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2296.3661251068115,
+    [Symbol(timeStamp)]: 1489.9482078552246,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -2029,15 +2149,112 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
-Error: connect ECONNREFUSED ::1:3001
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16) {
-  errno: -61,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '::1',
-  port: 3001
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
+    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
+    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
+    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
+    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
+    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.getStats (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:23:26) {
+  isAxiosError: true,
+  code: 'ERR_NETWORK',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined
+    },
+    method: 'get',
+    url: 'http://localhost:3001/api/reviews/product/1/stats',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest [EventTarget] {
+    upload: XMLHttpRequestUpload [EventTarget] {
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: Map(0) {}
+    },
+    withCredentials: false,
+    timeout: 0,
+    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(propertyEventListeners)]: Map(4) {
+      'onloadend' => [Function: onloadend],
+      'onabort' => [Function: handleAbort],
+      'onerror' => [Function: handleError],
+      'ontimeout' => [Function: handleTimeout]
+    }
+  },
+  event: ErrorEvent {
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    detail: 0,
+    layerX: 0,
+    layerY: 0,
+    pageX: 0,
+    pageY: 0,
+    view: null,
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001',
+    filename: '',
+    lineno: 0,
+    colno: 0,
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
+        at ClientRequest.emit (node:events:517:28)
+        at Socket.socketErrorListener (node:_http_client:501:9)
+        at Socket.emit (node:events:517:28)
+        at emitErrorNT (node:internal/streams/destroy:151:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+        at processTicksAndRejections (node:internal/process/task_queues:82:21),
+    [Symbol(composed)]: false,
+    [Symbol(bubbles)]: false,
+    [Symbol(cancelable)]: false,
+    [Symbol(defaultPrevented)]: false,
+    [Symbol(eventPhase)]: 0,
+    [Symbol(timeStamp)]: 1490.4236249923706,
+    [Symbol(type)]: 'error',
+    [Symbol(dispatching)]: false,
+    [Symbol(immediatePropagationStopped)]: false,
+    [Symbol(propagationStopped)]: false,
+    [Symbol(target)]: XMLHttpRequest [EventTarget] {
+      upload: [XMLHttpRequestUpload [EventTarget]],
+      withCredentials: false,
+      timeout: 0,
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: [Map]
+    },
+    [Symbol(currentTarget)]: null,
+    [Symbol(isInPassiveEventListener)]: false
+  }
 }
-stderr | processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+stderr | pages/ProductDetailPage.test.tsx
 AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
     at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
     at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
@@ -2124,7 +2341,7 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
     [Symbol(cancelable)]: false,
     [Symbol(defaultPrevented)]: false,
     [Symbol(eventPhase)]: 0,
-    [Symbol(timeStamp)]: 2297.2948751449585,
+    [Symbol(timeStamp)]: 1490.8795833587646,
     [Symbol(type)]: 'error',
     [Symbol(dispatching)]: false,
     [Symbol(immediatePropagationStopped)]: false,
@@ -2142,29 +2359,580 @@ AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3
   }
 }
 
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
+    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
+    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
+    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
+    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
+    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.getStats (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:23:26) {
+  isAxiosError: true,
+  code: 'ERR_NETWORK',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined
+    },
+    method: 'get',
+    url: 'http://localhost:3001/api/reviews/product/1/stats',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest [EventTarget] {
+    upload: XMLHttpRequestUpload [EventTarget] {
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: Map(0) {}
+    },
+    withCredentials: false,
+    timeout: 0,
+    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(propertyEventListeners)]: Map(4) {
+      'onloadend' => [Function: onloadend],
+      'onabort' => [Function: handleAbort],
+      'onerror' => [Function: handleError],
+      'ontimeout' => [Function: handleTimeout]
+    }
+  },
+  event: ErrorEvent {
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    detail: 0,
+    layerX: 0,
+    layerY: 0,
+    pageX: 0,
+    pageY: 0,
+    view: null,
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001',
+    filename: '',
+    lineno: 0,
+    colno: 0,
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
+        at ClientRequest.emit (node:events:517:28)
+        at Socket.socketErrorListener (node:_http_client:501:9)
+        at Socket.emit (node:events:517:28)
+        at emitErrorNT (node:internal/streams/destroy:151:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+        at processTicksAndRejections (node:internal/process/task_queues:82:21),
+    [Symbol(composed)]: false,
+    [Symbol(bubbles)]: false,
+    [Symbol(cancelable)]: false,
+    [Symbol(defaultPrevented)]: false,
+    [Symbol(eventPhase)]: 0,
+    [Symbol(timeStamp)]: 1491.350832939148,
+    [Symbol(type)]: 'error',
+    [Symbol(dispatching)]: false,
+    [Symbol(immediatePropagationStopped)]: false,
+    [Symbol(propagationStopped)]: false,
+    [Symbol(target)]: XMLHttpRequest [EventTarget] {
+      upload: [XMLHttpRequestUpload [EventTarget]],
+      withCredentials: false,
+      timeout: 0,
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: [Map]
+    },
+    [Symbol(currentTarget)]: null,
+    [Symbol(isInPassiveEventListener)]: false
+  }
+}
+
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
+    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
+    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
+    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
+    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
+    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
+    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.checkStatus (/Users/romanbulyhin/mnostva/mnostva-art/services/wishlistService.ts:21:26) {
+  isAxiosError: true,
+  code: 'ERR_NETWORK',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined,
+      Authorization: 'Bearer '
+    },
+    method: 'get',
+    url: 'http://localhost:3001/api/wishlist/1/check',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest [EventTarget] {
+    upload: XMLHttpRequestUpload [EventTarget] {
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: Map(0) {}
+    },
+    withCredentials: false,
+    timeout: 0,
+    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(propertyEventListeners)]: Map(4) {
+      'onloadend' => [Function: onloadend],
+      'onabort' => [Function: handleAbort],
+      'onerror' => [Function: handleError],
+      'ontimeout' => [Function: handleTimeout]
+    }
+  },
+  event: ErrorEvent {
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    detail: 0,
+    layerX: 0,
+    layerY: 0,
+    pageX: 0,
+    pageY: 0,
+    view: null,
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001',
+    filename: '',
+    lineno: 0,
+    colno: 0,
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
+        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
+        at ClientRequest.emit (node:events:517:28)
+        at Socket.socketErrorListener (node:_http_client:501:9)
+        at Socket.emit (node:events:517:28)
+        at emitErrorNT (node:internal/streams/destroy:151:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+        at processTicksAndRejections (node:internal/process/task_queues:82:21),
+    [Symbol(composed)]: false,
+    [Symbol(bubbles)]: false,
+    [Symbol(cancelable)]: false,
+    [Symbol(defaultPrevented)]: false,
+    [Symbol(eventPhase)]: 0,
+    [Symbol(timeStamp)]: 1491.660249710083,
+    [Symbol(type)]: 'error',
+    [Symbol(dispatching)]: false,
+    [Symbol(immediatePropagationStopped)]: false,
+    [Symbol(propagationStopped)]: false,
+    [Symbol(target)]: XMLHttpRequest [EventTarget] {
+      upload: [XMLHttpRequestUpload [EventTarget]],
+      withCredentials: false,
+      timeout: 0,
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: [Map]
+    },
+    [Symbol(currentTarget)]: null,
+    [Symbol(isInPassiveEventListener)]: false
+  }
+}
+
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
+    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
+    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
+    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
+    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
+    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
+    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.getByProduct (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:18:26) {
+  isAxiosError: true,
+  code: 'ERR_NETWORK',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined
+    },
+    method: 'get',
+    url: 'http://localhost:3001/api/reviews/product/1',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest [EventTarget] {
+    upload: XMLHttpRequestUpload [EventTarget] {
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: Map(0) {}
+    },
+    withCredentials: false,
+    timeout: 0,
+    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(propertyEventListeners)]: Map(4) {
+      'onloadend' => [Function: onloadend],
+      'onabort' => [Function: handleAbort],
+      'onerror' => [Function: handleError],
+      'ontimeout' => [Function: handleTimeout]
+    }
+  },
+  event: ErrorEvent {
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    detail: 0,
+    layerX: 0,
+    layerY: 0,
+    pageX: 0,
+    pageY: 0,
+    view: null,
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001',
+    filename: '',
+    lineno: 0,
+    colno: 0,
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1": connect ECONNREFUSED ::1:3001
+        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
+        at ClientRequest.emit (node:events:517:28)
+        at Socket.socketErrorListener (node:_http_client:501:9)
+        at Socket.emit (node:events:517:28)
+        at emitErrorNT (node:internal/streams/destroy:151:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+        at processTicksAndRejections (node:internal/process/task_queues:82:21),
+    [Symbol(composed)]: false,
+    [Symbol(bubbles)]: false,
+    [Symbol(cancelable)]: false,
+    [Symbol(defaultPrevented)]: false,
+    [Symbol(eventPhase)]: 0,
+    [Symbol(timeStamp)]: 1491.9972496032715,
+    [Symbol(type)]: 'error',
+    [Symbol(dispatching)]: false,
+    [Symbol(immediatePropagationStopped)]: false,
+    [Symbol(propagationStopped)]: false,
+    [Symbol(target)]: XMLHttpRequest [EventTarget] {
+      upload: [XMLHttpRequestUpload [EventTarget]],
+      withCredentials: false,
+      timeout: 0,
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: [Map]
+    },
+    [Symbol(currentTarget)]: null,
+    [Symbol(isInPassiveEventListener)]: false
+  }
+}
+
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
+    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
+    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
+    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
+    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
+    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.getStats (/Users/romanbulyhin/mnostva/mnostva-art/services/reviewsService.ts:23:26) {
+  isAxiosError: true,
+  code: 'ERR_NETWORK',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined
+    },
+    method: 'get',
+    url: 'http://localhost:3001/api/reviews/product/1/stats',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest [EventTarget] {
+    upload: XMLHttpRequestUpload [EventTarget] {
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: Map(0) {}
+    },
+    withCredentials: false,
+    timeout: 0,
+    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(propertyEventListeners)]: Map(4) {
+      'onloadend' => [Function: onloadend],
+      'onabort' => [Function: handleAbort],
+      'onerror' => [Function: handleError],
+      'ontimeout' => [Function: handleTimeout]
+    }
+  },
+  event: ErrorEvent {
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    detail: 0,
+    layerX: 0,
+    layerY: 0,
+    pageX: 0,
+    pageY: 0,
+    view: null,
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001',
+    filename: '',
+    lineno: 0,
+    colno: 0,
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/reviews/product/1/stats": connect ECONNREFUSED ::1:3001
+        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
+        at ClientRequest.emit (node:events:517:28)
+        at Socket.socketErrorListener (node:_http_client:501:9)
+        at Socket.emit (node:events:517:28)
+        at emitErrorNT (node:internal/streams/destroy:151:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+        at processTicksAndRejections (node:internal/process/task_queues:82:21),
+    [Symbol(composed)]: false,
+    [Symbol(bubbles)]: false,
+    [Symbol(cancelable)]: false,
+    [Symbol(defaultPrevented)]: false,
+    [Symbol(eventPhase)]: 0,
+    [Symbol(timeStamp)]: 1492.2816247940063,
+    [Symbol(type)]: 'error',
+    [Symbol(dispatching)]: false,
+    [Symbol(immediatePropagationStopped)]: false,
+    [Symbol(propagationStopped)]: false,
+    [Symbol(target)]: XMLHttpRequest [EventTarget] {
+      upload: [XMLHttpRequestUpload [EventTarget]],
+      withCredentials: false,
+      timeout: 0,
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: [Map]
+    },
+    [Symbol(currentTarget)]: null,
+    [Symbol(isInPassiveEventListener)]: false
+  }
+}
+
+stderr | pages/ProductDetailPage.test.tsx
+AxiosError: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
+    at handleError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/adapters/xhr.js:112:20)
+    at XMLHttpRequest.#callDispatchEventListeners (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:295:25)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:104:41)
+    at XMLHttpRequest.#goThroughDispatchEventPhases (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:164:38)
+    at XMLHttpRequest.dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/event/EventTarget.js:100:47)
+    at XMLHttpRequest.#dispatchEvent (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:460:14)
+    at onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:326:36)
+    at XMLHttpRequest.#sendAsync (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/xml-http-request/XMLHttpRequest.js:342:13)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Axios.request (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/axios/lib/core/Axios.js:46:41)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at Object.checkStatus (/Users/romanbulyhin/mnostva/mnostva-art/services/wishlistService.ts:21:26) {
+  isAxiosError: true,
+  code: 'ERR_NETWORK',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined,
+      Authorization: 'Bearer '
+    },
+    method: 'get',
+    url: 'http://localhost:3001/api/wishlist/1/check',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest [EventTarget] {
+    upload: XMLHttpRequestUpload [EventTarget] {
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: Map(0) {}
+    },
+    withCredentials: false,
+    timeout: 0,
+    [Symbol(listeners)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(listenerOptions)]: { capturing: Map(0) {}, bubbling: Map(0) {} },
+    [Symbol(propertyEventListeners)]: Map(4) {
+      'onloadend' => [Function: onloadend],
+      'onabort' => [Function: handleAbort],
+      'onerror' => [Function: handleError],
+      'ontimeout' => [Function: handleTimeout]
+    }
+  },
+  event: ErrorEvent {
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    detail: 0,
+    layerX: 0,
+    layerY: 0,
+    pageX: 0,
+    pageY: 0,
+    view: null,
+    message: 'Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001',
+    filename: '',
+    lineno: 0,
+    colno: 0,
+    error: DOMException [NetworkError]: Failed to execute "fetch()" on "Window" with URL "http://localhost:3001/api/wishlist/1/check": connect ECONNREFUSED ::1:3001
+        at Fetch.onError (file:///Users/romanbulyhin/mnostva/mnostva-art/node_modules/happy-dom/lib/fetch/Fetch.js:540:21)
+        at ClientRequest.emit (node:events:517:28)
+        at Socket.socketErrorListener (node:_http_client:501:9)
+        at Socket.emit (node:events:517:28)
+        at emitErrorNT (node:internal/streams/destroy:151:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+        at processTicksAndRejections (node:internal/process/task_queues:82:21),
+    [Symbol(composed)]: false,
+    [Symbol(bubbles)]: false,
+    [Symbol(cancelable)]: false,
+    [Symbol(defaultPrevented)]: false,
+    [Symbol(eventPhase)]: 0,
+    [Symbol(timeStamp)]: 1492.5540409088135,
+    [Symbol(type)]: 'error',
+    [Symbol(dispatching)]: false,
+    [Symbol(immediatePropagationStopped)]: false,
+    [Symbol(propagationStopped)]: false,
+    [Symbol(target)]: XMLHttpRequest [EventTarget] {
+      upload: [XMLHttpRequestUpload [EventTarget]],
+      withCredentials: false,
+      timeout: 0,
+      [Symbol(listeners)]: [Object],
+      [Symbol(listenerOptions)]: [Object],
+      [Symbol(propertyEventListeners)]: [Map]
+    },
+    [Symbol(currentTarget)]: null,
+    [Symbol(isInPassiveEventListener)]: false
+  }
+}
+
+ ✓ pages/ProductDetailPage.test.tsx (8 tests) 210ms
+ ✓ pages/ProfilePage.test.tsx (8 tests) 319ms
  ✓ services/orderService.test.ts (2 tests) 3ms
- ✓ components/ProtectedRoute.test.tsx (3 tests) 19ms
- ✓ components/ProductModal.test.tsx (4 tests) 41ms
- ✓ pages/MarketplacePage.test.tsx (5 tests) 1551ms
-     ✓ fetches and displays products  512ms
-     ✓ updates results when searching  338ms
-     ✓ shows "No assets found" when results are empty  307ms
-     ✓ should not crash when a product has null galleryImages  311ms
+ ✓ components/ProtectedRoute.test.tsx (3 tests) 18ms
+stderr | components/CartDrawer.test.tsx > CartDrawer > calls removeFromCart when delete button clicked
+Warning: An update to CartDrawer inside a test was not wrapped in act(...).
 
-⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CartDrawer (/Users/romanbulyhin/mnostva/mnostva-art/components/CartDrawer.tsx:6:23)
+    at Router (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9335:13)
+    at MemoryRouter (/Users/romanbulyhin/mnostva/mnostva-art/node_modules/react-router/dist/development/chunk-WICQJKU6.js:9251:3)
+
+ ✓ components/CartDrawer.test.tsx (4 tests) 48ms
+ ❯ pages/LoginPage.test.tsx (5 tests | 1 failed) 1143ms
+     ✓ renders login form by default 22ms
+     ✓ switches to register mode 17ms
+     ✓ calls login from useAuth on submit and calls onSuccess on success 26ms
+     ✓ shows local error state on login failure 29ms
+     × calls register with acceptedTerms on signup submit 1046ms
+ ✓ pages/MarketplacePage.test.tsx (7 tests) 1646ms
+     ✓ fetches and displays products  333ms
+     ✓ updates results when searching  321ms
+     ✓ shows "No assets found" when results are empty  312ms
+     ✓ should not crash when a product has null galleryImages  310ms
+       ✓ shows products for admin users  310ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
 
  FAIL  components/Marketplace.test.tsx > Marketplace Component > renders title and products
  FAIL  components/Marketplace.test.tsx > Marketplace Component > calls onSelectProduct when a product is clicked
  FAIL  components/Marketplace.test.tsx > Marketplace Component > opens modal if onSelectProduct is not provided
-Error: useCart must be used within a CartProvider
- ❯ useCart context/CartContext.tsx:85:23
-     83| export const useCart = () => {
-     84|   const context = useContext(CartContext);
-     85|   if (!context) throw new Error("useCart must be used within a CartPro…
+Error: useAuth must be used within an AuthProvider
+ ❯ useAuth context/AuthContext.tsx:289:23
+    287| export const useAuth = () => {
+    288|   const context = useContext(AuthContext);
+    289|   if (!context) throw new Error("useAuth must be used within an AuthPr…
        |                       ^
-     86|   return context;
-     87| };
- ❯ ProductModal components/ProductModal.tsx:42:31
+    290|   return context;
+    291| };
+ ❯ Marketplace components/Marketplace.tsx:26:20
  ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
  ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
  ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
@@ -2174,201 +2942,270 @@ Error: useCart must be used within a CartProvider
  ❯ HTMLUnknownElement.#goThroughDispatchEventPhases node_modules/happy-dom/src/event/EventTarget.ts:214:32
  ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:135:38
 
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
 
+ FAIL  components/ProductCard.test.tsx > ProductCard > renders product information
  FAIL  components/ProductCard.test.tsx > ProductCard > calls onOpen when clicking on image or title
-TestingLibraryElementError: Unable to find an accessible element with the role "heading" and name `/Test Asset/i`
+ FAIL  components/ProductCard.test.tsx > ProductCard > calls addToCart when "Add to Basket" is clicked
+ FAIL  components/ProductCard.test.tsx > ProductCard > shows "In Basket" when product is already in cart
+Error: useAuth must be used within an AuthProvider
+ ❯ useAuth context/AuthContext.tsx:289:23
+    287| export const useAuth = () => {
+    288|   const context = useContext(AuthContext);
+    289|   if (!context) throw new Error("useAuth must be used within an AuthPr…
+       |                       ^
+    290|   return context;
+    291| };
+ ❯ ProductCard components/ProductCard.tsx:43:20
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:14
+ ❯ HTMLUnknownElement.#callDispatchEventListeners node_modules/happy-dom/src/event/EventTarget.ts:305:41
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:142:35
+ ❯ HTMLUnknownElement.#goThroughDispatchEventPhases node_modules/happy-dom/src/event/EventTarget.ts:214:32
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:135:38
 
-Here are the accessible roles:
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
 
-  article:
+ FAIL  components/ProductModal.test.tsx > ProductModal Robustness > renders without crashing even if galleryImages is null
+ FAIL  components/ProductModal.test.tsx > ProductModal Robustness > handles galleryImages being a string (unexpected data type)
+ FAIL  components/ProductModal.test.tsx > ProductModal Robustness > renders Key Features and Technical Specs when data is provided
+ FAIL  components/ProductModal.test.tsx > ProductModal Robustness > hides Technical Specs when empty
+Error: useAuth must be used within an AuthProvider
+ ❯ useAuth context/AuthContext.tsx:289:23
+    287| export const useAuth = () => {
+    288|   const context = useContext(AuthContext);
+    289|   if (!context) throw new Error("useAuth must be used within an AuthPr…
+       |                       ^
+    290|   return context;
+    291| };
+ ❯ ProductModal components/ProductModal.tsx:44:20
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:14
+ ❯ HTMLUnknownElement.#callDispatchEventListeners node_modules/happy-dom/src/event/EventTarget.ts:305:41
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:142:35
+ ❯ HTMLUnknownElement.#goThroughDispatchEventPhases node_modules/happy-dom/src/event/EventTarget.ts:214:32
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:135:38
 
-  Name "":
-  [36m<article[39m
-    [33mclass[39m=[32m"relative group p-[5px] rounded-[2.8rem] transition-all duration-500 hover:scale-[1.03] active:scale-[1.05] h-full"[39m
-  [36m/>[39m
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
 
-  --------------------------------------------------
-  link:
+ FAIL  pages/LoginPage.test.tsx > LoginPage > calls register with acceptedTerms on signup submit
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'New Artist', …(3) ]
 
-  Name "Test Asset Prop $19.99":
-  [36m<a[39m
-    [33mclass[39m=[32m"relative aspect-video overflow-hidden block"[39m
-    [33mdata-discover[39m=[32m"true"[39m
-    [33mhref[39m=[32m"/product/1"[39m
-  [36m/>[39m
+Received:
 
-  Name "Test Asset":
-  [36m<a[39m
-    [33mclass[39m=[32m"text-2xl font-black text-gray-800 mb-2 group-hover:text-[#8a7db3] transition-colors cursor-pointer active:scale-95 origin-left inline-block uppercase tracking-tight"[39m
-    [33mdata-discover[39m=[32m"true"[39m
-    [33mhref[39m=[32m"/product/1"[39m
-  [36m/>[39m
+  1st vi.fn() call:
 
-  Name "Technical Info":
-  [36m<a[39m
-    [33mclass[39m=[32m"block w-full text-center bg-white/50 text-[#8a7db3] border border-purple-100 hover:bg-purple-50 py-2 rounded-xl text-[10px] font-black transition-all active:bg-purple-100 uppercase tracking-widest"[39m
-    [33mdata-discover[39m=[32m"true"[39m
-    [33mhref[39m=[32m"/product/1"[39m
-  [36m/>[39m
+  [
+    "New Artist",
+    "new@example.com",
+    "password123",
+    true,
++   "regular",
+  ]
 
-  --------------------------------------------------
-  img:
 
-  Name "Test Asset":
-  [36m<img[39m
-    [33malt[39m=[32m"Test Asset"[39m
-    [33mclass[39m=[32m"w-full h-full object-cover object-bottom transition-transform duration-700 group-hover:scale-110 group-active:scale-125"[39m
-    [33mloading[39m=[32m"lazy"[39m
-    [33msrc[39m=[32m"test.jpg"[39m
-  [36m/>[39m
+Number of calls: 1
 
-  --------------------------------------------------
-  paragraph:
-
-  Name "":
-  [36m<p[39m
-    [33mclass[39m=[32m"text-gray-500 text-sm mb-4 line-clamp-2 font-medium"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  button:
-
-  Name "Add to Basket 🧺":
-  [36m<button[39m
-    [33mclass[39m=[32m"block w-full text-center py-4 rounded-2xl font-black shadow-lg transition-all uppercase tracking-widest text-sm border-b-4 transform-gpu bg-gradient-to-r from-[#8a7db3] to-pink-500 text-white border-pink-700/30 hover:shadow-pink-200 hover:brightness-110 active:translate-y-[2px] active:border-b-2 active:mb-[2px] active:scale-95 "[39m
-  [36m/>[39m
-
-  --------------------------------------------------
 
 Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<article[39m
-      [33mclass[39m=[32m"relative group p-[5px] rounded-[2.8rem] transition-all duration-500 hover:scale-[1.03] active:scale-[1.05] h-full"[39m
-    [36m>[39m
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
       [36m<div[39m
-        [33mclass[39m=[32m"absolute inset-0 bg-gradient-to-br from-[#8a7db3] via-pink-400 to-[#a2c367] animate-gradient-slow opacity-30 group-hover:opacity-100 rounded-[2.8rem] transition-all duration-700 blur-[3px] group-hover:blur-[1px] group-hover:animate-border-pulse"[39m
-      [36m/>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"relative bg-white/90 backdrop-blur-xl rounded-[2.6rem] overflow-hidden flex flex-col h-full border border-white/40 shadow-xl group-hover:bg-white/95 transition-colors duration-500"[39m
+        [33mclass[39m=[32m"min-h-screen flex items-center justify-center px-4 py-20 bg-transparent"[39m
       [36m>[39m
-        [36m<a[39m
-          [33mclass[39m=[32m"relative aspect-video overflow-hidden block"[39m
-          [33mdata-discover[39m=[32m"true"[39m
-          [33mhref[39m=[32m"/product/1"[39m
-        [36m>[39m
-          [36m<img[39m
-            [33malt[39m=[32m"Test Asset"[39m
-            [33mclass[39m=[32m"w-full h-full object-cover object-bottom transition-transform duration-700 group-hover:scale-110 group-active:scale-125"[39m
-            [33mloading[39m=[32m"lazy"[39m
-            [33msrc[39m=[32m"test.jpg"[39m
-          [36m/>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500 flex items-center justify-center"[39m
-          [36m>[39m
-            [36m<div[39m
-              [33mclass[39m=[32m"bg-white/90 text-[#8a7db3] p-4 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all shadow-2xl scale-75 group-hover:scale-100"[39m
-            [36m>[39m
-              [36m<svg[39m
-                [33mclass[39m=[32m"w-6 h-6"[39m
-                [33mfill[39m=[32m"none"[39m
-                [33mstroke[39m=[32m"currentColor"[39m
-                [33mviewBox[39m=[32m"0 0 24 24"[39m
-              [36m>[39m
-                [36m<path[39m
-                  [33md[39m=[32m"M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"3"[39m
-                [36m/>[39m
-              [36m</svg>[39m
-            [36m</div>[39m
-          [36m</div>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"absolute top-4 left-4 bg-[#8a7db3] text-white px-4 py-1 rounded-full text-[10px] font-black shadow-lg uppercase tracking-widest"[39m
-          [36m>[39m
-            [0mProp[0m
-          [36m</div>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"absolute bottom-4 right-4 flex flex-col items-end gap-1 transform group-hover:translate-y-[-4px] transition-transform duration-300"[39m
-          [36m>[39m
-            [36m<div[39m
-              [33mclass[39m=[32m"bg-pink-500 text-white px-4 py-2 rounded-2xl font-bold shadow-lg"[39m
-            [36m>[39m
-              [0m$19.99[0m
-            [36m</div>[39m
-          [36m</div>[39m
-        [36m</a>[39m
         [36m<div[39m
-          [33mclass[39m=[32m"p-6 flex flex-col flex-grow"[39m
+          [33mdata-testid[39m=[32m"scroll-reveal"[39m
         [36m>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"text-2xl font-black text-gray-800 mb-2 group-hover:text-[#8a7db3] transition-colors cursor-pointer active:scale-95 origin-left inline-block uppercase tracking-tight"[39m
-            [33mdata-discover[39m=[32m"true"[39m
-            [33mhref[39m=[32m"/product/1"[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"mb-6 flex items-center gap-2 text-[#8a7db3] font-black uppercase tracking-widest hover:translate-x-[-4px] transition-transform"[39m
           [36m>[39m
-            [0mTest Asset[0m
-          [36m</a>[39m
-          [36m<p[39m
-            [33mclass[39m=[32m"text-gray-500 text-sm mb-4 line-clamp-2 font-medium"[39m
-          [36m>[39m
-            [0mA test asset description[0m
-          [36m</p>[39m
+            [0m← Back[0m
+          [36m</button>[39m
           [36m<div[39m
-            [33mclass[39m=[32m"flex flex-wrap gap-2 mb-6"[39m
+            [33mclass[39m=[32m"bg-white rounded-[3rem] p-10 md:p-12 shadow-2xl border-b-8 border-black/10 text-center"[39m
           [36m>[39m
-            [36m<span[39m
-              [33mclass[39m=[32m"bg-purple-50 text-[#8a7db3] px-3 py-1 rounded-full text-[10px] font-black border border-purple-100/50 uppercase tracking-tighter"[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl"[39m
             [36m>[39m
-              [0m#[0m
-              [0mtag1[0m
-            [36m</span>[39m
-            [36m<span[39m
-              [33mclass[39m=[32m"bg-purple-50 text-[#8a7db3] px-3 py-1 rounded-full text-[10px] font-black border border-purple-100/50 uppercase tracking-tighter"[39m
+              [0m🌈[0m
+            [36m</div>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-4xl font-black text-gray-900 mb-2"[39m
             [36m>[39m
-              [0m#[0m
-              [0mtag2[0m
-            [36m</span>[39m
-          [36m</div>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"mt-auto space-y-3 relative"[39m
-          [36m>[39m
-            [36m<button[39m
-              [33mclass[39m=[32m"block w-full text-center py-4 rounded-2xl font-black shadow-lg transition-all uppercase tracking-widest text-sm border-b-4 transform-gpu bg-gradient-to-r from-[#8a7db3] to-pink-500 text-white border-pink-700/30 hover:shadow-pink-200 hover:brightness-110 active:translate-y-[2px] active:border-b-2 active:mb-[2px] active:scale-95 "[39m
+              [0mJoin the Magic![0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-gray-500 font-bold mb-8 uppercase tracking-widest text-xs"[39m
             [36m>[39m
-              [0mAdd to Basket 🧺[0m
-            [36m</button>[39m
-            [36m<a[39m
-              [33mclass[39m=[32m"block w-full text-center bg-white/50 text-[#8a7db3] border border-purple-100 hover:bg-purple-50 py-2 rounded-xl text-[10px] font-black transition-all active:bg-purple-100 uppercase tracking-widest"[39m
-              [33mdata-discover[39m=[32m"true"[39m
-              [33mhref[39m=[32m"/product/1"[39m
+              [0mCreate your stylized account[0m
+            [36m</p>[39m
+            [36m<form[39m
+              [33mclass[39m=[32m"space-y-4"[39m
             [36m>[39m
-              [0mTechnical Info[0m
-            [36m</a>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-left animate-in fade-in slide-in-from-top-2"[39m
+              [36m>[39m
+                [36m<label[39m
+                  [33mclass[39m=[32m"block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4"[39m
+                [36m>[39m
+                  [0mFull Name[0m
+                [36m</label>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all text-[#8a7db3] placeholder-[#8a7db3]/30"[39m
+                  [33mplaceholder[39m=[32m"Artist Name"[39m
+                  [33mrequired[39m=[32m""[39m
+                  [33mtype[39m=[32m"text"[39m
+                  [33mvalue[39m=[32m"New Artist"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-left animate-in fade-in"[39m
+              [36m>[39m
+                [36m<label[39m
+                  [33mclass[39m=[32m"block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4"[39m
+                [36m>[39m
+                  [0mEmail Address[0m
+                [36m</label>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all text-[#8a7db3] placeholder-[#8a7db3]/30"[39m
+                  [33mplaceholder[39m=[32m"123@123.com"[39m
+                  [33mrequired[39m=[32m""[39m
+                  [33mtype[39m=[32m"email"[39m
+                  [33mvalue[39m=[32m"new@example.com"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-left animate-in fade-in"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex justify-between items-center mb-2 mx-4"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"block text-[10px] font-black text-gray-400 uppercase tracking-widest"[39m
+                  [36m>[39m
+                    [0mPassword[0m
+                  [36m</label>[39m
+                [36m</div>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all text-[#8a7db3] placeholder-[#8a7db3]/30"[39m
+                  [33mplaceholder[39m=[32m"••••••"[39m
+                  [33mrequired[39m=[32m""[39m
+                  [33mtype[39m=[32m"password"[39m
+                  [33mvalue[39m=[32m"password123"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center gap-3 text-left px-2 py-3 animate-in fade-in"[39m
+              [36m>[39m
+                [36m<input[39m
+                  [33mclass[39m=[32m"w-5 h-5 accent-[#8a7db3] cursor-pointer shrink-0"[39m
+                  [33mid[39m=[32m"terms"[39m
+                  [33mrequired[39m=[32m""[39m
+                  [33mtype[39m=[32m"checkbox"[39m
+                [36m/>[39m
+                [36m<label[39m
+                  [33mclass[39m=[32m"text-xs font-bold text-gray-500 leading-tight cursor-pointer"[39m
+                  [33mfor[39m=[32m"terms"[39m
+                [36m>[39m
+                  [0mI agree to the [0m
+                  [36m<a[39m
+                    [33mclass[39m=[32m"text-[#8a7db3] hover:underline"[39m
+                    [33mhref[39m=[32m"/legal"[39m
+                    [33mrel[39m=[32m"noopener noreferrer"[39m
+                    [33mtarget[39m=[32m"_blank"[39m
+                  [36m>[39m
+                    [0mTerms and Privacy Policy[0m
+                  [36m</a>[39m
+                  [0m.[0m
+                [36m</label>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"text-left animate-in fade-in mt-2 mb-2"[39m
+              [36m>[39m
+                [36m<label[39m
+                  [33mclass[39m=[32m"block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4"[39m
+                [36m>[39m
+                  [0mAccount Type[0m
+                [36m</label>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex gap-4 px-2"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-600"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mchecked[39m=[32m""[39m
+                      [33mclass[39m=[32m"accent-[#8a7db3] w-4 h-4"[39m
+                      [33mname[39m=[32m"userType"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"regular"[39m
+                    [36m/>[39m
+                    [0mRegular User[0m
+                  [36m</label>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-600"[39m
+                  [36m>[39m
+                    [36m<input[39m
+                      [33mclass[39m=[32m"accent-[#8a7db3] w-4 h-4"[39m
+                      [33mname[39m=[32m"userType"[39m
+                      [33mtype[39m=[32m"radio"[39m
+                      [33mvalue[39m=[32m"company"[39m
+                    [36m/>[39m
+                    [0mCompany[0m
+                  [36m</label>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"w-full bg-[#8a7db3] text-white py-5 rounded-2xl font-black text-lg shadow-xl hover:translate-y-[-4px] active:translate-y-0 transition-all uppercase tracking-widest mt-4 disabled:opacity-50"[39m
+                [33mtype[39m=[32m"submit"[39m
+              [36m>[39m
+                [0mCreate Account 🎨[0m
+              [36m</button>[39m
+            [36m</form>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mt-8 pt-8 border-t-2 border-gray-50"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-gray-400 font-bold text-xs text-center"[39m
+              [36m>[39m
+                [0mAlready have an account?[0m
+                [0m [0m
+                [0m [0m
+                [36m<button[39m
+                  [33mclass[39m=[32m"text-pink-500 hover:underline cursor-pointer font-black"[39m
+                [36m>[39m
+                  [0mLogin here[0m
+                [36m</button>[39m
+              [36m</p>[39m
+            [36m</div>[39m
           [36m</div>[39m
         [36m</div>[39m
       [36m</div>[39m
-    [36m</article>[39m
-  [36m</div>[39m
-[36m</body>[39m
- ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
- ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
- ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
- ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
- ❯ components/ProductCard.test.tsx:53:32
-     51|         );
-     52|
-     53|         fireEvent.click(screen.getByRole('heading', { name: /Test Asse…
-       |                                ^
-     54|         expect(mockOnOpen).toHaveBeenCalledWith(mockProduct);
-     55|     });
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+ ❯ pages/LoginPage.test.tsx:134:28
+    132|
+    133|     await waitFor(() => {
+    134|       expect(mockRegister).toHaveBeenCalledWith('New Artist', 'new@exa…
+       |                            ^
+    135|       expect(mockOnSuccess).toHaveBeenCalled();
+    136|     });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
 
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
 
 
- Test Files  2 failed | 10 passed (12)
-      Tests  4 failed | 46 passed (50)
-   Start at  10:45:38
-   Duration  3.03s (transform 2.98s, setup 1.83s, import 4.68s, tests 4.30s, environment 6.56s)
+ Test Files  4 failed | 8 passed (12)
+      Tests  12 failed | 46 passed (58)
+   Start at  14:07:09
+   Duration  2.78s (transform 2.42s, setup 1.46s, import 4.54s, tests 3.91s, environment 3.98s)
 

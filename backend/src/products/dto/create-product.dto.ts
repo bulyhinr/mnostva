@@ -69,11 +69,19 @@ export class CreateProductDto {
 
     @IsString()
     @IsOptional()
+    fileName?: string;
+
+    @IsString()
+    @IsOptional()
     previewImageKey?: string;
 
     @IsString()
     @IsOptional()
     previewModelKey?: string;
+
+    @IsString()
+    @IsOptional()
+    previewModelName?: string;
 
     @IsString()
     @IsOptional()

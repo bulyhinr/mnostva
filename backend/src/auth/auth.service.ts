@@ -130,6 +130,7 @@ export class AuthService {
                 avatar: user.avatar,
                 bio: user.bio,
                 isAdmin: user.isAdmin,
+                userType: user.userType,
             },
         };
     }

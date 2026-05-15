@@ -68,6 +68,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
           ) : (
             cart.map((item) => {
               const isRemoving = removingIds.has(`${item.id}-${item.licenseType || 'standard'}`);
+              const basePrice = item.licenseType === 'commercial' && item.commercialPrice ? item.commercialPrice : item.price;
               return (
                 <div
                   key={`${item.id}-${item.licenseType || 'standard'}`}
@@ -107,12 +108,12 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
                       <div className="flex flex-col items-end">
                         {item.discount && item.discount.isActive ? (
                           <>
-                            <span className="text-gray-400 line-through text-[10px] font-bold">${(item.price * item.quantity).toFixed(2)}</span>
-                            <span className="text-pink-500 font-black">${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}</span>
+                            <span className="text-gray-400 line-through text-[10px] font-bold">${(basePrice * item.quantity).toFixed(2)}</span>
+                            <span className="text-pink-500 font-black">${((basePrice * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}</span>
                           </>
                         ) : (
                           <div className="text-pink-500 font-black">
-                            {(item.price * item.quantity) === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}
+                            {(basePrice * item.quantity) === 0 ? 'Free Pack' : `$${(basePrice * item.quantity).toFixed(2)}`}
                           </div>
                         )}
                       </div>

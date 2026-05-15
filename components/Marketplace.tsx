@@ -55,7 +55,9 @@ const Marketplace: React.FC<MarketplaceProps> = ({
             galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
             previewImageKey: p.previewImageKey,
             previewModelKey: p.previewModelKey,
-            isActive: p.isActive
+            isActive: p.isActive,
+            updatedAt: p.updatedAt,
+            commercialPrice: p.commercialPrice ? p.commercialPrice / 100 : undefined
           }));
           setProducts(mappedProducts);
         } catch (error) {

@@ -4,6 +4,14 @@ import ProductCard from './ProductCard';
 import { useCart } from '../context/CartContext';
 import { MemoryRouter } from 'react-router-dom';
 
+// Mock useAuth
+vi.mock('../context/AuthContext', () => ({
+  useAuth: () => ({
+    user: null,
+    loading: false,
+  }),
+}));
+
 // Mock useCart
 vi.mock('../context/CartContext', () => ({
   useCart: vi.fn(),
@@ -18,7 +26,9 @@ describe('ProductCard', () => {
         description: 'A test asset description',
         imageUrl: 'test.jpg',
         tags: ['tag1', 'tag2'],
-        externalLinks: {}
+        externalLinks: {},
+        isActive: true,
+        commercialPrice: undefined
     };
     const mockOnOpen = vi.fn();
     const mockAddToCart = vi.fn();
@@ -65,7 +75,7 @@ describe('ProductCard', () => {
         const addBtn = screen.getByText(/Add to Basket/i);
         fireEvent.click(addBtn);
 
-        expect(mockAddToCart).toHaveBeenCalledWith(mockProduct);
+        expect(mockAddToCart).toHaveBeenCalledWith(mockProduct, 1, 'standard');
     });
 
     it('shows "In Basket" when product is already in cart', () => {

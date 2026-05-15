@@ -14,6 +14,7 @@ interface LoginResponse {
         avatar?: string;
         bio?: string;
         isAdmin: boolean;
+        userType?: 'regular' | 'company';
     };
 }
 
@@ -22,6 +23,7 @@ interface RegisterData {
     email: string;
     password: string;
     acceptedTerms: boolean;
+    userType?: string;
 }
 
 interface JWTPayload {

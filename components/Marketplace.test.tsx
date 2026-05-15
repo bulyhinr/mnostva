@@ -5,6 +5,23 @@ import { productService } from '../services/productService';
 import { MemoryRouter } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
+// Mock constants
+vi.mock('../constants', async () => {
+  const actual = await vi.importActual('../constants');
+  return {
+    ...actual,
+    MAINTENANCE_MODE: false,
+  };
+});
+
+// Mock useAuth
+vi.mock('../context/AuthContext', () => ({
+  useAuth: () => ({
+    user: null,
+    loading: false,
+  }),
+}));
+
 // Mock useCart
 vi.mock('../context/CartContext', () => ({
   useCart: () => ({
@@ -37,8 +54,8 @@ vi.mock('./ScrollReveal', () => ({
 describe('Marketplace Component', () => {
   const mockProducts = {
     data: [
-      { id: '1', title: 'Asset 1', price: 1000, category: 'Prop', description: 'Desc 1' },
-      { id: '2', title: 'Asset 2', price: 2000, category: 'Room', description: 'Desc 2' }
+      { id: '1', title: 'Asset 1', price: 1000, category: 'Prop', description: 'Desc 1', isActive: true, commercialPrice: undefined },
+      { id: '2', title: 'Asset 2', price: 2000, category: 'Room', description: 'Desc 2', isActive: true, commercialPrice: undefined }
     ],
     total: 2
   };

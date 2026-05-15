@@ -17,6 +17,9 @@ export class RegisterDto {
 
     @IsNotEmpty()
     acceptedTerms: boolean;
+
+    @IsString()
+    userType?: string;
 }
 
 export class LoginDto {

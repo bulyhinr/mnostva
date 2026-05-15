@@ -79,8 +79,8 @@ vi.mock('../components/ImageWithFallback', () => ({
 
 describe('AdminPage', () => {
     const mockProducts = [
-        { id: '1', title: 'Test Asset 1', price: 1000, category: 'Prop', tags: [], externalLinks: {} },
-        { id: '2', title: 'Test Asset 2', price: 2000, category: 'Environment', tags: [], externalLinks: {} },
+        { id: '1', title: 'Test Asset 1', price: 1000, category: 'Prop', tags: [], externalLinks: {}, isActive: true, commercialPrice: undefined },
+        { id: '2', title: 'Test Asset 2', price: 2000, category: 'Environment', tags: [], externalLinks: {}, isActive: true, commercialPrice: undefined },
     ];
 
     beforeEach(() => {

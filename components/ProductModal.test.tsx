@@ -3,6 +3,14 @@ import { describe, it, expect, vi } from 'vitest';
 import ProductModal from './ProductModal';
 import { MemoryRouter } from 'react-router-dom';
 
+// Mock useAuth
+vi.mock('../context/AuthContext', () => ({
+  useAuth: () => ({
+    user: null,
+    loading: false,
+  }),
+}));
+
 // Mock CartContext
 vi.mock('../context/CartContext', () => ({
   useCart: () => ({
@@ -17,16 +25,18 @@ vi.mock('./ImageWithFallback', () => ({
 }));
 
 describe('ProductModal Robustness', () => {
-  const mockProduct = {
+  const mockProduct: any = {
     id: '1',
     name: 'Test Product',
     price: 100,
-    category: 'Prop' as any,
+    category: 'Prop',
     tags: [],
     description: 'Test Description',
     imageUrl: 'test.jpg',
     externalLinks: {},
-    galleryImages: null as any, // This is what we're testing
+    galleryImages: null,
+    isActive: true,
+    commercialPrice: undefined
   };
 
   it('renders without crashing even if galleryImages is null', () => {
@@ -47,7 +57,7 @@ describe('ProductModal Robustness', () => {
 
     render(
       <MemoryRouter>
-        <ProductModal product={badProduct} onClose={() => {}} />
+        <ProductModal product={badProduct as any} onClose={() => {}} />
       </MemoryRouter>
     );
 
