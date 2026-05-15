@@ -90,40 +90,48 @@ const AdminPage: React.FC = () => {
         return () => clearTimeout(handler);
     }, [searchQuery]);
 
+    const mapBackendProductToFrontend = (p: any): Product => ({
+        id: p.id,
+        name: p.title,
+        price: p.price / 100,
+        category: p.category,
+        imageUrl: p.previewImageKey ? `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/public/${p.previewImageKey}` : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
+        description: p.description,
+        tags: [p.category || 'Asset', '3D Model'],
+        features: Array.isArray(p.features) ? p.features : (typeof p.features === 'string' && p.features.startsWith('[') ? JSON.parse(p.features) : []),
+        packContent: Array.isArray(p.packContent) ? p.packContent : (typeof p.packContent === 'string' && p.packContent.startsWith('[') ? JSON.parse(p.packContent) : []),
+        compatibility: Array.isArray(p.compatibility) ? p.compatibility : (typeof p.compatibility === 'string' && p.compatibility.startsWith('[') ? JSON.parse(p.compatibility) : []),
+        technicalSpecs: p.technicalSpecs || {},
+        externalLinks: p.externalLinks || {},
+        discount: p.discount,
+        fileKey: p.fileKey,
+        fileName: p.fileName,
+        galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
+        previewImageKey: p.previewImageKey,
+        isActive: p.isActive,
+        previewModelKey: p.previewModelKey,
+        previewModelName: p.previewModelName,
+        commercialPrice: p.commercialPrice ? p.commercialPrice / 100 : undefined
+    });
+
     const fetchData = async () => {
         try {
             setLoading(true);
+            const token = authService.getAccessToken() || '';
             const [backendProductsResponse, backendDiscounts, backendCoupons, backendOrders, backendLogs] = await Promise.all([
-                productService.getAllProducts({ page, limit: itemsPerPage, search: debouncedSearchQuery, showAll: true }),
-                discountService.getAllDiscounts(authService.getAccessToken() || ''),
-                couponService.getAllCoupons(authService.getAccessToken() || ''),
-                orderService.getAllOrders(authService.getAccessToken() || '', purchasesPage, reportingItemsPerPage),
-                downloadsService.getDownloadLogs(authService.getAccessToken() || '', downloadsPage, reportingItemsPerPage)
+                productService.getAllProducts({
+                    page,
+                    limit: itemsPerPage,
+                    search: debouncedSearchQuery,
+                    showAll: true
+                }),
+                discountService.getAllDiscounts(token),
+                couponService.getAllCoupons(token),
+                orderService.getAllOrders(token, purchasesPage, reportingItemsPerPage),
+                downloadsService.getDownloadLogs(token, downloadsPage, reportingItemsPerPage)
             ]);
 
-            const mappedProducts: Product[] = (backendProductsResponse.data || []).map((p: any) => ({
-                id: p.id,
-                name: p.title,
-                price: p.price / 100,
-                category: p.category,
-                imageUrl: p.previewImageKey ? `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/public/${p.previewImageKey}` : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
-                description: p.description,
-                tags: [p.category || 'Asset', '3D Model'],
-                features: Array.isArray(p.features) ? p.features : (typeof p.features === 'string' && p.features.startsWith('[') ? JSON.parse(p.features) : []),
-                packContent: Array.isArray(p.packContent) ? p.packContent : (typeof p.packContent === 'string' && p.packContent.startsWith('[') ? JSON.parse(p.packContent) : []),
-                compatibility: Array.isArray(p.compatibility) ? p.compatibility : (typeof p.compatibility === 'string' && p.compatibility.startsWith('[') ? JSON.parse(p.compatibility) : []),
-                technicalSpecs: p.technicalSpecs || {},
-                externalLinks: p.externalLinks || {},
-                discount: p.discount, // discount object from relation
-                fileKey: p.fileKey, // Add fileKey mapping
-                fileName: p.fileName,
-                galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
-                previewImageKey: p.previewImageKey,
-                isActive: p.isActive,
-                previewModelKey: p.previewModelKey,
-                previewModelName: p.previewModelName,
-                commercialPrice: p.commercialPrice ? p.commercialPrice / 100 : undefined
-            }));
+            const mappedProducts: Product[] = (backendProductsResponse.data || []).map(mapBackendProductToFrontend);
 
             setProducts(mappedProducts);
             setTotalPages(Math.ceil((backendProductsResponse.total || 0) / itemsPerPage));
@@ -147,10 +155,18 @@ const AdminPage: React.FC = () => {
     // Handle 'edit' query parameter
     useEffect(() => {
         const editId = searchParams.get('edit');
-        if (editId && products.length > 0 && !isEditingProduct) {
+        if (editId && !isEditingProduct) {
+            // First check in loaded products
             const productToEdit = products.find(p => p.id === editId);
             if (productToEdit) {
                 handleEditProduct(productToEdit);
+            } else if (products.length > 0) {
+                // If not found but products are loaded, fetch it specifically
+                productService.getProductById(editId).then(p => {
+                    if (p) {
+                        handleEditProduct(mapBackendProductToFrontend(p));
+                    }
+                }).catch(err => console.error('Failed to fetch product for editing:', err));
             }
         }
     }, [searchParams, products, isEditingProduct]);
@@ -656,8 +672,10 @@ const AdminPage: React.FC = () => {
                                                         <Link
                                                             to={`/admin?edit=${product.id}`}
                                                             onClick={(e) => {
-                                                                e.preventDefault();
-                                                                handleEditProduct(product);
+                                                                if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                                                                    e.preventDefault();
+                                                                    handleEditProduct(product);
+                                                                }
                                                             }}
                                                             className="p-2 border-2 border-gray-100 rounded-xl text-gray-400 hover:text-[#8a7db3] hover:border-[#8a7db3]/30 transition-all flex items-center justify-center"
                                                             aria-label={`Edit ${product.name}`}

@@ -221,7 +221,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
 
             {isSignup && !isForgotPassword && !isResetPassword && (
               <div className="text-left animate-in fade-in mt-2 mb-2">
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4">Account Type</label>
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4 flex items-center gap-1.5">
+                  Account Type
+                  <div className="group relative flex items-center">
+                    <span className="w-3.5 h-3.5 bg-gray-100 rounded-full flex items-center justify-center text-[8px] text-gray-400 cursor-help border border-gray-200 transition-colors group-hover:bg-[#8a7db3] group-hover:text-white group-hover:border-[#8a7db3]">ⓘ</span>
+                    <div className="absolute left-0 bottom-full mb-2 w-56 p-3 bg-gray-900 text-white text-[10px] font-bold rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all pointer-events-none z-50 shadow-2xl translate-y-1 group-hover:translate-y-0">
+                      <p className="text-pink-400 mb-1 uppercase tracking-widest">Regular Account</p>
+                      <p className="text-gray-300 leading-relaxed mb-2 font-medium">For personal use, hobbyists & small scale projects.</p>
+                      <p className="text-[#8a7db3] mb-1 uppercase tracking-widest">Company Account</p>
+                      <p className="text-gray-300 leading-relaxed font-medium">For commercial entities, teams & high-revenue products.</p>
+                    </div>
+                  </div>
+                </label>
                 <div className="flex gap-4 px-2">
                   <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-600">
                     <input type="radio" name="userType" value="regular" checked={userType === 'regular'} onChange={(e) => setUserType(e.target.value)} className="accent-[#8a7db3] w-4 h-4" />
