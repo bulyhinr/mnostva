@@ -506,7 +506,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                               </p>
 
                               <div className="flex items-center gap-3 mb-4">
-                                <span className="font-black text-pink-500 text-lg">${(item.price).toFixed(2)}</span>
                                 <span className="text-[9px] bg-pink-50 text-pink-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold border border-pink-100">Purchased</span>
                               </div>
 
