@@ -44,7 +44,8 @@ const AdminPage: React.FC = () => {
         previewModelKey: '',
         previewModelName: '',
         isActive: true,
-        commercialPrice: undefined
+        commercialPrice: undefined,
+        externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: [], sketchfab: '' }
     });
 
     // Discount Editing State
@@ -299,7 +300,12 @@ const AdminPage: React.FC = () => {
                 packContent: (currentProduct.packContent || []).filter(s => s.trim() !== ''),
                 compatibility: (currentProduct.compatibility || []).filter(s => s.trim() !== ''),
                 technicalSpecs: currentProduct.technicalSpecs || {},
-                externalLinks: currentProduct.externalLinks || {},
+                externalLinks: {
+                    ...currentProduct.externalLinks,
+                    youtube: Array.isArray(currentProduct.externalLinks?.youtube)
+                        ? currentProduct.externalLinks.youtube.filter(s => s.trim() !== '')
+                        : (currentProduct.externalLinks?.youtube ? [currentProduct.externalLinks.youtube] : [])
+                },
                 discountId: currentProduct.discountId || null,
                 isActive: currentProduct.isActive !== undefined ? currentProduct.isActive : true,
                 commercialPrice: currentProduct.commercialPrice ? Math.round(currentProduct.commercialPrice * 100) : null
@@ -338,7 +344,7 @@ const AdminPage: React.FC = () => {
                 compatibility: DEFAULT_COMPATIBILITY, 
                 discountId: '', 
                 technicalSpecs: { polyCount: '', textures: '', rigged: false, animated: false }, 
-                externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: '', sketchfab: '' }, 
+                externalLinks: { unity: '', fab: '', cgtrader: '', artstation: '', superhive: '', youtube: [], sketchfab: '' }, 
                 galleryImages: [], 
                 previewModelKey: '', 
                 previewModelName: '', 
@@ -377,7 +383,7 @@ const AdminPage: React.FC = () => {
                 cgtrader: '',
                 artstation: '',
                 superhive: '',
-                youtube: '',
+                youtube: [],
                 sketchfab: ''
             },
             galleryImages: [],
@@ -405,6 +411,44 @@ const AdminPage: React.FC = () => {
     const removeArrayItem = (field: keyof Product, index: number) => {
         const array = (currentProduct[field] as string[]) || [];
         setCurrentProduct({ ...currentProduct, [field]: array.filter((_, i) => i !== index) });
+    };
+
+    const handleYoutubeChange = (index: number, value: string) => {
+        const youtube = currentProduct.externalLinks?.youtube;
+        const array = Array.isArray(youtube) ? youtube : (youtube ? [youtube] : []);
+        const newArray = [...array];
+        newArray[index] = value;
+        setCurrentProduct({
+            ...currentProduct,
+            externalLinks: {
+                ...currentProduct.externalLinks,
+                youtube: newArray
+            }
+        });
+    };
+
+    const addYoutubeItem = () => {
+        const youtube = currentProduct.externalLinks?.youtube;
+        const array = Array.isArray(youtube) ? youtube : (youtube ? [youtube] : []);
+        setCurrentProduct({
+            ...currentProduct,
+            externalLinks: {
+                ...currentProduct.externalLinks,
+                youtube: [...array, '']
+            }
+        });
+    };
+
+    const removeYoutubeItem = (index: number) => {
+        const youtube = currentProduct.externalLinks?.youtube;
+        const array = Array.isArray(youtube) ? youtube : (youtube ? [youtube] : []);
+        setCurrentProduct({
+            ...currentProduct,
+            externalLinks: {
+                ...currentProduct.externalLinks,
+                youtube: array.filter((_, i) => i !== index)
+            }
+        });
     };
 
 
@@ -1125,14 +1169,31 @@ const AdminPage: React.FC = () => {
                                         )}
                                     </div>
                                     <div className="md:col-span-2">
-                                        <label className="block text-[11px] font-black text-red-500 uppercase tracking-widest mb-3 ml-4">YouTube Video URL (For Gallery)</label>
-                                        <input
-                                            type="text"
-                                            placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtu.be/..."
-                                            value={currentProduct.externalLinks?.youtube || ''}
-                                            onChange={e => setCurrentProduct({ ...currentProduct, externalLinks: { ...currentProduct.externalLinks, youtube: e.target.value } })}
-                                            className="w-full bg-red-50 border-4 border-transparent focus:border-red-300 rounded-2xl px-6 py-4 font-bold outline-none transition-all text-red-700"
-                                        />
+                                        <div className="flex justify-between items-center mb-3 px-4">
+                                            <label className="block text-[11px] font-black text-red-500 uppercase tracking-widest">YouTube Video URLs (For Gallery)</label>
+                                            <button type="button" onClick={addYoutubeItem} className="text-red-500 font-black text-xs uppercase tracking-widest hover:underline">+ Add Link</button>
+                                        </div>
+                                        <div className="space-y-3 pl-2">
+                                            {(Array.isArray(currentProduct.externalLinks?.youtube) 
+                                                ? currentProduct.externalLinks.youtube 
+                                                : (currentProduct.externalLinks?.youtube ? [currentProduct.externalLinks.youtube] : [])
+                                            ).map((item, index) => (
+                                                <div key={index} className="flex gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtu.be/..." 
+                                                        value={item} 
+                                                        onChange={(e) => handleYoutubeChange(index, e.target.value)} 
+                                                        className="w-full bg-red-50 border-2 border-transparent focus:border-red-300 rounded-xl px-4 py-3 font-bold outline-none text-sm text-red-700" 
+                                                    />
+                                                    <button type="button" onClick={() => removeYoutubeItem(index)} className="p-2 text-red-300 hover:text-red-500 font-bold">×</button>
+                                                </div>
+                                            ))}
+                                            {(!currentProduct.externalLinks?.youtube || 
+                                              (Array.isArray(currentProduct.externalLinks.youtube) && currentProduct.externalLinks.youtube.length === 0)) && (
+                                                <p className="text-center text-gray-300 text-[10px] font-bold py-2">No YouTube videos added yet. Click "+ Add Link" to add one!</p>
+                                            )}
+                                        </div>
                                     </div>
 
                                     {/* Gallery Images */}

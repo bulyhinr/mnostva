@@ -129,33 +129,40 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
   };
   const sketchfabEmbedUrl = getSketchfabEmbedUrl(product.externalLinks?.sketchfab);
  
-  const getYoutubeEmbedUrl = (url?: string) => {
-    if (!url) return null;
-    let videoId = '';
-    if (url.includes('v=')) {
-      videoId = url.split('v=')[1].split('&')[0];
-    } else if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1].split('?')[0];
-    } else if (url.includes('youtube.com/shorts/')) {
-      videoId = url.split('youtube.com/shorts/')[1].split('?')[0];
-    } else if (url.includes('embed/')) {
-      videoId = url.split('embed/')[1].split('?')[0];
-    }
-    if (!videoId) return null;
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+  const getYoutubeEmbedUrls = (youtubeInput?: string | string[]) => {
+    if (!youtubeInput) return [];
+    const urls = Array.isArray(youtubeInput) ? youtubeInput : [youtubeInput];
+    return urls
+      .map(url => {
+        if (!url) return null;
+        let videoId = '';
+        if (url.includes('v=')) {
+          videoId = url.split('v=')[1].split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+          videoId = url.split('youtu.be/')[1].split('?')[0];
+        } else if (url.includes('youtube.com/shorts/')) {
+          videoId = url.split('youtube.com/shorts/')[1].split('?')[0];
+        } else if (url.includes('embed/')) {
+          videoId = url.split('embed/')[1].split('?')[0];
+        }
+        if (!videoId) return null;
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+      })
+      .filter(Boolean) as string[];
   };
-  const youtubeEmbedUrl = getYoutubeEmbedUrl(product.externalLinks?.youtube);
+  const youtubeEmbedUrls = getYoutubeEmbedUrls(product.externalLinks?.youtube);
+  const isYoutubeEmbedUrl = (url: string) => url.startsWith('https://www.youtube.com/embed/');
 
   const galleryImages = [
     sketchfabEmbedUrl,
-    youtubeEmbedUrl,
+    ...youtubeEmbedUrls,
     modelViewerUrl,
     mainImageUrl,
     ...(Array.isArray(product.galleryImages) ? product.galleryImages : []).map(key => getStorageUrl(key))
   ].filter(Boolean) as string[];
 
   const [isSparkling, setIsSparkling] = useState(false);
-  const [activeImage, setActiveImage] = useState<string>(sketchfabEmbedUrl || modelViewerUrl || mainImageUrl);
+  const [activeImage, setActiveImage] = useState<string>(sketchfabEmbedUrl || youtubeEmbedUrls[0] || modelViewerUrl || mainImageUrl);
   const [quantity, setQuantity] = useState(1);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -171,10 +178,10 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
   };
 
   useEffect(() => {
-    setActiveImage(sketchfabEmbedUrl || modelViewerUrl || mainImageUrl);
+    setActiveImage(sketchfabEmbedUrl || youtubeEmbedUrls[0] || modelViewerUrl || mainImageUrl);
     setQuantity(1);
     window.scrollTo(0, 0);
-  }, [product, sketchfabEmbedUrl, modelViewerUrl, mainImageUrl]);
+  }, [product, sketchfabEmbedUrl, youtubeEmbedUrls.join(','), modelViewerUrl, mainImageUrl]);
 
   const derivedLicense = user?.userType === 'company' && product.commercialPrice ? 'commercial' : 'standard';
   const basePrice = derivedLicense === 'commercial' && product.commercialPrice ? product.commercialPrice : product.price;
@@ -287,11 +294,11 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                       allow="autoplay; fullscreen; vr"
                     ></iframe>
                   </div>
-                ) : activeImage === youtubeEmbedUrl ? (
+                ) : isYoutubeEmbedUrl(activeImage) ? (
                   <div className="w-full h-full relative group bg-black">
                     <iframe
                       title="YouTube Video"
-                      src={youtubeEmbedUrl!}
+                      src={activeImage}
                       className="w-full h-full border-0 absolute top-0 left-0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
@@ -375,7 +382,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                           </svg>
                         </span>
                       </div>
-                    ) : imgUrl === youtubeEmbedUrl ? (
+                    ) : isYoutubeEmbedUrl(imgUrl) ? (
                       <div className={`w-full h-full flex items-center justify-center bg-red-50 transition-all duration-500 ${activeImage === imgUrl ? 'scale-110' : 'grayscale-[40%] group-hover:grayscale-0'}`}>
                         <span className="flex items-center justify-center text-red-500" title="YouTube Video">
                           <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
@@ -610,7 +617,8 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                       <p className="text-center text-xs font-black text-gray-400 uppercase tracking-widest">Available on other platforms</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {Object.entries(product.externalLinks).map(([key, url]) => {
-                          if (!url || url.trim() === '' || key === 'youtube') return null;
+                          if (key === 'youtube') return null;
+                          if (!url || typeof url !== 'string' || url.trim() === '') return null;
                           const label = key.charAt(0).toUpperCase() + key.slice(1);
                           const Icon = StoreIcons[key as keyof typeof StoreIcons];
                           return (
@@ -740,14 +748,14 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                   allow="autoplay; fullscreen; vr"
                 ></iframe>
               </div>
-            ) : activeImage === youtubeEmbedUrl ? (
+            ) : isYoutubeEmbedUrl(activeImage) ? (
               <div
                 className="w-full h-full max-h-[85vh] rounded-2xl overflow-hidden shadow-[0_0_100px_rgba(138,125,179,0.3)] bg-black"
                 onClick={(e) => e.stopPropagation()}
               >
                 <iframe
                   title="YouTube Fullscreen"
-                  src={youtubeEmbedUrl!}
+                  src={activeImage}
                   className="w-full h-full border-0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

@@ -31,7 +31,7 @@ export interface Product {
     artstation?: string;
     sketchfab?: string;
     superhive?: string;
-    youtube?: string;
+    youtube?: string | string[];
   };
   tags: string[];
   features?: string[];

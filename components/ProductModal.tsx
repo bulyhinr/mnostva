@@ -65,33 +65,40 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
     return `https://sketchfab.com/models/${id}/embed?autostart=1&ui_controls=1&ui_infos=0&ui_watermark=1`;
   };
 
-  const getYoutubeEmbedUrl = (url?: string) => {
-    if (!url) return null;
-    let videoId = '';
-    if (url.includes('v=')) {
-      videoId = url.split('v=')[1].split('&')[0];
-    } else if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1].split('?')[0];
-    } else if (url.includes('youtube.com/shorts/')) {
-      videoId = url.split('youtube.com/shorts/')[1].split('?')[0];
-    } else if (url.includes('embed/')) {
-      videoId = url.split('embed/')[1].split('?')[0];
-    }
-    if (!videoId) return null;
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+  const getYoutubeEmbedUrls = (youtubeInput?: string | string[]) => {
+    if (!youtubeInput) return [];
+    const urls = Array.isArray(youtubeInput) ? youtubeInput : [youtubeInput];
+    return urls
+      .map(url => {
+        if (!url) return null;
+        let videoId = '';
+        if (url.includes('v=')) {
+          videoId = url.split('v=')[1].split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+          videoId = url.split('youtu.be/')[1].split('?')[0];
+        } else if (url.includes('youtube.com/shorts/')) {
+          videoId = url.split('youtube.com/shorts/')[1].split('?')[0];
+        } else if (url.includes('embed/')) {
+          videoId = url.split('embed/')[1].split('?')[0];
+        }
+        if (!videoId) return null;
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+      })
+      .filter(Boolean) as string[];
   };
 
   const sketchfabEmbedUrl = getSketchfabEmbedUrl(product?.externalLinks?.sketchfab);
-  const youtubeEmbedUrl = getYoutubeEmbedUrl(product?.externalLinks?.youtube);
+  const youtubeEmbedUrls = getYoutubeEmbedUrls(product?.externalLinks?.youtube);
+  const isYoutubeEmbedUrl = (url: string) => url.startsWith('https://www.youtube.com/embed/');
   const modelViewerUrl = product?.previewModelKey ? getStorageUrl(product.previewModelKey) : null;
   const mainImageUrl = product?.previewImageKey ? getStorageUrl(product.previewImageKey) : product?.imageUrl;
 
   useEffect(() => {
     if (product) {
-      setActiveImage(sketchfabEmbedUrl || youtubeEmbedUrl || modelViewerUrl || mainImageUrl || '');
+      setActiveImage(sketchfabEmbedUrl || youtubeEmbedUrls[0] || modelViewerUrl || mainImageUrl || '');
       setQuantity(1);
     }
-  }, [product, sketchfabEmbedUrl, youtubeEmbedUrl, modelViewerUrl, mainImageUrl]);
+  }, [product, sketchfabEmbedUrl, youtubeEmbedUrls.join(','), modelViewerUrl, mainImageUrl]);
 
   const derivedLicense = user?.userType === 'company' && product?.commercialPrice ? 'commercial' : 'standard';
   const basePrice = (derivedLicense === 'commercial' && product?.commercialPrice) ? product.commercialPrice : (product?.price || 0);
@@ -135,7 +142,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
 
   const galleryImages = product ? [
     sketchfabEmbedUrl,
-    youtubeEmbedUrl,
+    ...youtubeEmbedUrls,
     modelViewerUrl,
     mainImageUrl,
     ...ensureArray(product.galleryImages).map(key => getStorageUrl(key))
@@ -205,11 +212,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
                       allow="autoplay; fullscreen; vr"
                     ></iframe>
                   </div>
-                ) : activeImage === youtubeEmbedUrl ? (
+                ) : isYoutubeEmbedUrl(activeImage) ? (
                   <div className="w-full h-full relative group bg-black">
                     <iframe
                       title="YouTube Video"
-                      src={youtubeEmbedUrl!}
+                      src={activeImage}
                       className="w-full h-full border-0 absolute top-0 left-0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
@@ -274,7 +281,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
                           </svg>
                         </span>
                       </div>
-                    ) : imgUrl === youtubeEmbedUrl ? (
+                    ) : isYoutubeEmbedUrl(imgUrl) ? (
                       <div className={`w-full h-full flex items-center justify-center bg-red-50 transition-all duration-500 ${activeImage === imgUrl ? 'scale-110' : 'grayscale-[40%] group-hover:grayscale-0'}`}>
                         <span className="flex items-center justify-center text-red-500" title="YouTube Video">
                           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -465,7 +472,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onNavigat
                     <p className="text-center text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">Or buy on external platforms</p>
                     <div className="grid grid-cols-2 gap-3">
                       {Object.entries(product.externalLinks).map(([key, url]) => {
-                        if (!url || key === 'youtube') return null;
+                        if (key === 'youtube') return null;
+                        if (!url || typeof url !== 'string') return null;
                         const label = key.charAt(0).toUpperCase() + key.slice(1);
                         return (
                           <a

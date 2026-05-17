@@ -100,4 +100,26 @@ describe('ProductModal Robustness', () => {
 
     expect(screen.queryByText(/Technical Specs/i)).not.toBeInTheDocument();
   });
+
+  it('renders multiple YouTube iframe links in the modal gallery', () => {
+    const productWithMultipleYoutubes = {
+      ...mockProduct,
+      externalLinks: {
+        youtube: [
+          'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+          'https://youtu.be/kJQP7kiw5Fk'
+        ]
+      }
+    };
+
+    render(
+      <MemoryRouter>
+        <ProductModal product={productWithMultipleYoutubes as any} onClose={() => {}} />
+      </MemoryRouter>
+    );
+
+    // YouTube icons/thumbnails should be present in the gallery inside the modal
+    const youtubeIcons = screen.getAllByTitle(/YouTube Video/i);
+    expect(youtubeIcons.length).toBeGreaterThanOrEqual(2);
+  });
 });

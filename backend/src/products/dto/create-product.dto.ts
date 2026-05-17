@@ -44,9 +44,8 @@ class ExternalLinksDto {
     @IsOptional()
     superhive?: string;
 
-    @IsString()
     @IsOptional()
-    youtube?: string;
+    youtube?: string | string[];
 }
 
 export class CreateProductDto {

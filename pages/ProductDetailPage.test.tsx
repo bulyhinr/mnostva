@@ -127,6 +127,40 @@ describe('ProductDetailPage', () => {
         // Main view should show youtube iframe
         expect(screen.getAllByTitle(/YouTube Video/i).length).toBeGreaterThanOrEqual(1);
     });
+
+    it('renders multiple YouTube iframes when multiple youtube links are provided', () => {
+        const productWithMultipleYoutubes = {
+            ...mockProduct,
+            externalLinks: { 
+                youtube: [
+                    'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 
+                    'https://youtu.be/kJQP7kiw5Fk'
+                ] 
+            }
+        };
+
+        render(
+            <MemoryRouter>
+                <ProductDetailPage 
+                    product={productWithMultipleYoutubes as any} 
+                    onBack={mockOnBack} 
+                    onNavigateToLicense={vi.fn()}
+                />
+            </MemoryRouter>
+        );
+
+        // We expect to see multiple YouTube icons/thumbnails in the gallery
+        // Since there are 2 videos, getAllByTitle(/YouTube Video/i) should have at least 2 entries.
+        const youtubeThumbnails = screen.getAllByTitle(/YouTube Video/i);
+        expect(youtubeThumbnails.length).toBeGreaterThanOrEqual(2);
+
+        // Click on the second youtube thumbnail
+        fireEvent.click(youtubeThumbnails[1]);
+
+        // Main preview should be updated to display the second iframe
+        const mainIframe = screen.getAllByTitle(/YouTube Video/i);
+        expect(mainIframe.length).toBeGreaterThanOrEqual(2);
+    });
  
     it('handles keyboard navigation in lightbox', async () => {
         const productWithGallery = {

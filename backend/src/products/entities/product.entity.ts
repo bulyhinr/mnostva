@@ -65,7 +65,7 @@ export class Product {
         artstation?: string;
         sketchfab?: string;
         superhive?: string;
-        youtube?: string;
+        youtube?: string | string[];
     };
 
     @Column({ default: true })
