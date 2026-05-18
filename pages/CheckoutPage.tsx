@@ -70,6 +70,22 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
 
   const [showErrorModal, setShowErrorModal] = useState(false);
 
+  const handleGoToProfile = () => {
+    if (redirectStatus === 'succeeded') {
+      window.location.href = '/profile';
+    } else {
+      onNavigateToProfile();
+    }
+  };
+
+  const handleKeepShopping = () => {
+    if (redirectStatus === 'succeeded') {
+      window.location.href = '/marketplace';
+    } else {
+      onBack();
+    }
+  };
+
   useEffect(() => {
     if (!orderId && cart.length === 0 && step !== 4) {
       onBack();
@@ -763,8 +779,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                   Thank you for your purchase! Confirmation has been sent to your email.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-6 w-full max-w-lg mx-auto">
-                  <button onClick={onNavigateToProfile} className="flex-1 bg-[#8a7db3] text-white py-6 rounded-[2rem] font-black uppercase tracking-widest shadow-xl hover:translate-y-[-4px] transition-all border-b-8 border-purple-800/30 text-lg">My Assets 📦</button>
-                  <button onClick={onBack} className="flex-1 bg-gray-100 text-gray-700 py-6 rounded-[2rem] font-black uppercase tracking-widest hover:bg-gray-200 transition-all border-b-8 border-gray-300/30 text-lg">Keep Shopping</button>
+                  <button onClick={handleGoToProfile} className="flex-1 bg-[#8a7db3] text-white py-6 rounded-[2rem] font-black uppercase tracking-widest shadow-xl hover:translate-y-[-4px] transition-all border-b-8 border-purple-800/30 text-lg">My Assets 📦</button>
+                  <button onClick={handleKeepShopping} className="flex-1 bg-gray-100 text-gray-700 py-6 rounded-[2rem] font-black uppercase tracking-widest hover:bg-gray-200 transition-all border-b-8 border-gray-300/30 text-lg">Keep Shopping</button>
                 </div>
               </div>
             )}
