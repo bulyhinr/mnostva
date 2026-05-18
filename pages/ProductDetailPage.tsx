@@ -237,9 +237,9 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
     <div className="min-h-screen pt-10 pb-20 px-4">
       <Helmet>
         <title>{product.name} | Mnostva Art</title>
-        <meta name="description" content={product.description.substring(0, 160)} />
+        <meta name="description" content={product.description ? product.description.substring(0, 160) : ''} />
         <meta property="og:title" content={`${product.name} | Mnostva Art`} />
-        <meta property="og:description" content={product.description.substring(0, 160)} />
+        <meta property="og:description" content={product.description ? product.description.substring(0, 160) : ''} />
         <meta property="og:image" content={mainImageUrl} />
         <meta property="og:type" content="product" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -366,7 +366,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mb-8">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-8">
                 {galleryImages.map((imgUrl, idx) => (
                   <div
                     key={idx}
@@ -493,7 +493,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
             <div className="lg:w-2/5 p-8 lg:p-12 bg-gray-50/50 lg:border-l border-gray-100 flex flex-col">
               <div className="mb-8">
                 <div className="flex justify-between items-start gap-4">
-                  <h1 className="text-5xl font-black text-gray-900 mb-4 leading-tight flex-grow">{product.name}</h1>
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight flex-grow">{product.name}</h1>
                   <button
                     onClick={handleToggleWishlist}
                     className={`p-3 rounded-full transition-transform hover:scale-110 active:scale-95 shadow-sm border-2 ${isWishlisted ? 'text-red-500 bg-red-50 border-red-100' : 'text-gray-300 bg-white border-gray-100 hover:text-red-300'}`}

@@ -19,7 +19,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({ children, className = '', d
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.01 });
 
     const currentRef = domRef.current;
     if (currentRef) {
