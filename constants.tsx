@@ -10,6 +10,6 @@ export const NAV_ITEMS: NavItem[] = [
 
 export const PRODUCTS: Product[] = [];
 
-export const DOWNLOADS_ENABLED = false;
+export const DOWNLOADS_ENABLED = true;
 
-export const MAINTENANCE_MODE = true;
+export const MAINTENANCE_MODE = false;

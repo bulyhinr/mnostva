@@ -176,6 +176,22 @@ const AdminPage: React.FC = () => {
         window.scrollTo(0, 0);
     }, [activeTab, isEditingProduct]);
 
+    const handleCancelOrder = async (orderId: string) => {
+        if (!window.confirm("Are you sure you want to cancel this purchase? This will immediately revoke the user's access to the purchased assets.")) {
+            return;
+        }
+
+        try {
+            const token = authService.getAccessToken() || '';
+            await orderService.adminCancelOrder(orderId, token);
+            toast.success("Order cancelled successfully!");
+            fetchData(); // Refresh order history list
+        } catch (error: any) {
+            console.error("Failed to cancel order:", error);
+            toast.error(error.response?.data?.message || "Failed to cancel order");
+        }
+    };
+
     // --- Product Handlers ---
 
     const handleEditProduct = (product: Product) => {
@@ -940,9 +956,26 @@ const AdminPage: React.FC = () => {
                                             {new Date(order.createdAt).toLocaleDateString()}
                                         </td>
                                         <td className="px-8 py-6">
-                                            <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${order.status === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
-                                                {order.status}
-                                            </span>
+                                            <div className="flex items-center gap-3">
+                                                <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                                                    order.status === 'paid' || order.status === 'fulfilled'
+                                                        ? 'bg-emerald-100 text-emerald-600'
+                                                        : order.status === 'cancelled' || order.status === 'failed'
+                                                            ? 'bg-gray-100 text-gray-400'
+                                                            : 'bg-amber-100 text-amber-600'
+                                                }`}>
+                                                    {order.status}
+                                                </span>
+                                                {order.status !== 'cancelled' && order.status !== 'failed' && (
+                                                    <button
+                                                        onClick={() => handleCancelOrder(order.id)}
+                                                        className="text-[9px] font-black uppercase tracking-widest bg-pink-50 hover:bg-pink-100 text-pink-500 px-3 py-1 rounded-full border border-pink-100 active:scale-95 transition-all shadow-sm"
+                                                        title="Cancel Order"
+                                                    >
+                                                        Cancel ✕
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

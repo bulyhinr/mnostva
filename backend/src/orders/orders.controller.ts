@@ -13,6 +13,12 @@ export class OrdersController {
         return this.ordersService.findAll(Number(page), Number(limit));
     }
 
+    @UseGuards(AuthGuard('jwt'), AdminGuard)
+    @Post(':id/admin-cancel')
+    async adminCancelOrder(@Param('id') id: string) {
+        return this.ordersService.updateStatus(id, 'cancelled');
+    }
+
     @UseGuards(AuthGuard('jwt'))
     @Post('checkout')
     async createCheckoutSession(@Request() req, @Body() body: { items: { productId: string, licenseType?: string }[], couponCode?: string, paymentMethod?: string }) {

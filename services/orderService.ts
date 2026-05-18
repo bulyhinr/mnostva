@@ -90,6 +90,13 @@ export const orderService = {
         return response.data;
     },
 
+    async adminCancelOrder(orderId: string, token: string) {
+        const response = await axios.post(`${API_URL}/orders/${orderId}/admin-cancel`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
     async verifyPayment(orderId: string, token: string) {
         const response = await axios.post(`${API_URL}/orders/${orderId}/verify`, {}, {
             headers: { Authorization: `Bearer ${token}` }
