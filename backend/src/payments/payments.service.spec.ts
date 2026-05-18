@@ -51,6 +51,9 @@ describe('PaymentsService', () => {
                 amount: 1000,
                 currency: 'usd',
                 metadata: { orderId: '123' },
+                automatic_payment_methods: {
+                    enabled: true,
+                },
             });
             expect(result).toEqual({ id: 'pi_123' });
         });

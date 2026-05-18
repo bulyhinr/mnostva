@@ -21,6 +21,9 @@ export class PaymentsService {
             amount,
             currency,
             metadata,
+            automatic_payment_methods: {
+                enabled: true,
+            },
         });
     }
 
