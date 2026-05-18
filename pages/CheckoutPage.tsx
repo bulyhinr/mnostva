@@ -43,6 +43,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
   const [clientSecret, setClientSecret] = useState<string>(state?.clientSecret || '');
   const [paypalOrderId, setPaypalOrderId] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
+  const SHOW_PAYPAL = false;
   const [stripeError, setStripeError] = useState<string>('');
 
   const [couponCode, setCouponCode] = useState('');
@@ -543,7 +544,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                     </div>
                   </div>
 
-                  {(totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)) > 0 && (
+                  {SHOW_PAYPAL && (totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)) > 0 && (
                     <div className="mb-6">
                       <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Select Payment Method</p>
                       <div className="flex gap-4">
