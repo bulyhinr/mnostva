@@ -154,8 +154,16 @@ export class OrdersService {
         if (!order) {
             throw new NotFoundException(`Order ${id} not found`);
         }
+        const previousStatus = order.status;
         order.status = status;
-        return this.ordersRepository.save(order);
+        const savedOrder = await this.ordersRepository.save(order);
+
+        // Send email confirmation if transitioning to paid
+        if (status === 'paid' && previousStatus !== 'paid' && order.user && order.user.email) {
+            this.emailService.sendOrderConfirmation(order.user.email, savedOrder);
+        }
+
+        return savedOrder;
     }
 
     async cancelOrder(orderId: string, userId: string): Promise<Order> {

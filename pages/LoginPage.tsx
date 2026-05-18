@@ -82,7 +82,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
         if (success) {
           onSuccess();
         } else {
-          setError('Invalid email or password. Try 123@123.com / 123123');
+          setError('Invalid email or password. Please try again.');
         }
       }
     } catch (err: any) {
@@ -169,7 +169,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onBack }) => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="123@123.com"
+                  placeholder="your@email.com"
                   required
                   className="w-full bg-gray-50 border-4 border-transparent focus:border-[#8a7db3] rounded-2xl px-6 py-4 font-bold outline-none transition-all text-[#8a7db3] placeholder-[#8a7db3]/30"
                 />

@@ -50,7 +50,7 @@ describe('LoginPage', () => {
     );
 
     expect(screen.getByText(/Welcome Back/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/123@123.com/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/your@email.com/i)).toBeInTheDocument();
   });
 
   it('switches to register mode', () => {
@@ -75,7 +75,7 @@ describe('LoginPage', () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(screen.getByPlaceholderText(/123@123.com/i), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText(/your@email.com/i), { target: { value: 'test@example.com' } });
     fireEvent.change(screen.getByPlaceholderText(/••••••/i), { target: { value: 'password123' } });
     
     fireEvent.click(screen.getByRole('button', { name: /Login Now/i }));
@@ -95,7 +95,7 @@ describe('LoginPage', () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(screen.getByPlaceholderText(/123@123.com/i), { target: { value: 'wrong@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText(/your@email.com/i), { target: { value: 'wrong@example.com' } });
     fireEvent.change(screen.getByPlaceholderText(/••••••/i), { target: { value: 'wrong' } });
     
     fireEvent.click(screen.getByRole('button', { name: /Login Now/i }));
@@ -122,7 +122,7 @@ describe('LoginPage', () => {
 
     // Fill fields
     fireEvent.change(screen.getByPlaceholderText(/Artist Name/i), { target: { value: 'New Artist' } });
-    fireEvent.change(screen.getByPlaceholderText(/123@123.com/i), { target: { value: 'new@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText(/your@email.com/i), { target: { value: 'new@example.com' } });
     fireEvent.change(screen.getByPlaceholderText(/••••••/i), { target: { value: 'password123' } });
     
     // Check terms
