@@ -31,11 +31,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const queryOrderId = queryParams.get('orderId');
+  const redirectStatus = queryParams.get('redirect_status');
   const state = location.state as { clientSecret?: string; orderId?: string; totalAmount?: number } | null;
 
   const orderId = state?.orderId || queryOrderId;
 
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(state?.clientSecret ? 3 : (orderId ? 3 : (user ? 2 : 1)));
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(
+    redirectStatus === 'succeeded' ? 4 : (state?.clientSecret ? 3 : (orderId ? 3 : (user ? 2 : 1)))
+  );
   const [isProcessing, setIsProcessing] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
 
@@ -72,6 +75,13 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
       onBack();
     }
   }, [cart, step, onBack, orderId]);
+
+  // Clear cart if we just came back from a successful redirect payment
+  useEffect(() => {
+    if (redirectStatus === 'succeeded') {
+      clearCart();
+    }
+  }, [redirectStatus, clearCart]);
 
   // Fetch Order Details if missing (e.g. "Pay Now" flow where clientSecret is passed but items are not)
   useEffect(() => {

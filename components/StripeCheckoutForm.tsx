@@ -29,7 +29,7 @@ const StripeCheckoutForm: React.FC<StripeCheckoutFormProps> = ({ amount, onSucce
                 // but usually required. We can point to a success page or handle inline.
                 // For this implementation, we will try to handle it without full redirect if possible,
                 // or just redirect to the current page with a query param.
-                return_url: window.location.origin,
+                return_url: window.location.origin + '/checkout',
             },
             redirect: 'if_required', // Important: try to avoid redirect if not 3DS
         });
