@@ -32,7 +32,7 @@ export const getWelcomeTemplate = (name: string, frontendUrl: string) => `
       <p>- The Mnostva Team</p>
     </div>
     <div class="footer">
-      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
+      <p>© 2021 Mnostva Art Marketplace. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -99,7 +99,7 @@ export const getOrderConfirmationTemplate = (order: any, frontendUrl: string) =>
       <p>- The Mnostva Team</p>
     </div>
     <div class="footer">
-      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
+      <p>© 2021 Mnostva Art Marketplace. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -144,7 +144,7 @@ export const getPasswordResetTemplate = (token: string, frontendUrl: string) => 
       <p>- The Mnostva Team</p>
     </div>
     <div class="footer">
-      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
+      <p>© 2021 Mnostva Art Marketplace. All rights reserved.</p>
     </div>
   </div>
 </body>
