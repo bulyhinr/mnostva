@@ -8,6 +8,7 @@ export class EmailService {
     private resend: Resend;
     private readonly logger = new Logger(EmailService.name);
     private readonly FROM_EMAIL: string;
+    private readonly FRONTEND_URL: string;
 
     constructor(private configService: ConfigService) {
         const apiKey = this.configService.get<string>('RESEND_API_KEY');
@@ -17,6 +18,7 @@ export class EmailService {
             this.resend = new Resend(apiKey);
         }
         this.FROM_EMAIL = this.configService.get<string>('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
+        this.FRONTEND_URL = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:5173';
     }
 
     async sendWelcomeEmail(email: string, name: string) {
@@ -27,7 +29,7 @@ export class EmailService {
                 from: this.FROM_EMAIL,
                 to: [email],
                 subject: 'Welcome to Mnostva! 🎨',
-                html: getWelcomeTemplate(name),
+                html: getWelcomeTemplate(name, this.FRONTEND_URL),
             });
 
             if (error) {
@@ -48,7 +50,7 @@ export class EmailService {
                 from: this.FROM_EMAIL,
                 to: [email],
                 subject: `Order #${order.id.slice(0, 8)} Confirmed! 🎉`,
-                html: getOrderConfirmationTemplate(order),
+                html: getOrderConfirmationTemplate(order, this.FRONTEND_URL),
             });
 
             if (error) {
@@ -69,7 +71,7 @@ export class EmailService {
                 from: this.FROM_EMAIL,
                 to: [email],
                 subject: 'Reset Your Password - Mnostva Art 🔐',
-                html: getPasswordResetTemplate(token),
+                html: getPasswordResetTemplate(token, this.FRONTEND_URL),
             });
 
             if (error) {

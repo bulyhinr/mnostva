@@ -1,4 +1,4 @@
-export const getWelcomeTemplate = (name: string) => `
+export const getWelcomeTemplate = (name: string, frontendUrl: string) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,7 +24,7 @@ export const getWelcomeTemplate = (name: string) => `
       <p>Whether you're building a game, creating a virtual world, or just exploring, we've got the assets you need to bring your vision to life.</p>
       
       <div style="text-align: center;">
-        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/marketplace" class="button">Explore the Marketplace 🎨</a>
+        <a href="${frontendUrl}/marketplace" class="button">Explore the Marketplace 🎨</a>
       </div>
 
       <p>If you have any questions or need help with your projects, feel free to contact us at <a href="mailto:support@mnostva.art" style="color: #8a7db3; text-decoration: underline;">support@mnostva.art</a>.</p>
@@ -39,7 +39,7 @@ export const getWelcomeTemplate = (name: string) => `
 </html>
 `;
 
-export const getOrderConfirmationTemplate = (order: any) => {
+export const getOrderConfirmationTemplate = (order: any, frontendUrl: string) => {
   const itemsList = order.items.map((item: any) => `
     <div style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
       <div style="flex-grow: 1;">
@@ -85,7 +85,7 @@ export const getOrderConfirmationTemplate = (order: any) => {
       </div>
 
       <div style="text-align: center;">
-        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile" class="button">Access My Downloads 📦</a>
+        <a href="${frontendUrl}/profile" class="button">Access My Downloads 📦</a>
       </div>
 
       ${order.receiptUrl ? `
@@ -107,7 +107,7 @@ export const getOrderConfirmationTemplate = (order: any) => {
 `;
 };
 
-export const getPasswordResetTemplate = (token: string) => `
+export const getPasswordResetTemplate = (token: string, frontendUrl: string) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -133,7 +133,7 @@ export const getPasswordResetTemplate = (token: string) => `
       <p>Click the button below to choose a new password. This link is valid for 1 hour.</p>
       
       <div style="text-align: center;">
-        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?reset_token=${token}" class="button">Reset Password</a>
+        <a href="${frontendUrl}/login?reset_token=${token}" class="button">Reset Password</a>
       </div>
 
       <p>If you didn't request this, you can safely ignore this email. Your password will remain unchanged.</p>
