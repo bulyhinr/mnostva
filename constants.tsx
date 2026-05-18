@@ -12,4 +12,4 @@ export const PRODUCTS: Product[] = [];
 
 export const DOWNLOADS_ENABLED = false;
 
-export const MAINTENANCE_MODE = true;
+export const MAINTENANCE_MODE = false;
