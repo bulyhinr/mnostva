@@ -205,6 +205,7 @@ const AppContent: React.FC = () => {
             Legal
           </button>
         </div>
+        <p className="font-medium text-xs mb-2">Need help? Contact us at <a href="mailto:support@mnostva.art" className="text-[#8a7db3] hover:underline font-bold">support@mnostva.art</a></p>
         <p className="font-medium">© 2021 Mnostva Art. Stay Colorful! 🌈</p>
       </footer>
 

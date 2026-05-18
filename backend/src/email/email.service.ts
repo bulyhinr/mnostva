@@ -7,7 +7,7 @@ import { getWelcomeTemplate, getOrderConfirmationTemplate, getPasswordResetTempl
 export class EmailService {
     private resend: Resend;
     private readonly logger = new Logger(EmailService.name);
-    private readonly FROM_EMAIL = 'onboarding@resend.dev'; // Default testing domain that works without DNS setup
+    private readonly FROM_EMAIL: string;
 
     constructor(private configService: ConfigService) {
         const apiKey = this.configService.get<string>('RESEND_API_KEY');
@@ -16,6 +16,7 @@ export class EmailService {
         } else {
             this.resend = new Resend(apiKey);
         }
+        this.FROM_EMAIL = this.configService.get<string>('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
     }
 
     async sendWelcomeEmail(email: string, name: string) {
@@ -87,7 +88,7 @@ export class EmailService {
             return;
         }
 
-        const targetEmail = process.env.FAB_EMAIL || 'bulyhinroman@gmail.com';
+        const targetEmail = process.env.FAB_EMAIL || 'support@mnostva.art';
 
         try {
             const { data: resp, error } = await this.resend.emails.send({

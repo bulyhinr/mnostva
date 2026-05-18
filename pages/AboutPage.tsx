@@ -142,7 +142,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
             <div className="pt-10 border-t-4 border-gray-50 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-center md:text-left">
                 <h4 className="text-2xl font-black text-gray-900 mb-1">Join our journey!</h4>
-                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Follow us for weekly updates and art studies</p>
+                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Follow us for weekly updates, or write to us: <a href="mailto:support@mnostva.art" className="text-[#8a7db3] hover:underline">support@mnostva.art</a></p>
               </div>
               <div className="flex gap-4">
                 <a href="https://www.instagram.com/mnostva_art" target="_blank" className="p-4 bg-gray-50 rounded-2xl hover:bg-pink-100 hover:text-pink-500 transition-all font-black text-sm uppercase tracking-widest">Instagram</a>
@@ -177,6 +177,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
               <span className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-pink-100 text-pink-600 font-bold text-[9px] sm:text-[10px] uppercase tracking-widest mb-2 sm:mb-4">Let's create magic</span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 uppercase tracking-tighter leading-tight">Work With Us</h2>
               <p className="text-gray-500 font-medium mt-1 sm:mt-2 max-w-xs mx-auto text-xs sm:text-sm">Have a vision for a stylized world? Tell us about it!</p>
+              <p className="text-gray-400 font-medium mt-1 text-[10px] sm:text-xs">Or email us directly at <a href="mailto:support@mnostva.art" className="text-[#8a7db3] hover:underline font-bold">support@mnostva.art</a></p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">

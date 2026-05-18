@@ -27,7 +27,7 @@ export const getWelcomeTemplate = (name: string) => `
         <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/marketplace" class="button">Explore the Marketplace 🎨</a>
       </div>
 
-      <p>If you have any questions or need helper with your projects, feel free to reply to this email.</p>
+      <p>If you have any questions or need help with your projects, feel free to contact us at <a href="mailto:support@mnostva.art" style="color: #8a7db3; text-decoration: underline;">support@mnostva.art</a>.</p>
       <p>Happy Creating!</p>
       <p>- The Mnostva Team</p>
     </div>
@@ -94,6 +94,7 @@ export const getOrderConfirmationTemplate = (order: any) => {
       </div>
       ` : ''}
 
+      <p>If you have any questions regarding your order or assets, please contact us at <a href="mailto:support@mnostva.art" style="color: #8a7db3; text-decoration: underline;">support@mnostva.art</a>.</p>
       <p>Thank you for supporting independent creators!</p>
       <p>- The Mnostva Team</p>
     </div>
@@ -137,6 +138,7 @@ export const getPasswordResetTemplate = (token: string) => `
 
       <p>If you didn't request this, you can safely ignore this email. Your password will remain unchanged.</p>
       <p>You can also change your email and other settings in your dashboard -> Settings tab.</p>
+      <p>If you have any questions or issues, feel free to reach out to us at <a href="mailto:support@mnostva.art" style="color: #8a7db3; text-decoration: underline;">support@mnostva.art</a>.</p>
       <br>
       <p>Stay Colorful! 🌈</p>
       <p>- The Mnostva Team</p>
