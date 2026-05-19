@@ -338,9 +338,12 @@ describe('OrdersService', () => {
             await expect(service.getPaymentDetails('order-1', 'user-1')).rejects.toThrow('Order is already paid');
         });
 
-        it('should throw if missing payment intent ID', async () => {
+        it('should recreate and save payment intent if missing', async () => {
             jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder, stripePaymentIntentId: null } as any);
-            await expect(service.getPaymentDetails('order-1', 'user-1')).rejects.toThrow('Payment Intent ID missing on order');
+            const result = await service.getPaymentDetails('order-1', 'user-1');
+            expect(paymentsService.createPaymentIntent).toHaveBeenCalled();
+            expect(ordersRepository.save).toHaveBeenCalled();
+            expect(result).toEqual({ clientSecret: 'secret_123' });
         });
 
         it('should throw if client secret missing from Stripe', async () => {

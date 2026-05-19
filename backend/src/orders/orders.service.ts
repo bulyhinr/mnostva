@@ -214,12 +214,28 @@ export class OrdersService {
             return { paypalOrderId: order.paypalOrderId };
         }
 
-        if (!order.stripePaymentIntentId) {
-            // Ideally we'd create a new one here if missing
-            throw new Error('Payment Intent ID missing on order');
-        }
+        let paymentIntent: Stripe.PaymentIntent;
+        try {
+            if (!order.stripePaymentIntentId) {
+                throw new Error('Payment Intent ID missing on order');
+            }
+            paymentIntent = await this.paymentsService.retrievePaymentIntent(order.stripePaymentIntentId as string);
 
-        const paymentIntent = await this.paymentsService.retrievePaymentIntent(order.stripePaymentIntentId as string);
+            // If the PaymentIntent was canceled on Stripe, we must re-create a new one
+            if (paymentIntent.status === 'canceled') {
+                throw new Error('Payment Intent was canceled');
+            }
+        } catch (error) {
+            // Re-create Payment Intent if missing, expired, or canceled
+            paymentIntent = await this.paymentsService.createPaymentIntent(order.totalAmount, 'usd', {
+                orderId: order.id,
+                userId,
+            });
+
+            // Update database with new stripePaymentIntentId
+            order.stripePaymentIntentId = paymentIntent.id;
+            await this.ordersRepository.save(order);
+        }
 
         if (!paymentIntent.client_secret) {
             throw new Error('Client secret not returned from Stripe');
