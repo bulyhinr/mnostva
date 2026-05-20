@@ -28,23 +28,28 @@ export class DownloadsService {
                 accessKeyId,
                 secretAccessKey,
             },
+            requestChecksumCalculation: 'WHEN_REQUIRED' as any,
+            responseChecksumValidation: 'WHEN_REQUIRED' as any,
         });
         this.bucketName = this.configService.getOrThrow<string>('R2_BUCKET_NAME');
-    }
-
-    async generateSignedUrl(fileKey: string, expiresInSeconds: number = 600): Promise<string> {
-        if (!fileKey) {
-            throw new BadRequestException('File key is required');
-        }
-
-        try {
-            const command = new GetObjectCommand({
-                Bucket: this.bucketName,
-                Key: fileKey,
-            });
-
-            // Generate signed URL
-            return await getSignedUrl(this.r2Client, command, { expiresIn: expiresInSeconds });
+     }
+ 
+     async generateSignedUrl(fileKey: string, expiresInSeconds: number = 600): Promise<string> {
+         if (!fileKey) {
+             throw new BadRequestException('File key is required');
+         }
+ 
+         try {
+             const command = new GetObjectCommand({
+                 Bucket: this.bucketName,
+                 Key: fileKey,
+             });
+ 
+             // Generate signed URL
+             return await getSignedUrl(this.r2Client, command, { 
+                 expiresIn: expiresInSeconds,
+                 unhoistableHeaders: new Set(['x-amz-checksum-crc32', 'x-amz-checksum-sha256', 'x-amz-sdk-checksum-algorithm'])
+             });
         } catch (error) {
             console.error('Error generating signed URL:', error);
             throw new NotFoundException('Could not generate download link');

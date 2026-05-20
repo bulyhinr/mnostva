@@ -30,6 +30,8 @@ export class StorageService {
                 accessKeyId: accessKeyId || '',
                 secretAccessKey: secretAccessKey || '',
             },
+            requestChecksumCalculation: 'WHEN_REQUIRED' as any,
+            responseChecksumValidation: 'WHEN_REQUIRED' as any,
         });
     }
 
@@ -53,7 +55,10 @@ export class StorageService {
 
             // Force signed URL even for public files. This ensures reliability regardless of bucket privacy settings.
             // Also fixes issues where public domain might be misconfigured or blocked.
-            return await getSignedUrl(this.s3Client, command, { expiresIn: expiresInSeconds });
+            return await getSignedUrl(this.s3Client, command, { 
+                expiresIn: expiresInSeconds,
+                unhoistableHeaders: new Set(['x-amz-checksum-crc32', 'x-amz-checksum-sha256', 'x-amz-sdk-checksum-algorithm'])
+            });
 
         } catch (error) {
             if (error instanceof NotFoundException) throw error;
@@ -69,7 +74,10 @@ export class StorageService {
                 Key: key,
                 ContentType: contentType,
             });
-            return await getSignedUrl(this.s3Client, command, { expiresIn: expiresInSeconds });
+            return await getSignedUrl(this.s3Client, command, { 
+                expiresIn: expiresInSeconds,
+                unhoistableHeaders: new Set(['x-amz-checksum-crc32', 'x-amz-checksum-sha256', 'x-amz-sdk-checksum-algorithm'])
+            });
         } catch (error) {
             this.logger.error(`Failed to generate upload URL for key: ${key}`, error);
             throw new InternalServerErrorException('Could not generate upload link');

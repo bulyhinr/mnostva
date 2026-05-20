@@ -47,6 +47,8 @@ async function bootstrap() {
             accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
             secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
         },
+        requestChecksumCalculation: 'WHEN_REQUIRED' as any,
+        responseChecksumValidation: 'WHEN_REQUIRED' as any,
     });
     const bucketName = process.env.R2_BUCKET_NAME || 'mnostva-assets';
 
