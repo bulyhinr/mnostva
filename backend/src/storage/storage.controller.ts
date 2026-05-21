@@ -57,12 +57,7 @@ export class StorageController {
             throw new ForbiddenException('Only admins can upload private assets');
         }
 
-        // Force public for non-admins to be safe, though check above covers it if they sent false. 
-        // If they sent nothing, isPublic undefined -> typical logic might default? 
-        // Existing logic: const folder = body.isPublic ? 'public' : 'products';
-        // If isPublic is undefined, folder is 'products'. We must prevent that for non-admins.
-
-        // Enforce isPublic for non-admins
+        // Force public for non-admins to be safe
         const isPublic = isAdmin ? body.isPublic : true;
 
         const extension = body.contentType.split('/')[1] || 'bin';
@@ -72,6 +67,77 @@ export class StorageController {
         const uploadUrl = await this.storageService.generateUploadUrl(key, body.contentType);
 
         return { uploadUrl, key };
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('initiate-multipart')
+    async initiateMultipart(@Request() req, @Body() body: { contentType: string, isPublic?: boolean }) {
+        if (!body.contentType) {
+            body.contentType = 'application/octet-stream';
+        }
+
+        const isAdmin = req.user.isAdmin;
+        if (!isAdmin && body.isPublic === false) {
+            throw new ForbiddenException('Only admins can upload private assets');
+        }
+
+        const isPublic = isAdmin ? body.isPublic : true;
+        const extension = body.contentType.split('/')[1] || 'bin';
+        const folder = isPublic ? 'public' : 'products';
+        const key = `${folder}/${uuidv4()}.${extension}`;
+
+        const uploadId = await this.storageService.initiateMultipartUpload(key, body.contentType);
+
+        return { uploadId, key };
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('generate-multipart-url')
+    async generateMultipartUrl(@Request() req, @Body() body: { key: string, uploadId: string, partNumber: number }) {
+        const isAdmin = req.user.isAdmin;
+        // Verify path permissions: non-admins cannot upload to non-public keys
+        if (!isAdmin && !body.key.startsWith('public/')) {
+            throw new ForbiddenException('Only admins can upload private assets');
+        }
+
+        if (!body.key || !body.uploadId || !body.partNumber) {
+            throw new BadRequestException('Missing required fields: key, uploadId, partNumber');
+        }
+
+        const uploadUrl = await this.storageService.generateMultipartUploadPartUrl(body.key, body.uploadId, body.partNumber);
+        return { uploadUrl };
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('complete-multipart')
+    async completeMultipart(@Request() req, @Body() body: { key: string, uploadId: string }) {
+        const isAdmin = req.user.isAdmin;
+        if (!isAdmin && !body.key.startsWith('public/')) {
+            throw new ForbiddenException('Only admins can upload private assets');
+        }
+
+        if (!body.key || !body.uploadId) {
+            throw new BadRequestException('Missing required fields: key, uploadId');
+        }
+
+        await this.storageService.completeMultipartUpload(body.key, body.uploadId);
+        return { key: body.key };
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('abort-multipart')
+    async abortMultipart(@Request() req, @Body() body: { key: string, uploadId: string }) {
+        const isAdmin = req.user.isAdmin;
+        if (!isAdmin && !body.key.startsWith('public/')) {
+            throw new ForbiddenException('Only admins can upload private assets');
+        }
+
+        if (!body.key || !body.uploadId) {
+            throw new BadRequestException('Missing required fields: key, uploadId');
+        }
+
+        await this.storageService.abortMultipartUpload(body.key, body.uploadId);
+        return { success: true };
     }
 
     @UseGuards(AuthGuard('jwt'))

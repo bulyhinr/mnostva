@@ -13,6 +13,11 @@ jest.mock('@aws-sdk/client-s3', () => {
     GetObjectCommand: jest.fn(),
     PutObjectCommand: jest.fn(),
     HeadObjectCommand: jest.fn(),
+    CreateMultipartUploadCommand: jest.fn(),
+    UploadPartCommand: jest.fn(),
+    CompleteMultipartUploadCommand: jest.fn(),
+    AbortMultipartUploadCommand: jest.fn(),
+    ListPartsCommand: jest.fn(),
   };
 });
 
@@ -101,6 +106,54 @@ describe('StorageService', () => {
 
     it('should return null if key is not public', () => {
       expect(service.getPublicUrl('private/image.png')).toBeNull();
+    });
+  });
+
+  describe('initiateMultipartUpload', () => {
+    it('should return an uploadId', async () => {
+      (service as any).s3Client.send.mockResolvedValue({ UploadId: 'test-upload-id' });
+      const uploadId = await service.initiateMultipartUpload('key', 'application/zip');
+      expect(uploadId).toBe('test-upload-id');
+    });
+
+    it('should throw InternalServerErrorException if UploadId is missing', async () => {
+      (service as any).s3Client.send.mockResolvedValue({});
+      const loggerSpy = jest.spyOn((service as any).logger, 'error').mockImplementation();
+      await expect(service.initiateMultipartUpload('key', 'application/zip')).rejects.toThrow(InternalServerErrorException);
+      loggerSpy.mockRestore();
+    });
+  });
+
+  describe('generateMultipartUploadPartUrl', () => {
+    it('should return a signed URL for a part', async () => {
+      (getSignedUrl as jest.Mock).mockResolvedValue('http://signed-url.com/part');
+      const url = await service.generateMultipartUploadPartUrl('key', 'uploadId', 1);
+      expect(url).toBe('http://signed-url.com/part');
+      expect(getSignedUrl).toHaveBeenCalled();
+    });
+  });
+
+  describe('completeMultipartUpload', () => {
+    it('should successfully complete the upload', async () => {
+      (service as any).s3Client.send
+        .mockResolvedValueOnce({ Parts: [{ PartNumber: 1, ETag: 'etag-1' }] }) // for ListPartsCommand
+        .mockResolvedValueOnce({}); // for CompleteMultipartUploadCommand
+
+      await expect(service.completeMultipartUpload('key', 'uploadId')).resolves.not.toThrow();
+    });
+
+    it('should throw Error/InternalServerErrorException if no parts found', async () => {
+      (service as any).s3Client.send.mockResolvedValueOnce({ Parts: [] });
+      const loggerSpy = jest.spyOn((service as any).logger, 'error').mockImplementation();
+      await expect(service.completeMultipartUpload('key', 'uploadId')).rejects.toThrow(InternalServerErrorException);
+      loggerSpy.mockRestore();
+    });
+  });
+
+  describe('abortMultipartUpload', () => {
+    it('should successfully abort the upload', async () => {
+      (service as any).s3Client.send.mockResolvedValue({});
+      await expect(service.abortMultipartUpload('key', 'uploadId')).resolves.not.toThrow();
     });
   });
 });

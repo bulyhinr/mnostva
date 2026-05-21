@@ -18,6 +18,10 @@ describe('StorageController', () => {
           useValue: {
             generateDownloadUrl: jest.fn(),
             generateUploadUrl: jest.fn(),
+            initiateMultipartUpload: jest.fn(),
+            generateMultipartUploadPartUrl: jest.fn(),
+            completeMultipartUpload: jest.fn(),
+            abortMultipartUpload: jest.fn(),
           },
         },
         {
@@ -115,6 +119,98 @@ describe('StorageController', () => {
       (controller['productsService'].findOne as jest.Mock).mockResolvedValue({ fileKey: 'key', isActive: false });
 
       await expect(controller.generateDownloadLink(req, body)).rejects.toThrow('This asset is temporarily unavailable for download (Status: Off).');
+    });
+  });
+
+  describe('initiateMultipart', () => {
+    it('should allow admin to initiate upload', async () => {
+      const req = { user: { isAdmin: true } };
+      const body = { contentType: 'application/zip', isPublic: false };
+      (controller['storageService'].initiateMultipartUpload as jest.Mock).mockResolvedValue('test-upload-id');
+
+      const result = await controller.initiateMultipart(req, body);
+      expect(result.uploadId).toBe('test-upload-id');
+      expect(result.key).toContain('products/');
+    });
+
+    it('should enforce public segment for non-admin', async () => {
+      const req = { user: { isAdmin: false } };
+      const body = { contentType: 'image/png', isPublic: true };
+      (controller['storageService'].initiateMultipartUpload as jest.Mock).mockResolvedValue('test-upload-id');
+
+      const result = await controller.initiateMultipart(req, body);
+      expect(result.uploadId).toBe('test-upload-id');
+      expect(result.key).toContain('public/');
+    });
+
+    it('should throw ForbiddenException if non-admin attempts private upload', async () => {
+      const req = { user: { isAdmin: false } };
+      const body = { contentType: 'application/zip', isPublic: false };
+
+      await expect(controller.initiateMultipart(req, body)).rejects.toThrow('Only admins can upload private assets');
+    });
+  });
+
+  describe('generateMultipartUrl', () => {
+    it('should allow admin to generate url', async () => {
+      const req = { user: { isAdmin: true } };
+      const body = { key: 'products/file.zip', uploadId: 'id', partNumber: 1 };
+      (controller['storageService'].generateMultipartUploadPartUrl as jest.Mock).mockResolvedValue('url');
+
+      const result = await controller.generateMultipartUrl(req, body);
+      expect(result.uploadUrl).toBe('url');
+    });
+
+    it('should allow non-admin for public key', async () => {
+      const req = { user: { isAdmin: false } };
+      const body = { key: 'public/avatar.png', uploadId: 'id', partNumber: 1 };
+      (controller['storageService'].generateMultipartUploadPartUrl as jest.Mock).mockResolvedValue('url');
+
+      const result = await controller.generateMultipartUrl(req, body);
+      expect(result.uploadUrl).toBe('url');
+    });
+
+    it('should block non-admin for private key', async () => {
+      const req = { user: { isAdmin: false } };
+      const body = { key: 'products/file.zip', uploadId: 'id', partNumber: 1 };
+
+      await expect(controller.generateMultipartUrl(req, body)).rejects.toThrow('Only admins can upload private assets');
+    });
+  });
+
+  describe('completeMultipart', () => {
+    it('should allow admin to complete multipart', async () => {
+      const req = { user: { isAdmin: true } };
+      const body = { key: 'products/file.zip', uploadId: 'id' };
+      (controller['storageService'].completeMultipartUpload as jest.Mock).mockResolvedValue(undefined);
+
+      const result = await controller.completeMultipart(req, body);
+      expect(result.key).toBe('products/file.zip');
+    });
+
+    it('should block non-admin on private key', async () => {
+      const req = { user: { isAdmin: false } };
+      const body = { key: 'products/file.zip', uploadId: 'id' };
+
+      await expect(controller.completeMultipart(req, body)).rejects.toThrow('Only admins can upload private assets');
+    });
+  });
+
+  describe('abortMultipart', () => {
+    it('should allow admin to abort multipart', async () => {
+      const req = { user: { isAdmin: true } };
+      const body = { key: 'products/file.zip', uploadId: 'id' };
+      (controller['storageService'].abortMultipartUpload as jest.Mock).mockResolvedValue(undefined);
+
+      const result = await controller.abortMultipart(req, body);
+      expect(result.success).toBe(true);
+    });
+
+    it('should block non-admin on private key', async () => {
+      const req = { user: { isAdmin: false } };
+      const body = { key: 'products/file.zip', uploadId: 'id' };
+
+      await expect(controller.abortMultipart(req, body)).rejects.toThrow('Only admins can upload private assets');
     });
   });
 });

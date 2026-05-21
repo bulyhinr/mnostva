@@ -231,6 +231,57 @@ const AdminPage: React.FC = () => {
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const [uploadingFileName, setUploadingFileName] = useState<string>('');
 
+    const uploadChunkWithRetry = async (
+        chunk: Blob,
+        uploadUrl: string,
+        contentType: string,
+        maxRetries: number,
+        onProgress: (loaded: number) => void
+    ): Promise<void> => {
+        let lastError: any = null;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                return await new Promise<void>((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('PUT', uploadUrl, true);
+                    xhr.setRequestHeader('Content-Type', contentType);
+
+                    xhr.upload.onprogress = (event) => {
+                        if (event.lengthComputable) {
+                            onProgress(event.loaded);
+                        }
+                    };
+
+                    xhr.onload = () => {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve();
+                        } else {
+                            reject(new Error(`Server responded with status ${xhr.status}: ${xhr.statusText}`));
+                        }
+                    };
+
+                    xhr.onerror = () => {
+                        reject(new Error('Network error during chunk upload.'));
+                    };
+
+                    xhr.onabort = () => {
+                        reject(new Error('Upload was aborted.'));
+                    };
+
+                    xhr.send(chunk);
+                });
+            } catch (error) {
+                lastError = error;
+                console.warn(`Chunk upload attempt ${attempt} failed:`, error);
+                if (attempt < maxRetries) {
+                    const delay = Math.min(1000 * Math.pow(2, attempt), 8000);
+                    await new Promise((res) => setTimeout(res, delay));
+                }
+            }
+        }
+        throw lastError || new Error('Failed to upload chunk after maximum retries.');
+    };
+
     const uploadFile = async (file: File, isPublic: boolean): Promise<string> => {
         const token = authService.getAccessToken();
         let contentType = file.type;
@@ -241,59 +292,164 @@ const AdminPage: React.FC = () => {
             else contentType = 'application/octet-stream';
         }
 
+        const MULTIPART_MIN_SIZE = 10 * 1024 * 1024; // 10MB
+        const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB (S3/R2 requires parts to be at least 5MB)
+        const MAX_RETRIES = 5;
+
         setUploadingFileName(file.name);
         setUploadProgress(0);
 
-        try {
-            // 1. Get signed upload URL
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-upload`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ contentType, isPublic })
-            });
+        if (file.size < MULTIPART_MIN_SIZE) {
+            // Standard Single-part PUT Upload
+            try {
+                // 1. Get signed upload URL
+                const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ contentType, isPublic })
+                });
 
-            if (!res.ok) throw new Error('Failed to get upload URL');
+                if (!res.ok) throw new Error('Failed to get upload URL');
 
-            const { uploadUrl, key } = await res.json();
+                const { uploadUrl, key } = await res.json();
 
-            // 2. Upload file directly to R2 using XMLHttpRequest for high stability and progress tracking
-            return await new Promise<string>((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.open('PUT', uploadUrl, true);
-                xhr.setRequestHeader('Content-Type', contentType);
+                // 2. Upload file directly to R2 using XMLHttpRequest for high stability and progress tracking
+                return await new Promise<string>((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('PUT', uploadUrl, true);
+                    xhr.setRequestHeader('Content-Type', contentType);
 
-                xhr.upload.onprogress = (event) => {
-                    if (event.lengthComputable) {
-                        const percentComplete = Math.round((event.loaded / event.total) * 100);
-                        setUploadProgress(percentComplete);
-                        console.log(`Uploading ${file.name}: ${percentComplete}% completed`);
+                    xhr.upload.onprogress = (event) => {
+                        if (event.lengthComputable) {
+                            const percentComplete = Math.round((event.loaded / event.total) * 100);
+                            setUploadProgress(percentComplete);
+                            console.log(`Uploading ${file.name}: ${percentComplete}% completed`);
+                        }
+                    };
+
+                    xhr.onload = () => {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve(key);
+                        } else {
+                            reject(new Error(`Failed to upload file to storage: ${xhr.statusText} (${xhr.status})`));
+                        }
+                    };
+
+                    xhr.onerror = () => {
+                        reject(new Error('Network connection error or block during file upload. Check your firewall/VPN/antivirus settings.'));
+                    };
+
+                    xhr.onabort = () => {
+                        reject(new Error('Upload was aborted mid-transit by network/browser policy.'));
+                    };
+
+                    xhr.send(file);
+                });
+            } finally {
+                setUploadProgress(null);
+                setUploadingFileName('');
+            }
+        } else {
+            // Multipart chunked upload for large files
+            let uploadId = '';
+            let key = '';
+
+            try {
+                // 1. Initiate Multipart
+                const initRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/initiate-multipart`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ contentType, isPublic })
+                });
+
+                if (!initRes.ok) throw new Error('Failed to initiate multipart upload');
+                const initData = await initRes.json();
+                uploadId = initData.uploadId;
+                key = initData.key;
+
+                const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+                let uploadedBytes = 0;
+
+                for (let partNumber = 1; partNumber <= totalChunks; partNumber++) {
+                    const start = (partNumber - 1) * CHUNK_SIZE;
+                    const end = Math.min(start + CHUNK_SIZE, file.size);
+                    const chunk = file.slice(start, end);
+
+                    // Get signed URL for this part
+                    const urlRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-multipart-url`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ key, uploadId, partNumber })
+                    });
+
+                    if (!urlRes.ok) throw new Error(`Failed to get signed URL for part ${partNumber}`);
+                    const { uploadUrl } = await urlRes.json();
+
+                    // Upload chunk
+                    await uploadChunkWithRetry(
+                        chunk,
+                        uploadUrl,
+                        contentType,
+                        MAX_RETRIES,
+                        (chunkLoaded) => {
+                            const totalUploaded = uploadedBytes + chunkLoaded;
+                            const percentComplete = Math.round((totalUploaded / file.size) * 100);
+                            setUploadProgress(percentComplete);
+                            console.log(`Uploading ${file.name}: ${percentComplete}% completed`);
+                        }
+                    );
+
+                    uploadedBytes += chunk.size;
+                }
+
+                // 2. Complete Multipart
+                const completeRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/complete-multipart`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ key, uploadId })
+                });
+
+                if (!completeRes.ok) {
+                    const errData = await completeRes.json().catch(() => ({}));
+                    throw new Error(errData.message || 'Failed to complete multipart upload');
+                }
+
+                return key;
+
+            } catch (error: any) {
+                console.error('Multipart upload failed:', error);
+                // Attempt to abort multipart upload to clean up storage
+                if (uploadId && key) {
+                    try {
+                        await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/abort-multipart`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ key, uploadId })
+                        });
+                    } catch (abortErr) {
+                        console.error('Failed to abort multipart upload:', abortErr);
                     }
-                };
-
-                xhr.onload = () => {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        resolve(key);
-                    } else {
-                        reject(new Error(`Failed to upload file to storage: ${xhr.statusText} (${xhr.status})`));
-                    }
-                };
-
-                xhr.onerror = () => {
-                    reject(new Error('Network connection error or block during file upload. Check your firewall/VPN/antivirus settings.'));
-                };
-
-                xhr.onabort = () => {
-                    reject(new Error('Upload was aborted mid-transit by network/browser policy.'));
-                };
-
-                xhr.send(file);
-            });
-        } finally {
-            setUploadProgress(null);
-            setUploadingFileName('');
+                }
+                throw new Error(`Multipart upload failed: ${error.message || error}`);
+            } finally {
+                setUploadProgress(null);
+                setUploadingFileName('');
+            }
         }
     };
 
