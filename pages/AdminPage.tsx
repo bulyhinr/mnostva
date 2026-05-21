@@ -228,6 +228,9 @@ const AdminPage: React.FC = () => {
     const [selectedModel, setSelectedModel] = useState<File | null>(null);
     const [selectedGalleryFiles, setSelectedGalleryFiles] = useState<FileList | null>(null);
 
+    const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+    const [uploadingFileName, setUploadingFileName] = useState<string>('');
+
     const uploadFile = async (file: File, isPublic: boolean): Promise<string> => {
         const token = authService.getAccessToken();
         let contentType = file.type;
@@ -238,30 +241,60 @@ const AdminPage: React.FC = () => {
             else contentType = 'application/octet-stream';
         }
 
-        // 1. Get signed upload URL
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-upload`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ contentType, isPublic })
-        });
+        setUploadingFileName(file.name);
+        setUploadProgress(0);
 
-        if (!res.ok) throw new Error('Failed to get upload URL');
+        try {
+            // 1. Get signed upload URL
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-upload`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ contentType, isPublic })
+            });
 
-        const { uploadUrl, key } = await res.json();
+            if (!res.ok) throw new Error('Failed to get upload URL');
 
-        // 2. Upload file directly to R2
-        const uploadRes = await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': contentType },
-            body: file
-        });
+            const { uploadUrl, key } = await res.json();
 
-        if (!uploadRes.ok) throw new Error('Failed to upload file to storage');
+            // 2. Upload file directly to R2 using XMLHttpRequest for high stability and progress tracking
+            return await new Promise<string>((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', uploadUrl, true);
+                xhr.setRequestHeader('Content-Type', contentType);
 
-        return key;
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = Math.round((event.loaded / event.total) * 100);
+                        setUploadProgress(percentComplete);
+                        console.log(`Uploading ${file.name}: ${percentComplete}% completed`);
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve(key);
+                    } else {
+                        reject(new Error(`Failed to upload file to storage: ${xhr.statusText} (${xhr.status})`));
+                    }
+                };
+
+                xhr.onerror = () => {
+                    reject(new Error('Network connection error or block during file upload. Check your firewall/VPN/antivirus settings.'));
+                };
+
+                xhr.onabort = () => {
+                    reject(new Error('Upload was aborted mid-transit by network/browser policy.'));
+                };
+
+                xhr.send(file);
+            });
+        } finally {
+            setUploadProgress(null);
+            setUploadingFileName('');
+        }
     };
 
     const handleSubmitProduct = async (e: React.FormEvent) => {
@@ -1115,6 +1148,30 @@ const AdminPage: React.FC = () => {
                 {/* Product Form */}
                 {isEditingProduct && (
                     <div className="bg-white rounded-[3rem] p-8 md:p-16 shadow-xl relative flex flex-col h-fit animate-in fade-in slide-in-from-bottom-4 duration-500 mb-10">
+                        {uploadProgress !== null && (
+                            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-[3rem] z-50 flex flex-col items-center justify-center p-10 animate-in fade-in duration-200">
+                                <div className="w-full max-w-md bg-white rounded-3xl p-8 border border-gray-100 shadow-xl flex flex-col items-center">
+                                    <div className="w-16 h-16 rounded-2xl bg-[#8a7db3]/10 flex items-center justify-center text-[#8a7db3] mb-6 animate-pulse">
+                                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tighter text-center">Uploading Asset</h3>
+                                    <p className="text-xs font-bold text-gray-500 mb-6 truncate max-w-xs text-center">{uploadingFileName}</p>
+                                    
+                                    <div className="w-full bg-gray-100 rounded-full h-3 mb-3 overflow-hidden">
+                                        <div 
+                                            className="bg-[#8a7db3] h-full rounded-full transition-all duration-300 ease-out" 
+                                            style={{ width: `${uploadProgress}%` }}
+                                        />
+                                    </div>
+                                    <div className="flex justify-between w-full text-xs font-black text-gray-700">
+                                        <span>Progress</span>
+                                        <span>{uploadProgress}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div className="flex justify-between items-start mb-10 border-b-2 border-gray-100 pb-8">
                             <h2 className="text-4xl font-black text-gray-900 uppercase tracking-tighter shrink-0">
                                 {currentProduct.id ? 'Edit Asset' : 'New Asset'}
