@@ -39,6 +39,7 @@ vi.mock('../services/authService', () => ({
   __esModule: true,
   authService: {
     getAccessToken: vi.fn(),
+    getUserFromToken: vi.fn(),
   },
 }));
 
@@ -91,6 +92,7 @@ describe('AdminPage', () => {
         (orderService.getAllOrders as any).mockResolvedValue({ data: [], total: 0 });
         (downloadsService.getDownloadLogs as any).mockResolvedValue({ data: [], total: 0 });
         (authService.getAccessToken as any).mockReturnValue('mock-token');
+        (authService.getUserFromToken as any).mockReturnValue({ email: 'admin@mnostva.art' });
         (productService.deleteProduct as any).mockResolvedValue({ success: true });
     });
 

@@ -5,6 +5,8 @@ import { StorageService } from './storage.service';
 import { OrdersService } from '../orders/orders.service';
 import { ProductsService } from '../products/products.service';
 import { DownloadsService } from '../downloads/downloads.service';
+import { UsersService } from '../users/users.service';
+import { EmailService } from '../email/email.service';
 
 describe('StorageController', () => {
   let controller: StorageController;
@@ -40,6 +42,19 @@ describe('StorageController', () => {
           provide: DownloadsService,
           useValue: {
             logDownload: jest.fn(),
+            hasDownloadedBefore: jest.fn().mockResolvedValue(false),
+          },
+        },
+        {
+          provide: UsersService,
+          useValue: {
+            findOne: jest.fn().mockResolvedValue({ id: 'u1', email: 'test@example.com', name: 'Test' }),
+          },
+        },
+        {
+          provide: EmailService,
+          useValue: {
+            sendFeedbackReminderEmail: jest.fn().mockResolvedValue(undefined),
           },
         },
       ],

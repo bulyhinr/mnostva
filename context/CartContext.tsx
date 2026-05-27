@@ -14,6 +14,12 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+export const calculateDiscountedPrice = (price: number, discountPercentage: number): number => {
+  const priceCents = Math.round(price * 100);
+  const discountCents = Math.round(priceCents * (discountPercentage / 100));
+  return (priceCents - discountCents) / 100;
+};
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -68,7 +74,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const totalPrice = cart.reduce((sum, item) => {
     const basePrice = item.licenseType === 'commercial' && item.commercialPrice ? item.commercialPrice : item.price;
     const price = item.discount && item.discount.isActive
-      ? basePrice * (1 - item.discount.percentage / 100)
+      ? calculateDiscountedPrice(basePrice, item.discount.percentage)
       : basePrice;
     return sum + (price * item.quantity);
   }, 0);

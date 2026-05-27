@@ -19,6 +19,11 @@ vi.mock('../constants', async () => {
 vi.mock('../context/CartContext', () => ({
   __esModule: true,
   useCart: vi.fn(),
+  calculateDiscountedPrice: (price: number, percentage: number) => {
+    const priceCents = Math.round(price * 100);
+    const discountCents = Math.round(priceCents * (percentage / 100));
+    return (priceCents - discountCents) / 100;
+  },
 }));
 
 // Mock useAuth

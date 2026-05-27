@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCart } from '../context/CartContext';
+import { useCart, calculateDiscountedPrice } from '../context/CartContext';
 import ImageWithFallback from './ImageWithFallback';
 
 interface CartDrawerProps {
@@ -109,7 +109,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
                         {item.discount && item.discount.isActive ? (
                           <>
                             <span className="text-gray-400 line-through text-[10px] font-bold">${(basePrice * item.quantity).toFixed(2)}</span>
-                            <span className="text-pink-500 font-black">${((basePrice * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}</span>
+                            <span className="text-pink-500 font-black">${(calculateDiscountedPrice(basePrice, item.discount.percentage) * item.quantity).toFixed(2)}</span>
                           </>
                         ) : (
                           <div className="text-pink-500 font-black">

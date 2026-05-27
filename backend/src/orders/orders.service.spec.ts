@@ -69,6 +69,7 @@ describe('OrdersService', () => {
                     provide: EmailService,
                     useValue: {
                         sendOrderConfirmation: jest.fn(),
+                        sendPaymentReminderEmail: jest.fn(),
                     },
                 },
                 {
@@ -378,6 +379,48 @@ describe('OrdersService', () => {
             paymentsService.capturePayPalOrder.mockResolvedValue({ status: 'DECLINED' });
             jest.spyOn(service, 'findOne').mockResolvedValue({ ...mockOrder, paymentMethod: 'paypal', paypalOrderId: 'paypal_order_123' } as any);
             await expect(service.capturePayPalOrder('order-1', 'user-1')).rejects.toThrow('Payment capture failed, status: DECLINED');
+        });
+    });
+
+    describe('checkAndSendPaymentReminders', () => {
+        it('should find eligible pending orders, send reminders, and mark them as sent', async () => {
+            const mockUser = { id: 'user-1', email: 'test@example.com', name: 'Test User' };
+            const eligibleOrder = {
+                id: 'order-eligible',
+                status: 'pending',
+                paymentReminderSent: false,
+                createdAt: new Date(Date.now() - 30 * 60 * 60 * 1000), // 30 hours ago (threshold is 24 hours)
+                user: mockUser,
+                items: [],
+            };
+            const nonEligibleOrder = {
+                id: 'order-noneligible',
+                status: 'pending',
+                paymentReminderSent: false,
+                createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
+                user: mockUser,
+                items: [],
+            };
+
+            ordersRepository.find.mockResolvedValue([eligibleOrder, nonEligibleOrder]);
+            ordersRepository.save.mockImplementation((order) => Promise.resolve(order));
+
+            const sendPaymentReminderEmailSpy = jest.spyOn(service['emailService'], 'sendPaymentReminderEmail');
+
+            await service.checkAndSendPaymentReminders();
+
+            expect(ordersRepository.find).toHaveBeenCalledWith({
+                where: {
+                    status: 'pending',
+                    paymentReminderSent: false,
+                },
+                relations: ['user', 'items', 'items.product'],
+            });
+
+            expect(sendPaymentReminderEmailSpy).toHaveBeenCalledTimes(1);
+            expect(sendPaymentReminderEmailSpy).toHaveBeenCalledWith('test@example.com', 'Test User', eligibleOrder);
+            expect(eligibleOrder.paymentReminderSent).toBe(true);
+            expect(ordersRepository.save).toHaveBeenCalledWith(eligibleOrder);
         });
     });
 });

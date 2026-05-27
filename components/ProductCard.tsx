@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
-import { useCart } from '../context/CartContext';
+import { useCart, calculateDiscountedPrice } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import ImageWithFallback from './ImageWithFallback';
 
@@ -107,7 +107,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => {
                 </div>
                 <div className="flex items-center gap-2 bg-pink-500 text-white px-4 py-2 rounded-2xl font-bold shadow-lg">
                   <span className="text-pink-200 line-through text-xs opacity-80">${basePrice.toFixed(2)}</span>
-                  <span className="text-lg">${(basePrice * (1 - product.discount.percentage / 100)).toFixed(2)}</span>
+                  <span className="text-lg">${calculateDiscountedPrice(basePrice, product.discount.percentage).toFixed(2)}</span>
                 </div>
               </>
             ) : (

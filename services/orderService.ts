@@ -15,6 +15,8 @@ const mapOrderToFrontend = (order: any) => ({
                 name: 'Deleted Asset',
                 imageUrl: 'https://placehold.co/600x400?text=Deleted+Asset',
                 price: item.price / 100,
+                originalPrice: item.originalPrice ? item.originalPrice / 100 : item.price / 100,
+                discountPercentage: item.discountPercentage || null,
                 isDeleted: true
             };
         }
@@ -23,6 +25,8 @@ const mapOrderToFrontend = (order: any) => ({
             name: product.title,
             imageUrl: product.previewImageKey ? `${API_URL}/storage/public/${product.previewImageKey}` : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
             price: item.price / 100,
+            originalPrice: item.originalPrice ? item.originalPrice / 100 : item.price / 100,
+            discountPercentage: item.discountPercentage || null,
             productId: product.id,
             isDeleted: false
         };
@@ -37,7 +41,11 @@ export const orderService = {
                 productId: item.id,
                 quantity: item.quantity,
                 price: item.discount && item.discount.isActive
-                    ? item.price * (1 - item.discount.percentage / 100)
+                    ? (() => {
+                        const priceCents = Math.round(item.price * 100);
+                        const discountCents = Math.round(priceCents * (item.discount.percentage / 100));
+                        return (priceCents - discountCents) / 100;
+                      })()
                     : item.price
             })),
             total
@@ -66,8 +74,9 @@ export const orderService = {
         return response.data.map(mapOrderToFrontend);
     },
 
-    async getAllOrders(token: string, page: number = 1, limit: number = 30): Promise<{ data: any[], total: number }> {
-        const response = await axios.get(`${API_URL}/orders?page=${page}&limit=${limit}`, {
+    async getAllOrders(token: string, page: number = 1, limit: number = 30, month?: string): Promise<{ data: any[], total: number }> {
+        const url = `${API_URL}/orders?page=${page}&limit=${limit}` + (month ? `&month=${month}` : '');
+        const response = await axios.get(url, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return {

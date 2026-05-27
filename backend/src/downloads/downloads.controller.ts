@@ -1,22 +1,33 @@
-import { Controller, Post, Body, Req, UseGuards, UnauthorizedException, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, UnauthorizedException, Get, Query, Logger } from '@nestjs/common';
 import { DownloadsService } from './downloads.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminGuard } from '../auth/admin.guard';
 import { OrdersService } from '../orders/orders.service';
 import { ProductsService } from '../products/products.service';
+import { UsersService } from '../users/users.service';
+import { EmailService } from '../email/email.service';
 
 @Controller('downloads')
 export class DownloadsController {
+    private readonly logger = new Logger(DownloadsController.name);
+
     constructor(
         private readonly downloadsService: DownloadsService,
         private readonly ordersService: OrdersService,
         private readonly productsService: ProductsService,
+        private readonly usersService: UsersService,
+        private readonly emailService: EmailService,
     ) { }
 
     @UseGuards(AuthGuard('jwt'), AdminGuard)
     @Get('logs')
-    async findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 30) {
-        return this.downloadsService.findAll(Number(page), Number(limit));
+    async findAll(
+        @Query('page') page: number = 1, 
+        @Query('limit') limit: number = 30,
+        @Query('title') title?: string,
+        @Query('email') email?: string
+    ) {
+        return this.downloadsService.findAll(Number(page), Number(limit), title, email);
     }
 
     @UseGuards(AuthGuard('jwt'))
@@ -36,6 +47,9 @@ export class DownloadsController {
         //   throw new UnauthorizedException('Please purchase this product to download');
         // }
 
+        // Check if user has downloaded this product before logging the current download
+        const hasDownloadedBefore = await this.downloadsService.hasDownloadedBefore(user.userId, productId);
+
         // 3. Generate signed URL
         const url = await this.downloadsService.generateSignedUrl(product.fileKey);
 
@@ -46,6 +60,22 @@ export class DownloadsController {
             ipAddress: req.ip,
             userAgent: req.headers['user-agent'],
         });
+
+        // 5. Send feedback reminder email if first time downloading this asset pack
+        if (!hasDownloadedBefore) {
+            try {
+                const fullUser = await this.usersService.findOne(user.userId);
+                if (fullUser) {
+                    await this.emailService.sendFeedbackReminderEmail(
+                        fullUser.email,
+                        fullUser.name || 'Creative',
+                        product.title
+                    );
+                }
+            } catch (err) {
+                this.logger.error(`Failed to send feedback email: ${err.message}`);
+            }
+        }
 
         return { downloadUrl: url, expiresAt: new Date(Date.now() + 600 * 1000) };
     }

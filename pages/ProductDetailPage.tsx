@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
-import { useCart } from '../context/CartContext';
+import { useCart, calculateDiscountedPrice } from '../context/CartContext';
 import ScrollReveal from '../components/ScrollReveal';
 import ImageWithFallback from '../components/ImageWithFallback';
 import { reviewsService } from '../services/reviewsService';
@@ -256,7 +256,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
               "url": window.location.href,
               "priceCurrency": "USD",
               "price": product.discount && product.discount.isActive
-                ? product.price * (1 - product.discount.percentage / 100)
+                ? calculateDiscountedPrice(product.price, product.discount.percentage)
                 : product.price,
               "itemCondition": "https://schema.org/NewCondition",
               "availability": "https://schema.org/InStock"
@@ -525,13 +525,12 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                 <div className="flex items-center gap-4 mb-6">
                   <span className="text-4xl font-black text-pink-500">
                     {(product.discount && product.discount.isActive
-                      ? basePrice * (1 - product.discount.percentage / 100)
+                      ? calculateDiscountedPrice(basePrice, product.discount.percentage)
                       : basePrice) === 0
                       ? 'Free Pack'
                       : `$${(product.discount && product.discount.isActive
-                        ? basePrice * (1 - product.discount.percentage / 100)
-                        : basePrice).toFixed(2)}`}
-                  </span>
+                        ? calculateDiscountedPrice(basePrice, product.discount.percentage)
+                        : basePrice).toFixed(2)}`}</span>
                   {product.discount && product.discount.isActive && (
                     <>
                       <span className="text-gray-400 font-bold line-through text-xl opacity-50">${basePrice.toFixed(2)}</span>

@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 import type { Response } from 'express';
 import { ProductsService } from '../products/products.service';
 import { DownloadsService } from '../downloads/downloads.service';
+import { UsersService } from '../users/users.service';
+import { EmailService } from '../email/email.service';
 
 @Controller('storage')
 export class StorageController {
@@ -15,6 +17,8 @@ export class StorageController {
         private readonly ordersService: OrdersService,
         private readonly productsService: ProductsService,
         private readonly downloadsService: DownloadsService,
+        private readonly usersService: UsersService,
+        private readonly emailService: EmailService,
     ) { }
 
     @Get('public/*key')
@@ -147,9 +151,10 @@ export class StorageController {
         const isAdmin = req.user.isAdmin;
         const productId = body.productId;
         let fileKey: string;
+        let product: any;
 
         if (isAdmin) {
-            const product = await this.productsService.findOne(productId);
+            product = await this.productsService.findOne(productId);
             if (!product) throw new NotFoundException('Product not found');
             
             if (!product.isActive) {
@@ -185,12 +190,16 @@ export class StorageController {
                 throw new ForbiddenException('This asset is temporarily unavailable for download.');
             }
 
+            product = item.product;
             fileKey = item.product.fileKey;
         }
 
         if (!fileKey) {
             throw new NotFoundException('Asset file key is missing for this product.');
         }
+
+        // Check if user has downloaded this product before logging the current download
+        const hasDownloadedBefore = await this.downloadsService.hasDownloadedBefore(userId, productId);
 
         const signedUrl = await this.storageService.generateDownloadUrl(fileKey);
 
@@ -204,6 +213,22 @@ export class StorageController {
             });
         } catch (e) {
             console.error('Failed to log download:', e.message);
+        }
+
+        // Send feedback reminder email if first time downloading this asset pack
+        if (!hasDownloadedBefore) {
+            try {
+                const fullUser = await this.usersService.findOne(userId);
+                if (fullUser) {
+                    await this.emailService.sendFeedbackReminderEmail(
+                        fullUser.email,
+                        fullUser.name || 'Creative',
+                        product.title
+                    );
+                }
+            } catch (err) {
+                console.error(`Failed to send feedback email: ${err.message}`);
+            }
         }
 
         return { downloadUrl: signedUrl, expiresAt: new Date(Date.now() + 600 * 1000) };

@@ -61,13 +61,34 @@ export class DownloadsService {
         return this.logsRepository.save(log);
     }
 
-    async findAll(page: number = 1, limit: number = 30): Promise<{ data: DownloadLog[], total: number }> {
-        const [data, total] = await this.logsRepository.findAndCount({
-            relations: ['user', 'product'],
-            order: { downloadedAt: 'DESC' },
-            skip: (page - 1) * limit,
-            take: limit
+    async hasDownloadedBefore(userId: string, productId: string): Promise<boolean> {
+        const count = await this.logsRepository.count({
+            where: {
+                user: { id: userId },
+                product: { id: productId }
+            }
         });
+        return count > 0;
+    }
+
+    async findAll(page: number = 1, limit: number = 30, title?: string, email?: string): Promise<{ data: DownloadLog[], total: number }> {
+        const qb = this.logsRepository.createQueryBuilder('log')
+            .leftJoinAndSelect('log.user', 'user')
+            .leftJoinAndSelect('log.product', 'product')
+            .orderBy('log.downloadedAt', 'DESC');
+
+        if (title) {
+            qb.andWhere('product.title ILIKE :title', { title: `%${title}%` });
+        }
+
+        if (email) {
+            qb.andWhere('user.email ILIKE :email', { email: `%${email}%` });
+        }
+
+        qb.skip((page - 1) * limit);
+        qb.take(limit);
+
+        const [data, total] = await qb.getManyAndCount();
         return { data, total };
     }
 }

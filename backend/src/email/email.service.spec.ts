@@ -3,6 +3,9 @@ import { EmailService } from './email.service';
 import { ConfigService } from '@nestjs/config';
 import { Resend } from 'resend';
 import { Logger } from '@nestjs/common';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from '../users/entities/user.entity';
+import { Product } from '../products/entities/product.entity';
 
 jest.mock('resend');
 
@@ -23,6 +26,8 @@ describe('EmailService', () => {
             providers: [
                 EmailService,
                 { provide: ConfigService, useValue: configService },
+                { provide: getRepositoryToken(User), useValue: { find: jest.fn(), findOne: jest.fn() } },
+                { provide: getRepositoryToken(Product), useValue: { findOne: jest.fn() } },
             ],
         }).compile();
 
@@ -53,6 +58,8 @@ describe('EmailService', () => {
                 providers: [
                     EmailService,
                     { provide: ConfigService, useValue: emptyConfigService },
+                    { provide: getRepositoryToken(User), useValue: { find: jest.fn(), findOne: jest.fn() } },
+                    { provide: getRepositoryToken(Product), useValue: { findOne: jest.fn() } },
                 ],
             }).compile();
 

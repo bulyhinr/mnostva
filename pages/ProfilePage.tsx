@@ -72,6 +72,14 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab && ['dashboard', 'purchases', 'settings', 'logs', 'wishlist'].includes(tab)) {
+      setActiveTab(tab as any);
+    }
+  }, []);
+
+  useEffect(() => {
     if (user) {
       fetchOrders();
     }
@@ -339,47 +347,128 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                 </span>
                               </div>
                             </div>
+                                {items.length === 1 ? (
+                              /* Compact Row Layout for Single-Item Orders */
+                              <div className={`p-8 flex flex-col md:flex-row md:items-center gap-8 ${(order.status === 'cancelled' || order.status === 'failed') ? 'opacity-50 grayscale-[0.8]' : ''} overflow-hidden max-w-full`}>
+                                <div className="inline-block h-20 w-20 rounded-2xl ring-4 ring-white shadow-lg overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
+                                  <img className="h-full w-full object-cover" src={items[0].imageUrl} alt="" onError={handleImageError} />
+                                </div>
 
-                            <div className={`p-8 flex flex-col md:flex-row md:items-center gap-8 ${(order.status === 'cancelled' || order.status === 'failed') ? 'opacity-50 grayscale-[0.8]' : ''} overflow-hidden max-w-full`}>
-                              <div className="flex -space-x-4 overflow-hidden shrink-0">
-                                {items.slice(0, 4).map((item, idx) => (
-                                  <div key={idx} className="inline-block h-16 w-16 rounded-2xl ring-4 ring-white shadow-lg overflow-hidden relative group-hover:scale-110 transition-transform">
-                                    <img className="h-full w-full object-cover" src={item.imageUrl} alt="" onError={handleImageError} />
-                                    {idx === 3 && items.length > 4 && (
-                                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-black text-xs">
-                                        +{items.length - 3}
-                                      </div>
+                                <div className="flex-grow min-w-0 flex flex-col justify-center">
+                                  <div className="flex items-center min-w-0 gap-2 mb-1">
+                                    <h4 className="font-black text-lg md:text-xl text-gray-900 truncate leading-tight">
+                                      {items[0].name}
+                                    </h4>
+                                    {items[0].licenseType === 'commercial' && (
+                                      <span className="bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded text-[8px] font-black uppercase shrink-0">Commercial</span>
                                     )}
                                   </div>
-                                ))}
-                              </div>
+                                  
+                                  {items[0].originalPrice && items[0].originalPrice > items[0].price ? (
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-gray-400 line-through text-xs font-bold">${items[0].originalPrice.toFixed(2)}</span>
+                                      <span className="text-pink-500 font-extrabold text-[10px] uppercase bg-pink-50 px-1.5 py-0.5 rounded-md">-{items[0].discountPercentage}% OFF</span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-gray-400 text-xs font-bold">Standard Price</span>
+                                  )}
+                                </div>
 
-                              <div className="flex-grow min-w-0 flex flex-col justify-center">
-                                <h4 className="font-black text-lg md:text-xl text-gray-900 mb-3 leading-tight">
-                                  {items.length === 1 ? items[0].name : `${items.length} Asset Pack Bundle`}
+                                <div className="flex flex-col md:items-end shrink-0 gap-3 w-full md:w-auto">
+                                  <div className="text-right flex items-center justify-between md:block w-full">
+                                    {order.couponCode && (
+                                      <div className="mb-2 text-xs md:text-right">
+                                        <span className="bg-pink-100 text-pink-600 px-2.5 py-1 rounded-lg font-black uppercase text-[9px] tracking-wider inline-block">
+                                          Coupon: {order.couponCode}
+                                        </span>
+                                        {order.couponDiscount && order.couponDiscount > 0 && (
+                                          <span className="block text-[10px] font-bold text-pink-500 mt-1">
+                                            -${(order.couponDiscount / 100).toFixed(2)}
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
+                                    <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Order Total</span>
+                                    <span className="text-3xl font-black text-gray-900">${(order.total || 0).toFixed(2)}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              /* Spacious Grid Layout for Multi-Item Bundle Orders */
+                              <div className={`p-8 flex flex-col gap-6 ${(order.status === 'cancelled' || order.status === 'failed') ? 'opacity-50 grayscale-[0.8]' : ''} overflow-hidden max-w-full`}>
+                                {/* Row 1: Larger Visual Image Stack */}
+                                <div className="flex -space-x-3 overflow-hidden shrink-0 pb-2">
+                                  {items.slice(0, 5).map((item, idx) => (
+                                    <div key={idx} className="inline-block h-20 w-20 rounded-2xl ring-4 ring-white shadow-lg overflow-hidden relative group-hover:scale-105 transition-transform shrink-0">
+                                      <img className="h-full w-full object-cover" src={item.imageUrl} alt="" onError={handleImageError} />
+                                      {idx === 4 && items.length > 5 && (
+                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-black text-xs">
+                                          +{items.length - 4}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {/* Title above the flex row */}
+                                <h4 className="font-black text-lg md:text-xl text-gray-900 mb-1 leading-tight uppercase tracking-tight">
+                                  {items.length} Asset Pack Bundle
                                 </h4>
-                                <div className="bg-gray-50/50 rounded-xl p-3 border border-gray-100">
-                                  <div className="text-xs text-gray-600 font-medium space-y-2">
-                                    {items.slice(0, 4).map((i, idx) => (
-                                      <div key={idx} className="flex items-center justify-between w-full border-b border-dashed border-gray-200 last:border-0 pb-1.5 last:pb-0 gap-4">
-                                        <span className="truncate font-bold text-gray-700">{i.name}</span>
-                                        <span className="font-black text-gray-900 shrink-0 bg-white px-2 py-0.5 rounded-md shadow-sm border border-gray-100 text-[10px]">${(i.price).toFixed(2)}</span>
-                                      </div>
-                                    ))}
-                                    {items.length > 4 && (
-                                      <p className="text-[10px] text-gray-400 pt-1 italic text-center">...and {items.length - 4} more items</p>
-                                    )}
+
+                                {/* Row 2: Grid and Total Details side by side on desktop with matching heights */}
+                                <div className="flex flex-col md:flex-row gap-6 items-stretch w-full">
+                                  {/* Column A: Item Details List (w-full md:w-2/3) */}
+                                  <div className="flex-grow min-w-0 w-full md:w-2/3 bg-gray-50/50 rounded-3xl p-5 border border-gray-100 flex flex-col justify-center">
+                                    <div className="text-xs text-gray-600 font-medium space-y-2.5">
+                                      {items.map((i, idx) => {
+                                        const hasDiscount = !!(i.originalPrice && i.originalPrice > i.price);
+                                        return (
+                                          <div key={idx} className="flex items-center justify-between w-full border-b border-dashed border-gray-200 last:border-0 pb-2.5 last:pb-0 gap-4">
+                                            <div className="flex items-center min-w-0 gap-2">
+                                              <span className="truncate font-bold text-gray-700">{i.name}</span>
+                                              {i.licenseType === 'commercial' && (
+                                                <span className="bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded text-[8px] font-black uppercase shrink-0">Commercial</span>
+                                              )}
+                                            </div>
+                                            <div className="flex items-center gap-1.5 shrink-0">
+                                              {hasDiscount && (
+                                                <>
+                                                  <span className="text-gray-400 line-through text-[9px] font-bold">${i.originalPrice.toFixed(2)}</span>
+                                                  <span className="text-pink-500 font-extrabold text-[8px] uppercase tracking-tighter bg-pink-50 px-1 rounded">-{i.discountPercentage}%</span>
+                                                </>
+                                              )}
+                                              <span className="font-black text-gray-900 bg-white px-2 py-0.5 rounded-md shadow-sm border border-gray-100 text-[10px]">${(i.price).toFixed(2)}</span>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+
+                                  {/* Column B: Grand Total Summary (w-full md:w-1/3) */}
+                                  <div className="w-full md:w-1/3 flex flex-col md:items-end justify-between shrink-0 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 md:text-right">
+                                    <div className="w-full">
+                                      {order.couponCode && (
+                                        <div className="mb-4 text-xs md:text-right">
+                                          <span className="bg-pink-100 text-pink-600 px-2.5 py-1 rounded-lg font-black uppercase text-[9px] tracking-wider inline-block">
+                                            Coupon: {order.couponCode}
+                                          </span>
+                                          {order.couponDiscount && order.couponDiscount > 0 && (
+                                            <span className="block text-[10px] font-bold text-pink-500 mt-1">
+                                              -${(order.couponDiscount / 100).toFixed(2)}
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="w-full flex items-center justify-between md:block">
+                                      <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Order Total</span>
+                                      <span className="text-3xl font-black text-gray-900">${(order.total || 0).toFixed(2)}</span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-
-                              <div className="flex flex-col md:items-end shrink-0 gap-3 w-full md:w-auto">
-                                <div className="text-right flex items-center justify-between md:block w-full">
-                                  <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Order Total</span>
-                                  <span className="text-3xl font-black text-gray-900">${(order.total || 0).toFixed(2)}</span>
-                                </div>
-                              </div>
-                            </div>
+                            )}
 
                             {/* Action Buttons Row */}
                             <div className="px-8 pb-8 pt-0 flex flex-wrap gap-3 justify-end border-t border-gray-50 mt-4 pt-6">

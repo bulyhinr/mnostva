@@ -15,6 +15,11 @@ vi.mock('../context/AuthContext', () => ({
 // Mock useCart
 vi.mock('../context/CartContext', () => ({
   useCart: vi.fn(),
+  calculateDiscountedPrice: (price: number, percentage: number) => {
+    const priceCents = Math.round(price * 100);
+    const discountCents = Math.round(priceCents * (percentage / 100));
+    return (priceCents - discountCents) / 100;
+  },
 }));
 
 describe('ProductCard', () => {

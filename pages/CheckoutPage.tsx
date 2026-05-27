@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart, calculateDiscountedPrice } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/ScrollReveal';
 import { Order } from '../types';
@@ -57,7 +57,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
   const [existingOrderAmount, setExistingOrderAmount] = useState<number | null>(state?.totalAmount || null);
   const [existingOrderItems, setExistingOrderItems] = useState<any[]>([]);
 
-  const displayTotal = existingOrderAmount !== null ? existingOrderAmount : totalPrice;
+  const discountedTotalPrice = calculateDiscountedPrice(totalPrice, appliedCoupon?.discountPercentage || 0);
+  const displayTotal = existingOrderAmount !== null ? existingOrderAmount : discountedTotalPrice;
 
   const [form, setForm] = useState({
     name: user?.name || '',
@@ -525,7 +526,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                                   ${(basePrice * item.quantity).toFixed(2)}
                                 </p>
                                 <p className="font-black text-pink-500 text-sm">
-                                  ${((basePrice * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}
+                                  ${(calculateDiscountedPrice(basePrice, item.discount.percentage) * item.quantity).toFixed(2)}
                                 </p>
                               </>
                             ) : (
@@ -563,14 +564,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                     <div className="text-right">
                       {appliedCoupon && <span className="text-gray-400 line-through text-sm mr-2 font-bold">${totalPrice.toFixed(2)}</span>}
                       <span className="text-gray-900 text-5xl font-black">
-                        {(totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)) === 0 
+                        {discountedTotalPrice === 0 
                           ? 'Free Pack' 
-                          : `$${(totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)).toFixed(2)}`}
+                          : `$${discountedTotalPrice.toFixed(2)}`}
                       </span>
                     </div>
                   </div>
 
-                  {SHOW_PAYPAL && (totalPrice * (1 - (appliedCoupon?.discountPercentage || 0) / 100)) > 0 && (
+                  {SHOW_PAYPAL && discountedTotalPrice > 0 && (
                     <div className="mb-6">
                       <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Select Payment Method</p>
                       <div className="flex gap-4">
@@ -653,18 +654,21 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                             </li>
                           ))
                         ) : cart.length > 0 ? (
-                          cart.map((item, idx) => (
-                            <li key={`${item.id}-${idx}`} className="flex justify-between text-sm font-bold text-gray-600">
-                              <span>{item.name} {item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
-                              <span>
-                                {item.discount?.isActive ? (
-                                  <span className="text-pink-500">${((item.price * (1 - item.discount.percentage / 100)) * item.quantity).toFixed(2)}</span>
-                                ) : (
-                                  <span>{item.price === 0 ? 'Free Pack' : `$${(item.price * item.quantity).toFixed(2)}`}</span>
-                                )}
-                              </span>
-                            </li>
-                          ))
+                          cart.map((item, idx) => {
+                            const basePrice = item.licenseType === 'commercial' && item.commercialPrice ? item.commercialPrice : item.price;
+                            return (
+                              <li key={`${item.id}-${idx}`} className="flex justify-between text-sm font-bold text-gray-600">
+                                <span>{item.name} {item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                                <span>
+                                  {item.discount?.isActive ? (
+                                    <span className="text-pink-500">${(calculateDiscountedPrice(basePrice, item.discount.percentage) * item.quantity).toFixed(2)}</span>
+                                  ) : (
+                                    <span>{basePrice === 0 ? 'Free Pack' : `$${(basePrice * item.quantity).toFixed(2)}`}</span>
+                                  )}
+                                </span>
+                              </li>
+                            );
+                          })
                         ) : orderId ? (
                           <li className="flex justify-between text-sm font-bold text-gray-600">
                             <span className="text-[#8a7db3] uppercase tracking-wider">Pending Order Payment</span>

@@ -21,6 +21,12 @@ export class OrderItem {
     @Column({ type: 'int', default: 1 })
     quantity: number;
 
+    @Column({ name: 'original_price', type: 'int', nullable: true })
+    originalPrice: number | null; // Original price before product discount (in cents)
+
+    @Column({ name: 'discount_percentage', type: 'int', nullable: true })
+    discountPercentage: number | null; // Product discount percentage applied
+
     @Column({ type: 'varchar', default: 'standard' })
     licenseType: string; // 'standard' or 'commercial'
 }

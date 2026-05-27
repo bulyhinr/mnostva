@@ -9,8 +9,12 @@ export class OrdersController {
 
     @UseGuards(AuthGuard('jwt'), AdminGuard)
     @Get()
-    async findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 30) {
-        return this.ordersService.findAll(Number(page), Number(limit));
+    async findAll(
+        @Query('page') page: number = 1, 
+        @Query('limit') limit: number = 30,
+        @Query('month') month?: string
+    ) {
+        return this.ordersService.findAll(Number(page), Number(limit), month);
     }
 
     @UseGuards(AuthGuard('jwt'), AdminGuard)

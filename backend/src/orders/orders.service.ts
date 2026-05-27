@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject, forwardRef, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef, BadRequestException, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Order } from './entities/order.entity';
@@ -11,7 +11,10 @@ import { EmailService } from '../email/email.service';
 import { CouponsService } from '../coupons/coupons.service';
 
 @Injectable()
-export class OrdersService {
+export class OrdersService implements OnModuleInit, OnModuleDestroy {
+    private readonly logger = new Logger(OrdersService.name);
+    private schedulerInterval: NodeJS.Timeout | null = null;
+    private readonly REMINDER_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours
     constructor(
         @InjectRepository(Order)
         private ordersRepository: Repository<Order>,
@@ -60,13 +63,17 @@ export class OrdersService {
             // Use commercialPrice if standard vs commercial is provided
             let basePrice = (licenseType === 'commercial' && product.commercialPrice) ? product.commercialPrice : product.price;
             let finalPrice = basePrice;
+            let discountPercentage = 0;
 
             if (product.discount && product.discount.isActive) {
-                const discountAmount = Math.round(basePrice * (product.discount.percentage / 100));
+                discountPercentage = product.discount.percentage;
+                const discountAmount = Math.round(basePrice * (discountPercentage / 100));
                 finalPrice = basePrice - discountAmount;
             }
 
             item.price = finalPrice;
+            item.originalPrice = basePrice;
+            item.discountPercentage = discountPercentage > 0 ? discountPercentage : null;
             item.quantity = 1;
 
             orderItems.push(item);
@@ -305,13 +312,81 @@ export class OrdersService {
         }
     }
 
-    async findAll(page: number = 1, limit: number = 30): Promise<{ data: Order[], total: number }> {
-        const [data, total] = await this.ordersRepository.findAndCount({
-            relations: ['user', 'items', 'items.product'],
-            order: { createdAt: 'DESC' },
-            skip: (page - 1) * limit,
-            take: limit
-        });
+    async findAll(page: number = 1, limit: number = 30, month?: string): Promise<{ data: Order[], total: number }> {
+        const qb = this.ordersRepository.createQueryBuilder('order')
+            .leftJoinAndSelect('order.user', 'user')
+            .leftJoinAndSelect('order.items', 'items')
+            .leftJoinAndSelect('items.product', 'product')
+            .orderBy('order.createdAt', 'DESC');
+
+        if (month) {
+            const [year, m] = month.split('-').map(Number);
+            const start = new Date(year, m - 1, 1);
+            const end = new Date(year, m, 1);
+            qb.andWhere('order.createdAt >= :start AND order.createdAt < :end', { start, end });
+        }
+
+        qb.skip((page - 1) * limit);
+        qb.take(limit);
+
+        const [data, total] = await qb.getManyAndCount();
         return { data, total };
+    }
+
+    onModuleInit() {
+        this.logger.log('Initializing Payment Reminder Scheduler...');
+        // Runs every 1 minute (60,000 ms)
+        this.schedulerInterval = setInterval(async () => {
+            try {
+                await this.checkAndSendPaymentReminders();
+            } catch (err) {
+                this.logger.error(`Error in Payment Reminder Scheduler: ${err.message}`);
+            }
+        }, 60000);
+    }
+
+    onModuleDestroy() {
+        if (this.schedulerInterval) {
+            clearInterval(this.schedulerInterval);
+            this.logger.log('Payment Reminder Scheduler stopped.');
+        }
+    }
+
+    async checkAndSendPaymentReminders() {
+        const thresholdDate = new Date(Date.now() - this.REMINDER_THRESHOLD_MS);
+
+        // Find orders in status 'pending' that haven't had reminder sent
+        const pendingOrders = await this.ordersRepository.find({
+            where: {
+                status: 'pending',
+                paymentReminderSent: false,
+            },
+            relations: ['user', 'items', 'items.product'],
+        });
+
+        const ordersToRemind = pendingOrders.filter(order => order.createdAt <= thresholdDate);
+
+        if (ordersToRemind.length === 0) return;
+
+        this.logger.log(`Found ${ordersToRemind.length} pending orders eligible for payment reminders.`);
+
+        for (const order of ordersToRemind) {
+            try {
+                if (order.user && order.user.email) {
+                    await this.emailService.sendPaymentReminderEmail(
+                        order.user.email,
+                        order.user.name || 'Creative',
+                        order
+                    );
+                    
+                    // Mark as sent
+                    order.paymentReminderSent = true;
+                    await this.ordersRepository.save(order);
+                    this.logger.log(`Marked order ${order.id} as reminder sent.`);
+                }
+            } catch (err) {
+                this.logger.error(`Failed to send reminder for order ${order.id}: ${err.message}`);
+            }
+        }
     }
 }

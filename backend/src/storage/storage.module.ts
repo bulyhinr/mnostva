@@ -5,9 +5,10 @@ import { ConfigModule } from '@nestjs/config';
 import { OrdersModule } from '../orders/orders.module';
 import { ProductsModule } from '../products/products.module';
 import { DownloadsModule } from '../downloads/downloads.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [ConfigModule, OrdersModule, ProductsModule, DownloadsModule],
+  imports: [ConfigModule, OrdersModule, ProductsModule, DownloadsModule, UsersModule],
   providers: [StorageService],
   controllers: [StorageController],
   exports: [StorageService]

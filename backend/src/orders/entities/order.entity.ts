@@ -35,6 +35,9 @@ export class Order {
     @Column({ default: 'pending' })
     status: 'pending' | 'paid' | 'failed' | 'fulfilled' | 'cancelled';
 
+    @Column({ name: 'payment_reminder_sent', type: 'boolean', default: false })
+    paymentReminderSent: boolean;
+
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 

@@ -8,11 +8,13 @@ import { couponService } from '../services/couponService';
 import { authService } from '../services/authService';
 import { orderService } from '../services/orderService';
 import { downloadsService } from '../services/downloadsService';
+import { broadcastService } from '../services/broadcastService';
 import ScrollReveal from '../components/ScrollReveal';
 import ImageWithFallback from '../components/ImageWithFallback';
 import { Toaster, toast } from 'react-hot-toast';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { calculateDiscountedPrice } from '../context/CartContext';
+
 
 const DEFAULT_PACK_CONTENT = ['FBX', 'OBJ', 'Blender', 'GLTF (glb)', 'STL', 'MAYA', 'Unity Package', 'Unreal Engine', 'Tuanjie Engine'];
 const DEFAULT_COMPATIBILITY = ['Unreal Engine 4.26 - 4.27 and 5.0+', 'Unity 2021.3+', 'Unity 6000+', 'Tuanjie Engine 1.8.1+', 'Blender 3.5+', 'Godot 3.4+', 'Roblox'];
@@ -22,10 +24,24 @@ const AdminPage: React.FC = () => {
     const [discounts, setDiscounts] = useState<Discount[]>([]);
     const [coupons, setCoupons] = useState<Coupon[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'products' | 'discounts' | 'coupons' | 'purchases' | 'downloads'>('products');
+    const [activeTab, setActiveTab] = useState<'products' | 'discounts' | 'coupons' | 'purchases' | 'downloads' | 'newsletters'>('products');
     const [allOrders, setAllOrders] = useState<any[]>([]);
     const [downloadLogs, setDownloadLogs] = useState<any[]>([]);
     const [searchParams, setSearchParams] = useSearchParams();
+
+    // Newsletter State
+    const [newsletter, setNewsletter] = useState({
+        subject: 'Vibrant New Asset Released! 🎨',
+        body: `We are super excited to announce our latest addition to the Mnostva Art catalog!\n\nThis high-quality, fully optimized stylized asset pack is designed to help you construct beautiful environments with zero hassle.\n\nTake advantage of our current launch discounts today!`,
+        imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
+        featuredProductId: '',
+        ctaText: 'Explore Collection',
+        ctaLink: 'http://localhost:3002/marketplace',
+        templateType: 'new_release' as 'promo' | 'announcement' | 'new_release',
+        testEmailOnly: true,
+        testRecipient: '',
+    });
+    const [sendingBroadcast, setSendingBroadcast] = useState(false);
 
     // Product Editing State
     const [isEditingProduct, setIsEditingProduct] = useState(false);
@@ -82,6 +98,8 @@ const AdminPage: React.FC = () => {
     // Reporting Filters
     const [purchaseMonth, setPurchaseMonth] = useState('');
     const [downloadSearch, setDownloadSearch] = useState({ title: '', email: '' });
+    const [debouncedDownloadTitle, setDebouncedDownloadTitle] = useState('');
+    const [debouncedDownloadEmail, setDebouncedDownloadEmail] = useState('');
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -90,6 +108,26 @@ const AdminPage: React.FC = () => {
         }, 500);
         return () => clearTimeout(handler);
     }, [searchQuery]);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedDownloadTitle(downloadSearch.title);
+            if (downloadsPage !== 1) setDownloadsPage(1);
+        }, 500);
+        return () => clearTimeout(handler);
+    }, [downloadSearch.title]);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedDownloadEmail(downloadSearch.email);
+            if (downloadsPage !== 1) setDownloadsPage(1);
+        }, 500);
+        return () => clearTimeout(handler);
+    }, [downloadSearch.email]);
+
+    useEffect(() => {
+        if (purchasesPage !== 1) setPurchasesPage(1);
+    }, [purchaseMonth]);
 
     const mapBackendProductToFrontend = (p: any): Product => ({
         id: p.id,
@@ -128,8 +166,8 @@ const AdminPage: React.FC = () => {
                 }),
                 discountService.getAllDiscounts(token),
                 couponService.getAllCoupons(token),
-                orderService.getAllOrders(token, purchasesPage, reportingItemsPerPage),
-                downloadsService.getDownloadLogs(token, downloadsPage, reportingItemsPerPage)
+                orderService.getAllOrders(token, purchasesPage, reportingItemsPerPage, purchaseMonth),
+                downloadsService.getDownloadLogs(token, downloadsPage, reportingItemsPerPage, debouncedDownloadTitle, debouncedDownloadEmail)
             ]);
 
             const mappedProducts: Product[] = (backendProductsResponse.data || []).map(mapBackendProductToFrontend);
@@ -151,7 +189,7 @@ const AdminPage: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, [page, debouncedSearchQuery, purchasesPage, downloadsPage]);
+    }, [page, debouncedSearchQuery, purchasesPage, downloadsPage, purchaseMonth, debouncedDownloadTitle, debouncedDownloadEmail]);
 
     // Handle 'edit' query parameter
     useEffect(() => {
@@ -771,6 +809,71 @@ const AdminPage: React.FC = () => {
         setIsEditingCoupon(true);
     };
 
+    const handleSendNewsletter = async (testEmailOnly: boolean) => {
+        try {
+            const token = authService.getAccessToken();
+            if (!token) {
+                toast.error("Authentication token not found");
+                return;
+            }
+
+            if (!newsletter.subject) {
+                toast.error("Subject is required");
+                return;
+            }
+
+            if (!newsletter.body) {
+                toast.error("Message body is required");
+                return;
+            }
+
+            if (testEmailOnly && !newsletter.testRecipient) {
+                toast.error("Please enter a test recipient email");
+                return;
+            }
+
+            setSendingBroadcast(true);
+
+            const payload = {
+                subject: newsletter.subject,
+                body: newsletter.body,
+                imageUrl: newsletter.imageUrl || undefined,
+                featuredProductId: newsletter.featuredProductId || undefined,
+                ctaText: newsletter.ctaText || undefined,
+                ctaLink: newsletter.ctaLink || undefined,
+                templateType: newsletter.templateType,
+                testEmailOnly,
+                testRecipient: testEmailOnly ? newsletter.testRecipient : undefined
+            };
+
+            const result = await broadcastService.sendBroadcast(token, payload);
+
+            if (result.success) {
+                if (testEmailOnly) {
+                    toast.success(`Test email sent successfully! 🚀`);
+                } else if (result.simulatedCount > 0) {
+                    toast.success(`Newsletter processed for ${result.totalRecipients} customers! 📧 (${result.realSentCount} sent via Resend, ${result.simulatedCount} simulated locally)`);
+                } else {
+                    toast.success(`Newsletter blasted to ${result.sentCount} customers! 📧`);
+                }
+            } else {
+                toast.error(result.message || "Failed to send newsletter");
+            }
+        } catch (error: any) {
+            console.error("Failed to broadcast newsletter:", error);
+            toast.error(`Broadcast failed: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setSendingBroadcast(false);
+        }
+    };
+
+    useEffect(() => {
+        const decoded = authService.getUserFromToken();
+        if (decoded && decoded.email) {
+            setNewsletter(prev => ({ ...prev, testRecipient: decoded.email }));
+        }
+    }, []);
+
 
     const isEditingAny = isEditingProduct || isEditingDiscount || isEditingCoupon;
 
@@ -818,6 +921,12 @@ const AdminPage: React.FC = () => {
                         className={`px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${activeTab === 'downloads' ? 'bg-[#8a7db3] text-white shadow-lg' : 'text-gray-400 hover:text-gray-600'}`}
                     >
                         Downloads
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('newsletters')}
+                        className={`px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-all ${activeTab === 'newsletters' ? 'bg-[#8a7db3] text-white shadow-lg' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        Newsletters
                     </button>
                 </div>
 
@@ -903,7 +1012,7 @@ const AdminPage: React.FC = () => {
                                                     {product.discount && product.discount.isActive ? (
                                                         <>
                                                             <p className="font-bold text-gray-400 line-through text-xs">${product.price.toFixed(2)}</p>
-                                                            <p className="font-black text-[#8a7db3]">${(product.price * (1 - product.discount.percentage / 100)).toFixed(2)}</p>
+                                                            <p className="font-black text-[#8a7db3]">${calculateDiscountedPrice(product.price, product.discount.percentage).toFixed(2)}</p>
                                                         </>
                                                     ) : (
                                                         <p className="font-black text-[#8a7db3]">${product.price.toFixed(2)}</p>
@@ -1122,9 +1231,7 @@ const AdminPage: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {allOrders
-                                    .filter(order => !purchaseMonth || order.createdAt.startsWith(purchaseMonth))
-                                    .map(order => (
+                                {allOrders.map(order => (
                                     <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-8 py-6 font-mono text-[10px] text-gray-400">{order.id.split('-')[0]}...</td>
                                         <td className="px-8 py-6">
@@ -1132,15 +1239,46 @@ const AdminPage: React.FC = () => {
                                             <p className="text-[10px] text-gray-400 font-bold">{order.user?.email}</p>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <div className="flex flex-col gap-1">
-                                                {order.items.map((item: any, idx: number) => (
-                                                    <span key={idx} className="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full w-fit">
-                                                        {item.name}
-                                                    </span>
-                                                ))}
+                                            <div className="flex flex-col gap-1.5">
+                                                {order.items.map((item: any, idx: number) => {
+                                                    const hasDiscount = !!(item.originalPrice && item.originalPrice > item.price);
+                                                    return (
+                                                        <div key={idx} className="flex items-center gap-2">
+                                                            <span className="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full w-fit">
+                                                                {item.name}
+                                                                {item.licenseType === 'commercial' && (
+                                                                    <span className="text-[8px] text-purple-600 font-extrabold ml-1.5 uppercase tracking-tighter">Commercial</span>
+                                                                )}
+                                                            </span>
+                                                            <span className="text-[9px] font-black text-gray-900 bg-gray-50 border border-gray-100 px-1.5 py-0.5 rounded">
+                                                                {hasDiscount && (
+                                                                    <span className="text-gray-400 line-through mr-1 font-bold">${item.originalPrice.toFixed(2)}</span>
+                                                                )}
+                                                                ${item.price.toFixed(2)}
+                                                                {hasDiscount && (
+                                                                    <span className="text-pink-500 font-extrabold ml-1">(-{item.discountPercentage}%)</span>
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 font-black text-[#8a7db3]">${order.total.toFixed(2)}</td>
+                                        <td className="px-8 py-6">
+                                            <p className="font-black text-[#8a7db3] text-sm">${order.total.toFixed(2)}</p>
+                                            {order.couponCode && (
+                                                <div className="mt-1">
+                                                    <span className="bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider">
+                                                        Coupon: {order.couponCode}
+                                                    </span>
+                                                    {order.couponDiscount && order.couponDiscount > 0 && (
+                                                        <span className="block text-[8px] font-bold text-pink-500 mt-0.5">
+                                                            -${(order.couponDiscount / 100).toFixed(2)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </td>
                                         <td className="px-8 py-6 text-[10px] font-bold text-gray-500">
                                             {new Date(order.createdAt).toLocaleDateString()}
                                         </td>
@@ -1243,13 +1381,7 @@ const AdminPage: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {downloadLogs
-                                    .filter(log => {
-                                        const matchesTitle = !downloadSearch.title || (log.product?.title || '').toLowerCase().includes(downloadSearch.title.toLowerCase());
-                                        const matchesEmail = !downloadSearch.email || (log.user?.email || '').toLowerCase().includes(downloadSearch.email.toLowerCase());
-                                        return matchesTitle && matchesEmail;
-                                    })
-                                    .map(log => (
+                                {downloadLogs.map(log => (
                                     <tr key={log.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-8 py-6">
                                             <p className="font-bold text-gray-800">{log.product?.title || 'Unknown Product'}</p>
@@ -1295,6 +1427,302 @@ const AdminPage: React.FC = () => {
                                 </button>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Newsletters View */}
+            {activeTab === 'newsletters' && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex flex-col lg:flex-row gap-8 items-stretch w-full">
+                        {/* Column A: Controls Form (w-full lg:w-1/2) */}
+                        <div className="w-full lg:w-1/2 flex flex-col justify-between bg-white rounded-[3rem] p-8 md:p-12 shadow-xl border border-gray-100/50">
+                            <div>
+                                <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter mb-1">Mailing Campaigns</h2>
+                                <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-8">Design and broadcast premium newsletters</p>
+
+                                {/* Template type selectors */}
+                                <div className="mb-6">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Mailing Theme Template</label>
+                                    <div className="grid grid-cols-3 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setNewsletter({ ...newsletter, templateType: 'announcement' })}
+                                            className={`py-3 px-4 rounded-2xl font-black text-xs uppercase tracking-widest border-2 transition-all ${newsletter.templateType === 'announcement' ? 'border-[#8a7db3] bg-[#8a7db3]/5 text-[#8a7db3]' : 'border-gray-100 hover:border-gray-200 text-gray-400'}`}
+                                        >
+                                            📢 News
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setNewsletter({ ...newsletter, templateType: 'new_release' })}
+                                            className={`py-3 px-4 rounded-2xl font-black text-xs uppercase tracking-widest border-2 transition-all ${newsletter.templateType === 'new_release' ? 'border-[#7c3aed] bg-[#7c3aed]/5 text-[#7c3aed]' : 'border-gray-100 hover:border-gray-200 text-gray-400'}`}
+                                        >
+                                            🚀 Release
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setNewsletter({ ...newsletter, templateType: 'promo' })}
+                                            className={`py-3 px-4 rounded-2xl font-black text-xs uppercase tracking-widest border-2 transition-all ${newsletter.templateType === 'promo' ? 'border-pink-500 bg-pink-50 text-pink-600' : 'border-gray-100 hover:border-gray-200 text-gray-400'}`}
+                                        >
+                                            🏷️ Sale
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Subject / Title */}
+                                <div className="mb-5">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Email Subject / Campaign Title</label>
+                                    <input
+                                        type="text"
+                                        value={newsletter.subject}
+                                        onChange={(e) => setNewsletter({ ...newsletter, subject: e.target.value })}
+                                        className="w-full bg-gray-50/50 border-2 border-gray-100 focus:border-[#8a7db3] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none transition-all shadow-sm"
+                                        placeholder="Enter high-impact email subject..."
+                                    />
+                                </div>
+
+                                {/* Image URL */}
+                                <div className="mb-5">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Campaign Hero Image Banner (URL)</label>
+                                    <input
+                                        type="text"
+                                        value={newsletter.imageUrl}
+                                        onChange={(e) => setNewsletter({ ...newsletter, imageUrl: e.target.value })}
+                                        className="w-full bg-gray-50/50 border-2 border-gray-100 focus:border-[#8a7db3] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none transition-all shadow-sm"
+                                        placeholder="Paste high-res image URL (e.g. Unsplash)..."
+                                    />
+                                </div>
+
+                                {/* Featured Asset selector */}
+                                <div className="mb-5">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Featured Catalogs Asset (Optional)</label>
+                                    <select
+                                        value={newsletter.featuredProductId}
+                                        onChange={(e) => setNewsletter({ ...newsletter, featuredProductId: e.target.value })}
+                                        className="w-full bg-gray-50/50 border-2 border-gray-100 focus:border-[#8a7db3] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none transition-all shadow-sm"
+                                    >
+                                        <option value="">-- Select Asset Pack --</option>
+                                        {products.map((prod) => (
+                                            <option key={prod.id} value={prod.id}>
+                                                {prod.name} (${prod.price.toFixed(2)})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* CTA details */}
+                                <div className="grid grid-cols-2 gap-4 mb-5">
+                                    <div>
+                                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">CTA Button Text</label>
+                                        <input
+                                            type="text"
+                                            value={newsletter.ctaText}
+                                            onChange={(e) => setNewsletter({ ...newsletter, ctaText: e.target.value })}
+                                            className="w-full bg-gray-50/50 border-2 border-gray-100 focus:border-[#8a7db3] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none transition-all shadow-sm"
+                                            placeholder="Explore Collection"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">CTA Link Destination</label>
+                                        <input
+                                            type="text"
+                                            value={newsletter.ctaLink}
+                                            onChange={(e) => setNewsletter({ ...newsletter, ctaLink: e.target.value })}
+                                            className="w-full bg-gray-50/50 border-2 border-gray-100 focus:border-[#8a7db3] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none transition-all shadow-sm"
+                                            placeholder="http://localhost:3002/marketplace"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Message Body */}
+                                <div className="mb-6">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Mailing Message Body</label>
+                                    <textarea
+                                        rows={6}
+                                        value={newsletter.body}
+                                        onChange={(e) => setNewsletter({ ...newsletter, body: e.target.value })}
+                                        className="w-full bg-gray-50/50 border-2 border-gray-100 focus:border-[#8a7db3] rounded-2xl px-5 py-3.5 text-xs font-medium outline-none transition-all shadow-sm resize-none"
+                                        placeholder="Describe the campaign, coupon codes, and updates..."
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Safe Double-Check Operations */}
+                            <div className="border-t border-gray-100 pt-6 mt-6 space-y-4">
+                                <div className="bg-gray-50/50 rounded-2xl p-4 border border-dashed border-gray-200">
+                                    <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Test Campaign Recipient</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="email"
+                                            placeholder="admin@mnostva.art"
+                                            value={newsletter.testRecipient}
+                                            onChange={(e) => setNewsletter({ ...newsletter, testRecipient: e.target.value })}
+                                            className="flex-grow bg-white border-2 border-gray-100 focus:border-[#8a7db3] rounded-xl px-4 py-2 text-xs font-bold outline-none transition-all"
+                                        />
+                                        <button
+                                            type="button"
+                                            disabled={sendingBroadcast}
+                                            onClick={() => handleSendNewsletter(true)}
+                                            className="px-5 py-2.5 bg-gray-900 text-white rounded-xl font-black text-2xs uppercase tracking-widest hover:bg-gray-800 disabled:opacity-50 transition-all shrink-0"
+                                        >
+                                            Send Test 🚀
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    disabled={sendingBroadcast}
+                                    onClick={() => {
+                                        if (window.confirm("ARE YOU ABSOLUTELY SURE?\n\nThis will instantly broadcast this email campaign to all registered Mnostva users in the database! This action is permanent and cannot be undone.")) {
+                                            handleSendNewsletter(false);
+                                        }
+                                    }}
+                                    className={`w-full py-4 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg transition-all ${
+                                        newsletter.templateType === 'promo' 
+                                            ? 'bg-gradient-to-r from-pink-500 to-rose-600 hover:shadow-pink-500/20' 
+                                            : newsletter.templateType === 'new_release'
+                                            ? 'bg-gradient-to-r from-purple-600 to-violet-700 hover:shadow-violet-600/20'
+                                            : 'bg-gradient-to-r from-indigo-500 to-blue-600 hover:shadow-indigo-500/20'
+                                    }`}
+                                >
+                                    {sendingBroadcast ? 'Blasting Campaign... 🔥' : 'Blast Newsletter to Customers 📧'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Column B: Interactive Live Preview (w-full lg:w-1/2) */}
+                        <div className="w-full lg:w-1/2 flex flex-col bg-gray-950 rounded-[3rem] p-6 shadow-2xl relative border-4 border-gray-800 h-fit min-h-[700px] overflow-hidden justify-between">
+                            {/* Browser Mock Header */}
+                            <div className="flex items-center justify-between pb-4 border-b border-gray-800 mb-6 shrink-0">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                                    <span className="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                                    <span className="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+                                </div>
+                                <span className="text-[10px] text-gray-500 font-mono font-bold tracking-tight">live_preview_server.html</span>
+                                <span className="w-6 inline-block"></span>
+                            </div>
+
+                            {/* Email Container Frame */}
+                            <div className="flex-grow bg-[#f9fafb] rounded-[2rem] p-6 overflow-y-auto text-gray-800 shadow-inner flex flex-col justify-between max-h-[750px] min-h-[500px]">
+                                <div>
+                                    {/* Email Header */}
+                                    <div className="text-center py-6 border-b border-gray-100 bg-[#fdfdfd] rounded-t-2xl mb-6">
+                                        <div className="font-black text-lg text-gray-900 uppercase tracking-widest">
+                                            Mnostva<span className="text-[#8a7db3]">.art</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Campaign Badge and Headline */}
+                                    <div className="text-left mb-6">
+                                        <span className={`inline-block px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider ${
+                                            newsletter.templateType === 'promo'
+                                                ? 'bg-pink-100 text-pink-600'
+                                                : newsletter.templateType === 'new_release'
+                                                ? 'bg-purple-100 text-purple-600'
+                                                : 'bg-indigo-100 text-indigo-600'
+                                        }`}>
+                                            {newsletter.templateType === 'promo' && 'SALE / SPECIAL OFFERS 🏷️'}
+                                            {newsletter.templateType === 'new_release' && 'NEW RELEASE 🚀'}
+                                            {newsletter.templateType === 'announcement' && 'ANNOUNCEMENT 📢'}
+                                        </span>
+                                        <h1 className="text-xl md:text-2xl font-black text-gray-900 leading-tight uppercase tracking-tight mt-2">
+                                            {newsletter.subject || 'Campaign Subject line'}
+                                        </h1>
+                                    </div>
+
+                                    {/* Hero Banner */}
+                                    {newsletter.imageUrl && (
+                                        <div className="mb-6 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                                            <img src={newsletter.imageUrl} alt="Hero Banner" className="w-full max-h-56 object-cover" />
+                                        </div>
+                                    )}
+
+                                    {/* Email Content Body */}
+                                    <div className="text-xs text-gray-600 font-medium leading-relaxed mb-6 whitespace-pre-line">
+                                        {newsletter.body || 'Email content body goes here...'}
+                                    </div>
+
+                                    {/* Featured product live card rendering */}
+                                    {(() => {
+                                        if (!newsletter.featuredProductId) return null;
+                                        const prod = products.find(p => p.id === newsletter.featuredProductId);
+                                        if (!prod) return null;
+
+                                        const hasDiscount = prod.discount && prod.discount.isActive;
+                                        const originalPrice = hasDiscount ? prod.price : null;
+                                        const finalPrice = hasDiscount 
+                                            ? prod.price * (1 - prod.discount.percentage / 100) 
+                                            : prod.price;
+
+                                        const themeColor = newsletter.templateType === 'promo' 
+                                            ? '#db2777' 
+                                            : newsletter.templateType === 'new_release' 
+                                            ? '#7c3aed' 
+                                            : '#8a7db3';
+
+                                        return (
+                                            <div className="bg-white border-2 border-gray-100 rounded-3xl p-5 shadow-sm my-6 text-left">
+                                                <div className="text-[8px] font-black uppercase tracking-widest mb-2" style={{ color: themeColor }}>Featured Stylized Asset Pack</div>
+                                                <div className="flex flex-col gap-4">
+                                                    <div className="w-full rounded-2xl overflow-hidden relative shadow-inner aspect-[16/9] border border-gray-50">
+                                                        <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover" />
+                                                        {hasDiscount && (
+                                                            <span className="absolute top-3 right-3 bg-pink-500 text-white font-black text-[8px] uppercase tracking-tighter px-2 py-0.5 rounded-md shadow-md">
+                                                                -{prod.discount.percentage}% OFF
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <span className="bg-gray-100 text-gray-500 text-[8px] font-black uppercase px-2 py-0.5 rounded-full">{prod.category}</span>
+                                                        <h3 className="font-black text-gray-900 text-sm md:text-base uppercase tracking-tight mt-2 leading-tight">{prod.name}</h3>
+                                                        <div className="font-black text-gray-900 text-base mt-2 flex items-center gap-1.5">
+                                                            {hasDiscount && (
+                                                                <span className="text-gray-400 line-through text-xs font-bold">${originalPrice.toFixed(2)}</span>
+                                                            )}
+                                                            <span>${finalPrice.toFixed(2)}</span>
+                                                        </div>
+                                                        <button 
+                                                            type="button" 
+                                                            className="w-full text-center py-2.5 mt-4 text-white font-black text-2xs uppercase tracking-widest rounded-full shadow-md"
+                                                            style={{ backgroundColor: themeColor }}
+                                                        >
+                                                            View on Marketplace 🎨
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
+
+                                    {/* Action button */}
+                                    {newsletter.ctaText && newsletter.ctaLink && (
+                                        <div className="text-center my-6">
+                                            <a 
+                                                href={newsletter.ctaLink} 
+                                                onClick={(e) => e.preventDefault()} 
+                                                className={`inline-block px-8 py-3.5 text-white font-black text-2xs uppercase tracking-widest rounded-full shadow-lg ${
+                                                    newsletter.templateType === 'promo'
+                                                        ? 'bg-pink-500 hover:shadow-pink-500/20'
+                                                        : newsletter.templateType === 'new_release'
+                                                        ? 'bg-purple-600 hover:shadow-purple-600/20'
+                                                        : 'bg-indigo-500 hover:shadow-indigo-500/20'
+                                                }`}
+                                            >
+                                                {newsletter.ctaText}
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Email Footer */}
+                                <div className="text-center py-6 border-t border-gray-100 bg-[#fafafa] rounded-b-2xl mt-8 text-[9px] text-gray-400 font-bold shrink-0">
+                                    <p className="mb-1">© 2021 Mnostva Art Marketplace. All rights reserved.</p>
+                                    <p>You are receiving this because you registered at mnostva.art.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
