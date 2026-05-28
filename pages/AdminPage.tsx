@@ -13,6 +13,7 @@ import ScrollReveal from '../components/ScrollReveal';
 import ImageWithFallback from '../components/ImageWithFallback';
 import { Toaster, toast } from 'react-hot-toast';
 import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { calculateDiscountedPrice } from '../context/CartContext';
 
 
