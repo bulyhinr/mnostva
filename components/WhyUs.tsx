@@ -76,7 +76,7 @@ const WhyUs: React.FC = () => {
 
       <ScrollReveal className="text-center mb-20">
         <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
-          The Secret Sauce of <br/>
+          The Secret Sauce of <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8a7db3] to-pink-500">Mnostva Art</span>
         </h2>
         <p className="text-xl text-gray-500 font-medium max-w-3xl mx-auto">
@@ -88,12 +88,12 @@ const WhyUs: React.FC = () => {
         {/* Main Bento Grid */}
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
           {BENEFITS.map((benefit, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               className={`group relative p-8 rounded-[3rem] overflow-hidden border-2 border-white shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/60 backdrop-blur-sm ${benefit.size}`}
             >
               <div className={`absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br ${benefit.color} opacity-10 group-hover:opacity-20 transition-opacity rounded-full blur-3xl`}></div>
-              
+
               <div className="relative z-10">
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-sm border border-gray-100 group-hover:rotate-12 transition-transform">
                   {benefit.icon}
@@ -111,8 +111,8 @@ const WhyUs: React.FC = () => {
             <div className="absolute -inset-2 bg-gradient-to-r from-pink-400 to-[#8a7db3] rounded-[3.5rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
             <div className="relative h-full bg-white rounded-[3rem] p-4 border-2 border-white shadow-2xl flex flex-col">
               <div className="flex-grow rounded-[2rem] overflow-hidden relative">
-                <img 
-                  src="/technical_showcase.jpg" 
+                <img
+                  src="/technical_showcase.jpg"
                   alt="Technical Showcase"
                   className="w-full h-full object-cover"
                 />
@@ -159,12 +159,12 @@ const WhyUs: React.FC = () => {
             <span className="w-12 h-1 bg-[#8a7db3]/20 rounded-full"></span>
           </div>
         </div>
-        
+
         <div className="relative overflow-hidden group py-4">
           <div className="flex gap-8 animate-carousel-move hover:pause-animation">
             {[...(reviews.length > 0 ? reviews : MOCK_REVIEWS), ...(reviews.length > 0 ? reviews : MOCK_REVIEWS)].map((review, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="min-w-[320px] md:min-w-[400px] bg-white/80 backdrop-blur-md rounded-[2.5rem] p-8 shadow-xl border-4 border-white hover:border-purple-100 transition-all hover:scale-[1.02] flex flex-col justify-between"
               >
                 <div>

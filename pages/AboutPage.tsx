@@ -59,7 +59,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
         <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border-b-8 border-black/10">
           <div className="relative h-64 md:h-96">
             <img
-              src="https://picsum.photos/seed/mnostva_studio/1200/600"
+              src="/about_workstation.jpg"
               className="w-full h-full object-cover"
               alt="Mnostva Art Studio"
             />
