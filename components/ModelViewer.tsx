@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, ContactShadows, Environment, useGLTF } from '@react-three/drei';
 // @ts-ignore
-import roomUrl from '../content/Room_1.glb?url';
+import roomUrl from '../content/Cafe_5.glb?url';
 
 // Fix for JSX intrinsic element errors: aliasing lowercase three.js elements to capitalized components
 const Group = 'group' as any;

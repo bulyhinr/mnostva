@@ -111,15 +111,11 @@ const WhyUs: React.FC = () => {
             <div className="absolute -inset-2 bg-gradient-to-r from-pink-400 to-[#8a7db3] rounded-[3.5rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
             <div className="relative h-full bg-white rounded-[3rem] p-4 border-2 border-white shadow-2xl flex flex-col">
               <div className="flex-grow rounded-[2rem] overflow-hidden relative">
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline
+                <img 
+                  src="/technical_showcase.jpg" 
+                  alt="Technical Showcase"
                   className="w-full h-full object-cover"
-                >
-                  <source src={ASSET_VIDEOS[0]} type="video/mp4" />
-                </video>
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
                   <span className="text-white/80 font-black text-xs uppercase tracking-[0.3em] mb-2">Technical Showcase</span>
                   <h5 className="text-white text-xl font-bold">Stylized Fluidity</h5>
