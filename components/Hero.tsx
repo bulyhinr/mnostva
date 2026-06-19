@@ -17,10 +17,10 @@ const Hero: React.FC<HeroProps> = ({ onExplore, onWorkWithUs }) => {
             ✨ Specialist in Cartoon Environments
           </div>
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 leading-tight mb-6">
-            Dreamy <span className="text-purple-600">3D Worlds</span> for Your Projects
+            Create Amazing Worlds Without <span className="text-purple-600">Starting From Scratch</span>
           </h1>
           <p className="text-xl text-gray-600 mb-10 max-w-2xl">
-            Mnostva Art creates vibrant, stylized 3D cartoon rooms and levels that bring stories to life. Interact with our work.
+            Mnostva Art offers ready-to-use stylized environments, interiors, islands, props, and interactive assets for your projects
           </p>
           <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
             <button

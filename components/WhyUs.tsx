@@ -5,44 +5,40 @@ import { reviewsService } from '../services/reviewsService';
 
 const BENEFITS = [
   {
-    title: 'Kidcore DNA',
-    description: 'We don\'t just make stylized assets; we craft nostalgic, "kidcore" experiences that evoke joy, comfort, and pure imagination.',
-    icon: '🌈',
+    title: 'Consistent Art Style',
+    description: 'Build larger worlds with assets designed to work together seamlessly.',
+    icon: '🎨',
     color: 'from-pink-400 to-rose-400',
     size: 'lg:col-span-2'
   },
   {
-    title: 'Unity & UE Ready',
-    description: 'Perfectly optimized meshes for the world\'s top engines.',
-    icon: (
-      <svg viewBox="0 0 24 24" className="w-10 h-10 fill-[#222c37]">
-        <path d="M12 1.5L2 7.23v10.54L12 23.5l10-5.73V7.23L12 1.5zm0 2.29l8.03 4.6L12 13.01 3.97 8.39 12 3.79zM3.97 10.7l7.03 4.02v8.13l-7.03-4.04V10.7zM13 22.85v-8.13l7.03-4.02v8.11L13 22.85z" />
-      </svg>
-    ),
+    title: 'Multiple Formats',
+    description: 'Available in Blender, FBX, GLB, OBJ, Unreal Engine, Unity, and more.',
+    icon: '⚡️',
     color: 'from-blue-400 to-indigo-400',
     size: 'lg:col-span-1'
   },
   {
-    title: 'Bespoke Lighting',
-    description: 'Our scenes include custom lighting rigs and post-processing profiles that work instantly.',
-    icon: '💡',
+    title: 'Modular & Customizable',
+    description: 'Mix, match, and adapt environments, props, and rooms to fit your project.',
+    icon: '🧩',
     color: 'from-amber-400 to-orange-400',
     size: 'lg:col-span-1'
   },
   {
-    title: 'Modular Systems',
-    description: 'Swap walls, change props, and build entire cities with our grid-snapping modular sets.',
-    icon: '🧱',
+    title: 'Interactive Environments',
+    description: 'Explore growing collections of interactive rooms, buildings, furniture, doors, windows, and props.',
+    icon: '🚪',
     color: 'from-emerald-400 to-teal-400',
     size: 'lg:col-span-2'
   }
 ];
 
 const STATS = [
-  { label: 'Avg. Poly Count', value: '< 20k', sub: 'Tris per Room' },
-  { label: 'Texture Resolution', value: '4K', sub: 'PBR Stylized' },
-  { label: 'Platforms', value: 'All', sub: 'Mobile to PC' },
-  { label: 'Delivery', value: 'Instant', sub: 'Digital Download' }
+  { label: 'Packs', value: '65+', sub: 'Growing Asset Library' },
+  { label: 'Experience', value: '5+ Years', sub: 'Creating Stylized Assets' },
+  { label: 'Formats', value: '7+', sub: 'Blender • UE • Unity • FBX • GLB' },
+  { label: 'Customers', value: 'Global', sub: 'Trusted by Developers & Creators' }
 ];
 
 const ASSET_VIDEOS = [

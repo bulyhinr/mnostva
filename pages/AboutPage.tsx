@@ -69,7 +69,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                 About <span className="text-pink-200">Mnostva Art</span>
               </h1>
               <p className="text-white/90 font-bold uppercase tracking-[0.3em] text-xs md:text-sm">
-                Stylized 3D Pioneers • Cartoon Worlds • Kidcore DNA
+                Independent 3D Asset Creators. Asset Packs for Games, VR & Creative Projects
               </p>
             </div>
           </div>
@@ -87,10 +87,13 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                 </button>
               </div>
               <p className="text-gray-600 text-lg leading-relaxed font-medium">
-                Mnostva Art was born from a simple dream: to make the digital world feel as cozy and vibrant as a Sunday morning cartoon. We are a specialized collective of 3D artists, designers, and dreamers who believe that stylized environments are the heartbeat of storytelling.
+                Hi, we are the creators behind Mnostva Art.
               </p>
               <p className="text-gray-600 text-lg leading-relaxed font-medium">
-                Based on the principles of "Kidcore" and high-fidelity stylized rendering, we've spent years perfecting our unique aesthetic—blending soft purple hues, bouncy shapes, and nostalgic vibes into professional game-ready assets.
+                For the past 5 years, we've been creating stylized 3D assets for game developers, VR creators, educators, and creative projects.
+              </p>
+              <p className="text-gray-600 text-lg leading-relaxed font-medium">
+                Today, the collection includes more than 65+ asset packs ranging from cozy interiors and cartoon environments to low-poly worlds and interactive scenes.
               </p>
             </section>
 
@@ -102,9 +105,9 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                 </p>
               </div>
               <div className="bg-[#8a7db3]/5 p-8 rounded-[2rem] border-2 border-[#8a7db3]/10">
-                <h3 className="text-xl font-black text-[#8a7db3] mb-4 uppercase tracking-widest">Our Vision</h3>
+                <h3 className="text-xl font-black text-[#8a7db3] mb-4 uppercase tracking-widest">Vision</h3>
                 <p className="text-gray-700 font-medium">
-                  We envision a gaming landscape filled with color, wonder, and stylized magic, where every indie creator has access to the same level of environmental polish as AAA studios.
+                  To create one of the largest collections of stylized environments, props, and interactive assets for indie creators.
                 </p>
               </div>
             </div>
@@ -114,16 +117,16 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
               <div className="space-y-6">
                 {[
                   {
-                    title: "Bespoke Aesthetic",
-                    desc: "We don't do 'generic'. Every asset pack we release undergoes a rigorous art-direction phase to ensure it fits our signature dreamy look."
+                    title: "65+ Asset Packs",
+                    desc: "A growing collection of interiors, environments, props, islands, and interactive scenes."
                   },
                   {
-                    title: "Engine Optimized",
-                    desc: "Beauty shouldn't be heavy. Our assets are meticulously optimized for Unity (URP/HDRP), Unreal Engine 5, and mobile platforms."
+                    title: "Multiple Formats",
+                    desc: "Available for Blender, FBX, GLB, OBJ, Unreal Engine, Unity, and more."
                   },
                   {
-                    title: "Ready-to-Use",
-                    desc: "We provide full demo scenes and lighting setups. You don't just buy a collection of meshes; you buy an atmosphere."
+                    title: "Ready for Production",
+                    desc: "Designed to help developers prototype, build, and ship projects faster."
                   }
                 ].map((item, i) => (
                   <div key={i} className="flex gap-6 items-start">
@@ -141,8 +144,19 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
 
             <div className="pt-10 border-t-4 border-gray-50 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-center md:text-left">
-                <h4 className="text-2xl font-black text-gray-900 mb-1">Join our journey!</h4>
-                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Follow us for weekly updates, or write to us: <a href="mailto:support@mnostva.art" className="text-[#8a7db3] hover:underline">support@mnostva.art</a></p>
+                <h4 className="text-2xl font-black text-gray-900 mb-2">Thank You for Supporting Independent Artists</h4>
+                <p className="text-gray-600 font-medium text-base mb-1">
+                  Every purchase directly supports the creation of new asset packs, updates, and future projects.
+                </p>
+                <p className="text-gray-600 font-medium text-base mb-1">
+                  Thank you for being part of the journey.
+                </p>
+                <p className="text-gray-500 font-bold text-xs mb-3">
+                  Have questions? Write to us: <a href="mailto:support@mnostva.art" className="text-[#8a7db3] hover:underline">support@mnostva.art</a>
+                </p>
+                <p className="text-[#8a7db3] font-black uppercase tracking-widest text-xs mt-6">
+                  — Mnostva Art Team
+                </p>
               </div>
               <div className="flex gap-4">
                 <a href="https://www.instagram.com/mnostva_art" target="_blank" className="p-4 bg-gray-50 rounded-2xl hover:bg-pink-100 hover:text-pink-500 transition-all font-black text-sm uppercase tracking-widest">Instagram</a>
