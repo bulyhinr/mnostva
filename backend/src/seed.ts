@@ -61,11 +61,12 @@ async function bootstrap() {
         console.log(`📦 Found ${files.length} scraped products. Processing...`);
 
         // Empty existing products first so no duplicates
-        console.log('Clearing old products...');
-        const oldProducts = await productsService.findAllProducts();
-        for (const op of oldProducts) {
-             try { await productsService.remove(op.id); } catch(e){}
-        }
+        // console.log('Clearing old products...');
+        // const oldProducts = await productsService.findAllProducts();
+        // for (const op of oldProducts) {
+        //      try { await productsService.remove(op.id); } catch(e){}
+        // }
+
 
         for (let i = 0; i < files.length; i++) {
             const fileName = files[i];
