@@ -174,7 +174,7 @@ async function bootstrap() {
 
     console.log('--- 🚀 Starting Reviews Import ---');
 
-    const csvPath = path.join(__dirname, '..', '..', 'content', 'reviews_from_cgtraders.csv');
+    const csvPath = path.join(process.cwd(), 'reviews_from_cgtraders.csv');
     if (!fs.existsSync(csvPath)) {
         console.error(`❌ CSV file not found at ${csvPath}`);
         await app.close();
