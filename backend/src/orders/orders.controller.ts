@@ -12,9 +12,10 @@ export class OrdersController {
     async findAll(
         @Query('page') page: number = 1, 
         @Query('limit') limit: number = 30,
-        @Query('month') month?: string
+        @Query('month') month?: string,
+        @Query('status') status?: string
     ) {
-        return this.ordersService.findAll(Number(page), Number(limit), month);
+        return this.ordersService.findAll(Number(page), Number(limit), month, status);
     }
 
     @UseGuards(AuthGuard('jwt'), AdminGuard)

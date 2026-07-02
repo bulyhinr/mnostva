@@ -44,6 +44,28 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [cart, isLoaded]);
 
+  // Synchronize cart across tabs
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'mnostva_cart') {
+        if (event.newValue) {
+          try {
+            setCart(JSON.parse(event.newValue));
+          } catch (e) {
+            console.error("Failed to parse synchronized cart", e);
+          }
+        } else {
+          setCart([]);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   const addToCart = (product: Product, quantity: number = 1, licenseType: 'standard' | 'commercial' = 'standard') => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id && (item.licenseType || 'standard') === licenseType);

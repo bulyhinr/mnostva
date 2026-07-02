@@ -64,6 +64,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
   const { user } = useAuth();
 
   const [reviews, setReviews] = useState<any[]>([]);
+  const [showAllReviews, setShowAllReviews] = useState(false);
   const [stats, setStats] = useState({ average: 0, count: 0 });
   const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -653,7 +654,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                   <p className="text-gray-500 italic text-sm">No reviews yet. Be the first!</p>
                 ) : (
                   <div className="space-y-6">
-                    {reviews.slice(0, 3).map((review) => (
+                    {(showAllReviews ? reviews : reviews.slice(0, 3)).map((review) => (
                       <div key={review.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
@@ -674,8 +675,11 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, 
                       </div>
                     ))}
                     {reviews.length > 3 && (
-                      <button className="text-xs font-black text-[#8a7db3] uppercase tracking-widest hover:underline mt-2">
-                        View all {reviews.length} reviews
+                      <button
+                        onClick={() => setShowAllReviews(!showAllReviews)}
+                        className="text-xs font-black text-[#8a7db3] uppercase tracking-widest hover:underline mt-2"
+                      >
+                        {showAllReviews ? 'Show less' : `View all ${reviews.length} reviews`}
                       </button>
                     )}
                   </div>

@@ -27,6 +27,7 @@ const AdminPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'products' | 'discounts' | 'coupons' | 'purchases' | 'downloads' | 'newsletters'>('products');
     const [allOrders, setAllOrders] = useState<any[]>([]);
+    const [purchasesTotalRevenue, setPurchasesTotalRevenue] = useState(0);
     const [downloadLogs, setDownloadLogs] = useState<any[]>([]);
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -98,6 +99,7 @@ const AdminPage: React.FC = () => {
 
     // Reporting Filters
     const [purchaseMonth, setPurchaseMonth] = useState('');
+    const [purchaseStatus, setPurchaseStatus] = useState<'all' | 'paid'>('all');
     const [downloadSearch, setDownloadSearch] = useState({ title: '', email: '' });
     const [debouncedDownloadTitle, setDebouncedDownloadTitle] = useState('');
     const [debouncedDownloadEmail, setDebouncedDownloadEmail] = useState('');
@@ -128,7 +130,7 @@ const AdminPage: React.FC = () => {
 
     useEffect(() => {
         if (purchasesPage !== 1) setPurchasesPage(1);
-    }, [purchaseMonth]);
+    }, [purchaseMonth, purchaseStatus]);
 
     const mapBackendProductToFrontend = (p: any): Product => ({
         id: p.id,
@@ -167,7 +169,7 @@ const AdminPage: React.FC = () => {
                 }),
                 discountService.getAllDiscounts(token),
                 couponService.getAllCoupons(token),
-                orderService.getAllOrders(token, purchasesPage, reportingItemsPerPage, purchaseMonth),
+                orderService.getAllOrders(token, purchasesPage, reportingItemsPerPage, purchaseMonth, purchaseStatus),
                 downloadsService.getDownloadLogs(token, downloadsPage, reportingItemsPerPage, debouncedDownloadTitle, debouncedDownloadEmail)
             ]);
 
@@ -178,6 +180,7 @@ const AdminPage: React.FC = () => {
             setDiscounts(backendDiscounts);
             setCoupons(backendCoupons);
             setAllOrders(backendOrders.data);
+            setPurchasesTotalRevenue(backendOrders.totalRevenue || 0);
             setPurchasesTotalPages(Math.ceil((backendOrders.total || 0) / reportingItemsPerPage));
             setDownloadLogs(backendLogs.data);
             setDownloadsTotalPages(Math.ceil((backendLogs.total || 0) / reportingItemsPerPage));
@@ -190,7 +193,7 @@ const AdminPage: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, [page, debouncedSearchQuery, purchasesPage, downloadsPage, purchaseMonth, debouncedDownloadTitle, debouncedDownloadEmail]);
+    }, [page, debouncedSearchQuery, purchasesPage, downloadsPage, purchaseMonth, purchaseStatus, debouncedDownloadTitle, debouncedDownloadEmail]);
 
     // Handle 'edit' query parameter
     useEffect(() => {
@@ -1206,6 +1209,11 @@ const AdminPage: React.FC = () => {
                             <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Track all sales and transactions</p>
                         </div>
                         <div className="flex items-center gap-4">
+                            {purchasesTotalRevenue > 0 && (
+                                <div className="bg-[#8a7db3]/10 border border-[#8a7db3]/20 text-[#8a7db3] px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-sm">
+                                    Total: ${purchasesTotalRevenue.toFixed(2)}
+                                </div>
+                            )}
                             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Filter by Month:</label>
                             <input 
                                 type="month" 
@@ -1216,6 +1224,16 @@ const AdminPage: React.FC = () => {
                             {purchaseMonth && (
                                 <button onClick={() => setPurchaseMonth('')} className="text-[#8a7db3] font-black text-[10px] uppercase tracking-widest hover:underline">Clear</button>
                             )}
+
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Status:</label>
+                            <select
+                                value={purchaseStatus}
+                                onChange={(e) => setPurchaseStatus(e.target.value as 'all' | 'paid')}
+                                className="bg-white border-2 border-gray-100 focus:border-[#8a7db3] rounded-xl px-4 py-2 font-bold outline-none transition-all shadow-sm text-xs cursor-pointer"
+                            >
+                                <option value="all">All</option>
+                                <option value="paid">Paid Only</option>
+                            </select>
                         </div>
                     </div>
 

@@ -312,25 +312,65 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
         }
     }
 
-    async findAll(page: number = 1, limit: number = 30, month?: string): Promise<{ data: Order[], total: number }> {
+    async findAll(page: number = 1, limit: number = 30, month?: string, status?: string): Promise<{ data: Order[], total: number, totalRevenue: number }> {
         const qb = this.ordersRepository.createQueryBuilder('order')
             .leftJoinAndSelect('order.user', 'user')
             .leftJoinAndSelect('order.items', 'items')
             .leftJoinAndSelect('items.product', 'product')
             .orderBy('order.createdAt', 'DESC');
 
+        if (status && status !== 'all') {
+            qb.andWhere('order.status = :status', { status });
+        }
+
         if (month) {
             const [year, m] = month.split('-').map(Number);
-            const start = new Date(year, m - 1, 1);
-            const end = new Date(year, m, 1);
+            const start = new Date(Date.UTC(year, m - 1, 1));
+            const end = new Date(Date.UTC(year, m, 1));
             qb.andWhere('order.createdAt >= :start AND order.createdAt < :end', { start, end });
+        }
+
+        // Calculate total revenue for paid orders in this month (excluding "test" products)
+        const sumQb = this.ordersRepository.createQueryBuilder('order')
+            .leftJoinAndSelect('order.items', 'items')
+            .leftJoinAndSelect('items.product', 'product')
+            .where("order.status = 'paid'");
+
+        if (month) {
+            const [year, m] = month.split('-').map(Number);
+            const start = new Date(Date.UTC(year, m - 1, 1));
+            const end = new Date(Date.UTC(year, m, 1));
+            sumQb.andWhere('order.createdAt >= :start AND order.createdAt < :end', { start, end });
+        }
+
+        const allFilteredPaidOrders = await sumQb.getMany();
+        let totalRevenueCents = 0;
+        for (const order of allFilteredPaidOrders) {
+            let orderRealItemsTotal = 0;
+            let orderAllItemsTotal = 0;
+
+            for (const item of order.items) {
+                const itemCost = item.price * item.quantity;
+                orderAllItemsTotal += itemCost;
+                
+                const title = item.product?.title || '';
+                if (title.toLowerCase() !== 'test') {
+                    orderRealItemsTotal += itemCost;
+                }
+            }
+
+            if (orderAllItemsTotal > 0) {
+                // Apply proportional revenue share from order.totalAmount (which has coupon discount deducted)
+                const proportionalShare = (orderRealItemsTotal / orderAllItemsTotal) * order.totalAmount;
+                totalRevenueCents += Math.round(proportionalShare);
+            }
         }
 
         qb.skip((page - 1) * limit);
         qb.take(limit);
 
         const [data, total] = await qb.getManyAndCount();
-        return { data, total };
+        return { data, total, totalRevenue: totalRevenueCents / 100 };
     }
 
     onModuleInit() {

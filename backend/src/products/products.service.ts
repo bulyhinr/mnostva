@@ -106,7 +106,7 @@ export class ProductsService implements OnModuleInit {
         }
 
         if (options.search) {
-            qb.andWhere('(product.title ILIKE :search OR product.description ILIKE :search)', { search: `%${options.search}%` });
+            qb.andWhere('product.title ILIKE :search', { search: `%${options.search}%` });
         }
 
         if (options.polyCount && options.polyCount !== 'All') {

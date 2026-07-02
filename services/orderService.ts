@@ -74,14 +74,17 @@ export const orderService = {
         return response.data.map(mapOrderToFrontend);
     },
 
-    async getAllOrders(token: string, page: number = 1, limit: number = 30, month?: string): Promise<{ data: any[], total: number }> {
-        const url = `${API_URL}/orders?page=${page}&limit=${limit}` + (month ? `&month=${month}` : '');
+    async getAllOrders(token: string, page: number = 1, limit: number = 30, month?: string, status?: string): Promise<{ data: any[], total: number, totalRevenue: number }> {
+        let url = `${API_URL}/orders?page=${page}&limit=${limit}`;
+        if (month) url += `&month=${month}`;
+        if (status) url += `&status=${status}`;
         const response = await axios.get(url, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return {
             data: response.data.data.map(mapOrderToFrontend),
-            total: response.data.total
+            total: response.data.total,
+            totalRevenue: response.data.totalRevenue || 0
         };
     },
 

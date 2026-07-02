@@ -166,7 +166,7 @@ describe('ProductsService', () => {
                 search: 'Low Poly'
             });
             expect(products[0]).toEqual(expect.objectContaining({ id: '1' }));
-            expect(qbMock.andWhere).toHaveBeenCalledWith('(product.title ILIKE :search OR product.description ILIKE :search)', { search: '%Low Poly%' });
+            expect(qbMock.andWhere).toHaveBeenCalledWith('product.title ILIKE :search', { search: '%Low Poly%' });
         });
 
         it('should filter by isActive when provided', async () => {
