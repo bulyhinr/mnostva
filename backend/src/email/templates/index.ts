@@ -410,3 +410,131 @@ export const getBroadcastTemplate = (options: {
 </html>
 `;
 };
+
+export const getAdminPurchaseAlertTemplate = (order: any) => {
+  const itemsList = order.items && order.items.length 
+    ? order.items.map((item: any) => {
+        const hasDiscount = item.originalPrice && item.originalPrice > item.price;
+        const priceDisplay = hasDiscount 
+          ? `<span style="text-decoration: line-through; color: #a1a1aa; font-weight: normal; margin-right: 5px;">$${(item.originalPrice / 100).toFixed(2)}</span>$${(item.price / 100).toFixed(2)}`
+          : `$${(item.price / 100).toFixed(2)}`;
+
+        return `
+          <div style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee;">
+            <div style="flex-grow: 1;">
+              <h4 style="margin: 0; color: #333; font-weight: 700;">${item.product?.title || item.product?.name || 'Stylized Asset Pack'}</h4>
+              <p style="margin: 3px 0 0; font-size: 12px; color: #666;">Quantity: ${item.quantity || 1} | Price: ${priceDisplay}</p>
+            </div>
+          </div>
+        `;
+      }).join('')
+    : '<p style="color: #666; font-size: 13px;">No items in order.</p>';
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #333; line-height: 1.6; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; padding: 40px 0; background-color: #fafafa; border-radius: 20px; margin-bottom: 30px; }
+    .logo { font-weight: 900; font-size: 24px; color: #333; text-transform: uppercase; letter-spacing: 2px; }
+    .logo span { color: #8a7db3; }
+    .content { padding: 0 20px; }
+    .order-summary { background: #f9f9f9; padding: 20px; border-radius: 10px; margin: 20px 0; }
+    .total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; }
+    .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #999; }
+    .details { font-size: 13px; color: #555; background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Mnostva<span>.art</span></div>
+      <div style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #db2777; margin-top: 10px;">New Purchase Alert 💰</div>
+    </div>
+    <div class="content">
+      <h2 style="margin-top: 0; color: #111;">A customer just purchased assets! 🚀</h2>
+      
+      <div class="details">
+        <p style="margin: 0 0 8px 0;"><strong>Order ID:</strong> #${order.id}</p>
+        <p style="margin: 0 0 8px 0;"><strong>Customer Name:</strong> ${order.user?.name || 'Guest'}</p>
+        <p style="margin: 0 0 8px 0;"><strong>Customer Email:</strong> ${order.user?.email || 'N/A'}</p>
+        <p style="margin: 0;"><strong>Payment Method:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'N/A'}</p>
+      </div>
+
+      <div class="order-summary">
+        <h3 style="margin-top: 0; border-bottom: 2px solid #ddd; padding-bottom: 8px;">Order Details</h3>
+        ${itemsList}
+        ${order.couponCode ? `
+        <div style="text-align: right; font-size: 13px; color: #db2777; font-weight: bold; margin-top: 10px;">
+          Coupon Applied: ${order.couponCode} (-$${(order.couponDiscount / 100).toFixed(2)})
+        </div>
+        ` : ''}
+        <div class="total" style="color: #db2777;">
+          Total Amount: $${(order.totalAmount / 100).toFixed(2)}
+        </div>
+      </div>
+
+      <p style="font-size: 12px; color: #777; margin-top: 30px; text-align: center;">This is an automated notification for site administrators.</p>
+    </div>
+    <div class="footer">
+      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+};
+
+export const getAdminReviewAlertTemplate = (review: any, productTitle: string, userEmail: string) => {
+  const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #333; line-height: 1.6; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; padding: 40px 0; background-color: #fafafa; border-radius: 20px; margin-bottom: 30px; }
+    .logo { font-weight: 900; font-size: 24px; color: #333; text-transform: uppercase; letter-spacing: 2px; }
+    .logo span { color: #8a7db3; }
+    .content { padding: 0 20px; }
+    .review-card { background: #f9f9f9; padding: 25px; border-radius: 12px; border-left: 5px solid #8a7db3; margin: 20px 0; }
+    .stars { color: #f59e0b; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+    .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #999; }
+    .details { font-size: 13px; color: #555; background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Mnostva<span>.art</span></div>
+      <div style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #7c3aed; margin-top: 10px;">New Review Alert ⭐</div>
+    </div>
+    <div class="content">
+      <h2 style="margin-top: 0; color: #111;">A new review was submitted! 🌟</h2>
+      
+      <div class="details">
+        <p style="margin: 0 0 8px 0;"><strong>Product:</strong> ${productTitle}</p>
+        <p style="margin: 0;"><strong>Reviewer Email:</strong> ${userEmail}</p>
+      </div>
+
+      <div class="review-card">
+        <div class="stars">${stars} (${review.rating} / 5)</div>
+        <p style="margin: 10px 0 0 0; color: #444; font-style: italic; font-size: 14px; line-height: 1.6;">
+          "${(review.comment || 'No comment text provided.').replace(/\n/g, '<br />')}"
+        </p>
+      </div>
+
+      <p style="font-size: 12px; color: #777; margin-top: 30px; text-align: center;">This is an automated notification for site administrators.</p>
+    </div>
+    <div class="footer">
+      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+};;
