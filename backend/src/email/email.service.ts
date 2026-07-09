@@ -158,6 +158,74 @@ export class EmailService {
         }
     }
 
+    async sendAdminPurchaseAlert(order: any) {
+        if (!this.resend) return;
+
+        const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'mnostva@gmail.com';
+        try {
+            const itemsHtml = order.items && order.items.length 
+                ? order.items.map((item: any) => `<li>${item.product?.title || 'Product'} (x${item.quantity || 1}) - $${item.price}</li>`).join('')
+                : 'No items';
+
+            const { data, error } = await this.resend.emails.send({
+                from: this.FROM_EMAIL,
+                to: [adminEmail],
+                subject: `🔔 New Purchase Alert - Order #${order.id?.slice(0, 8) || 'N/A'}!`,
+                html: `
+                    <h2>New Purchase on Mnostva! 💰</h2>
+                    <p><strong>Order ID:</strong> ${order.id}</p>
+                    <p><strong>Customer Name:</strong> ${order.user?.name || 'Guest'}</p>
+                    <p><strong>Customer Email:</strong> ${order.user?.email || 'N/A'}</p>
+                    <p><strong>Total Amount:</strong> $${order.totalAmount || 0}</p>
+                    <p><strong>Payment Method:</strong> ${order.paymentMethod || 'N/A'}</p>
+                    <h3>Items:</h3>
+                    <ul>
+                        ${itemsHtml}
+                    </ul>
+                `,
+            });
+
+            if (error) {
+                this.logger.error(`Resend API Error (admin purchase alert):`, error);
+                return;
+            }
+            this.logger.log(`Admin purchase alert email sent to ${adminEmail}, id: ${data?.id}`);
+        } catch (error) {
+            this.logger.error(`Failed to send admin purchase alert email`, error);
+        }
+    }
+
+    async sendAdminReviewAlert(review: any, productTitle: string, userEmail: string) {
+        if (!this.resend) return;
+
+        const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'mnostva@gmail.com';
+        try {
+            const { data, error } = await this.resend.emails.send({
+                from: this.FROM_EMAIL,
+                to: [adminEmail],
+                subject: `🔔 New Product Review Alert! ⭐`,
+                html: `
+                    <h2>New Review Submitted! 🌟</h2>
+                    <p><strong>Product:</strong> ${productTitle}</p>
+                    <p><strong>User Email:</strong> ${userEmail}</p>
+                    <p><strong>Rating:</strong> ${review.rating} / 5</p>
+                    <p><strong>Comment:</strong></p>
+                    <blockquote style="background: #f9f9f9; padding: 15px; border-left: 5px solid #ccc;">
+                        ${(review.comment || '').replace(/\n/g, '<br>')}
+                    </blockquote>
+                `,
+            });
+
+            if (error) {
+                this.logger.error(`Resend API Error (admin review alert):`, error);
+                return;
+            }
+            this.logger.log(`Admin review alert email sent to ${adminEmail}, id: ${data?.id}`);
+        } catch (error) {
+            this.logger.error(`Failed to send admin review alert email`, error);
+        }
+    }
+
     async sendFeedbackReminderEmail(email: string, name: string, productName: string) {
         if (!this.resend) return;
 

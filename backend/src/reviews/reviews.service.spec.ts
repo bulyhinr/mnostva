@@ -6,12 +6,14 @@ import { OrderItem } from '../orders/entities/order-item.entity';
 import { Product } from '../products/entities/product.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { EmailService } from '../email/email.service';
 
 describe('ReviewsService', () => {
     let service: ReviewsService;
     let reviewsRepository: jest.Mocked<Partial<Repository<Review>>>;
     let orderItemsRepository: jest.Mocked<Partial<Repository<OrderItem>>>;
     let productsRepository: jest.Mocked<Partial<Repository<Product>>>;
+    let emailService: jest.Mocked<Partial<EmailService>>;
 
     beforeEach(async () => {
         reviewsRepository = {
@@ -35,12 +37,17 @@ describe('ReviewsService', () => {
             findOneBy: jest.fn(),
         };
 
+        emailService = {
+            sendAdminReviewAlert: jest.fn().mockResolvedValue(undefined as any),
+        };
+
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 ReviewsService,
                 { provide: getRepositoryToken(Review), useValue: reviewsRepository },
                 { provide: getRepositoryToken(OrderItem), useValue: orderItemsRepository },
                 { provide: getRepositoryToken(Product), useValue: productsRepository },
+                { provide: EmailService, useValue: emailService },
             ],
         }).compile();
 

@@ -1,13 +1,16 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Review } from './entities/review.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { OrderItem } from '../orders/entities/order-item.entity';
 import { Product } from '../products/entities/product.entity';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class ReviewsService {
+    private readonly logger = new Logger(ReviewsService.name);
+
     constructor(
         @InjectRepository(Review)
         private reviewsRepository: Repository<Review>,
@@ -15,6 +18,7 @@ export class ReviewsService {
         private orderItemsRepository: Repository<OrderItem>,
         @InjectRepository(Product)
         private productsRepository: Repository<Product>,
+        private emailService: EmailService,
     ) { }
 
     async create(userId: string, createReviewDto: CreateReviewDto): Promise<Review> {
@@ -64,7 +68,18 @@ export class ReviewsService {
             product: { id: productId } as any,
         });
 
-        return this.reviewsRepository.save(review);
+        const savedReview = await this.reviewsRepository.save(review);
+
+        // Send admin review alert
+        this.emailService.sendAdminReviewAlert(
+            savedReview,
+            product.title,
+            hasPurchased.order?.user?.email || 'Unknown User'
+        ).catch(err => {
+            this.logger.error(`Failed to send admin review alert email: ${err.message}`);
+        });
+
+        return savedReview;
     }
 
     async findAllByProduct(productId: string): Promise<Review[]> {
@@ -93,6 +108,14 @@ export class ReviewsService {
             relations: ['user', 'product'],
             order: { createdAt: 'DESC' },
             take: limit,
+        });
+    }
+
+    async findAllByUser(userId: string): Promise<Review[]> {
+        return this.reviewsRepository.find({
+            where: { user: { id: userId } },
+            relations: ['product'],
+            order: { createdAt: 'DESC' },
         });
     }
 }

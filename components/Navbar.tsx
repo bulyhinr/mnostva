@@ -230,18 +230,31 @@ const Navbar: React.FC = () => {
               ))}
 
               {user ? (
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    navigate('/profile');
-                  }}
-                  className="text-xl text-white font-black text-center border-b border-white/10 pb-3 flex items-center justify-center gap-3"
-                >
-                  <div className="w-8 h-8 rounded-full overflow-hidden border border-white">
-                    <img src={user.avatar} className="w-full h-full object-cover" alt={user.name} />
-                  </div>
-                  My Profile
-                </button>
+                <>
+                  {user.isAdmin && (
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        navigate('/admin');
+                      }}
+                      className="text-xl text-pink-300 font-black text-center border-b border-white/10 pb-3 flex items-center justify-center gap-3"
+                    >
+                      Admin Panel
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/profile');
+                    }}
+                    className="text-xl text-white font-black text-center border-b border-white/10 pb-3 flex items-center justify-center gap-3"
+                  >
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-white">
+                      <img src={user.avatar} className="w-full h-full object-cover" alt={user.name} />
+                    </div>
+                    My Profile
+                  </button>
+                </>
               ) : (
                 <button
                   onClick={() => {

@@ -9,6 +9,7 @@ import { useCart } from '../context/CartContext';
 import ConfirmationModal from '../components/ConfirmationModal';
 import ReviewModal from '../components/ReviewModal';
 import { DOWNLOADS_ENABLED, MAINTENANCE_MODE } from '../constants';
+import { reviewsService } from '../services/reviewsService';
 
 
 interface ProfilePageProps {
@@ -32,6 +33,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
     productId: null,
     productName: ''
   });
+  const [reviewedProductIds, setReviewedProductIds] = useState<string[]>([]);
 
   // Cancellation Modal State
   const [cancelModal, setCancelModal] = useState<{ isOpen: boolean; orderId: string | null }>({
@@ -72,14 +74,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get('tab');
-    if (tab && ['dashboard', 'purchases', 'settings', 'logs', 'wishlist'].includes(tab)) {
-      setActiveTab(tab as any);
-    }
-  }, []);
-
-  useEffect(() => {
     if (user) {
       fetchOrders();
     }
@@ -92,6 +86,21 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
       }
     }
   }, [user, fetchOrders, activeTab]);
+
+  useEffect(() => {
+    if (user && activeTab === 'purchases') {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        reviewsService.getMyReviews(token)
+          .then((data: any) => {
+            if (Array.isArray(data)) {
+              setReviewedProductIds(data.map((r: any) => r.product?.id).filter(Boolean));
+            }
+          })
+          .catch(console.error);
+      }
+    }
+  }, [user, activeTab]);
 
   if (!user) return null;
 
@@ -198,6 +207,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
             toast.success('Thanks for your review! 🌟', {
               style: { borderRadius: '1rem', background: '#333', color: '#fff' }
             });
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+              reviewsService.getMyReviews(token)
+                .then((data: any) => {
+                  if (Array.isArray(data)) {
+                    setReviewedProductIds(data.map((r: any) => r.product?.id).filter(Boolean));
+                  }
+                })
+                .catch(console.error);
+            }
           }}
         />
       )}
@@ -653,7 +672,15 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                       const data = await response.json();
                                       toast.dismiss(loadingToast);
                                       toast.success('Download starting! 🚀', { duration: 3000 });
-                                      window.open(data.downloadUrl, '_blank');
+                                      
+                                      // Safari blocks window.open inside async functions (popup blocker).
+                                      // Using a dynamic <a> element with direct click bypasses this and downloads directly.
+                                      const link = document.createElement('a');
+                                      link.href = data.downloadUrl;
+                                      link.setAttribute('download', '');
+                                      document.body.appendChild(link);
+                                      link.click();
+                                      document.body.removeChild(link);
                                     } catch (e) {
                                       console.error(e);
                                       toast.dismiss();
@@ -667,14 +694,22 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onNavigateToShop }) =
                                   {isDeleted ? 'Unavailable 🚫' : (!DOWNLOADS_ENABLED && !user?.isAdmin) ? 'Downloads Paused ⏸' : (item.product?.isActive === false) ? 'Unavailable 🚫' : 'Download Files'}
                                 </button>
 
-                                {!isDeleted && (
-                                  <button
-                                    onClick={() => setReviewModal({ isOpen: true, productId: item.productId || item.product?.id, productName: name })}
-                                    className="w-full sm:w-auto bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white border-2 border-purple-100 px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2"
-                                  >
-                                    <span>★</span> Review
-                                  </button>
-                                )}
+                                {!isDeleted && (() => {
+                                   const isReviewed = reviewedProductIds.includes(item.productId || item.product?.id);
+                                   return (
+                                     <button
+                                       disabled={isReviewed}
+                                       onClick={() => setReviewModal({ isOpen: true, productId: item.productId || item.product?.id, productName: name })}
+                                       className={`w-full sm:w-auto px-5 py-3 sm:py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2 border-2 ${
+                                         isReviewed
+                                           ? 'bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed'
+                                           : 'bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white border-purple-100'
+                                       }`}
+                                     >
+                                       <span>★</span> {isReviewed ? 'Reviewed' : 'Review'}
+                                     </button>
+                                   );
+                                 })()}
                               </div>
                             </div>
                           </div>

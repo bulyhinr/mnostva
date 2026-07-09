@@ -70,6 +70,7 @@ describe('OrdersService', () => {
                     useValue: {
                         sendOrderConfirmation: jest.fn(),
                         sendPaymentReminderEmail: jest.fn(),
+                        sendAdminPurchaseAlert: jest.fn().mockResolvedValue(undefined as any),
                     },
                 },
                 {

@@ -119,6 +119,9 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
             const reloadedOrder = await this.findOne(savedOrder.id);
             if (reloadedOrder && reloadedOrder.user && reloadedOrder.user.email) {
                 this.emailService.sendOrderConfirmation(reloadedOrder.user.email, savedOrder);
+                this.emailService.sendAdminPurchaseAlert(reloadedOrder).catch(err => 
+                    this.logger.error(`Failed to send admin purchase alert: ${err.message}`)
+                );
             }
             
             return {
@@ -168,6 +171,13 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
         // Send email confirmation if transitioning to paid
         if (status === 'paid' && previousStatus !== 'paid' && order.user && order.user.email) {
             this.emailService.sendOrderConfirmation(order.user.email, savedOrder);
+            this.findOne(savedOrder.id).then(fullOrder => {
+                if (fullOrder) {
+                    this.emailService.sendAdminPurchaseAlert(fullOrder).catch(err => 
+                        this.logger.error(`Failed to send admin purchase alert: ${err.message}`)
+                    );
+                }
+            }).catch(err => this.logger.error(`Failed to reload order for admin alert: ${err.message}`));
         }
 
         return savedOrder;
@@ -284,6 +294,13 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
 
             // Send confirmation email
             this.emailService.sendOrderConfirmation(order.user.email, savedOrder);
+            this.findOne(savedOrder.id).then(fullOrder => {
+                if (fullOrder) {
+                    this.emailService.sendAdminPurchaseAlert(fullOrder).catch(err => 
+                        this.logger.error(`Failed to send admin purchase alert: ${err.message}`)
+                    );
+                }
+            }).catch(err => this.logger.error(`Failed to reload order for admin alert: ${err.message}`));
 
             return savedOrder;
         }
@@ -306,6 +323,13 @@ export class OrdersService implements OnModuleInit, OnModuleDestroy {
             }
             const savedOrder = await this.ordersRepository.save(order);
             this.emailService.sendOrderConfirmation(order.user.email, savedOrder);
+            this.findOne(savedOrder.id).then(fullOrder => {
+                if (fullOrder) {
+                    this.emailService.sendAdminPurchaseAlert(fullOrder).catch(err => 
+                        this.logger.error(`Failed to send admin purchase alert: ${err.message}`)
+                    );
+                }
+            }).catch(err => this.logger.error(`Failed to reload order for admin alert: ${err.message}`));
             return savedOrder;
         } else {
             throw new Error(`Payment capture failed, status: ${captureResult.status}`);

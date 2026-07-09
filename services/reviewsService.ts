@@ -27,5 +27,12 @@ export const reviewsService = {
     async getLatestReviews(limit: number = 10) {
         const response = await axios.get(`${API_URL}/reviews/latest?limit=${limit}`);
         return response.data;
+    },
+
+    async getMyReviews(token: string) {
+        const response = await axios.get(`${API_URL}/reviews/my-reviews`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
     }
 };

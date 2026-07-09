@@ -13,6 +13,12 @@ export class ReviewsController {
         return this.reviewsService.create(req.user.userId, createReviewDto);
     }
 
+    @UseGuards(AuthGuard('jwt'))
+    @Get('my-reviews')
+    async findMyReviews(@Request() req) {
+        return this.reviewsService.findAllByUser(req.user.userId);
+    }
+
     @Get('latest')
     async findLatest() {
         return this.reviewsService.findLatestReviews();
