@@ -324,7 +324,7 @@ export class EmailService {
             };
         }
 
-        // 4. Send emails in parallel batches
+        // 4. Send emails sequentially with a delay to strictly avoid Resend's rate limit
         let realSentCount = 0;
         let simulatedCount = 0;
         let failCount = 0;
@@ -338,46 +338,41 @@ export class EmailService {
             adminUser?.email
         ].filter(Boolean).map(e => e.toLowerCase());
 
-        const batchSize = 10;
-        for (let i = 0; i < recipients.length; i += batchSize) {
-            const chunk = recipients.slice(i, i + batchSize);
+        for (let i = 0; i < recipients.length; i++) {
+            const email = recipients[i];
             
-            // Wait 250ms between batches to strictly avoid Resend's 5 requests/sec rate limit
+            // Wait 200ms between emails to strictly avoid Resend's rate limit
             if (i > 0) {
-                await new Promise((resolve) => setTimeout(resolve, 250));
+                await new Promise((resolve) => setTimeout(resolve, 200));
             }
 
-            await Promise.all(
-                chunk.map(async (email) => {
-                    const emailLower = email.toLowerCase();
-                    const isVerified = verifiedEmails.includes(emailLower);
+            const emailLower = email.toLowerCase();
+            const isVerified = verifiedEmails.includes(emailLower);
 
-                    if (isSandbox && !isVerified) {
-                        // Simulate sending to mock sandbox user
-                        this.logger.log(`[Sandbox Mode] Simulated newsletter delivery of "${body.subject}" to mock customer: ${email}`);
-                        simulatedCount++;
-                        return;
-                    }
+            if (isSandbox && !isVerified) {
+                // Simulate sending to mock sandbox user
+                this.logger.log(`[Sandbox Mode] Simulated newsletter delivery of "${body.subject}" to mock customer: ${email}`);
+                simulatedCount++;
+                continue;
+            }
 
-                    try {
-                        const { error } = await this.resend.emails.send({
-                            from: this.FROM_EMAIL,
-                            to: [email],
-                            subject: body.subject,
-                            html: templateHtml,
-                        });
-                        if (error) {
-                            this.logger.error(`Failed to send newsletter to ${email}:`, error);
-                            failCount++;
-                        } else {
-                            realSentCount++;
-                        }
-                    } catch (err) {
-                        this.logger.error(`Exception sending newsletter to ${email}:`, err);
-                        failCount++;
-                    }
-                })
-            );
+            try {
+                const { error } = await this.resend.emails.send({
+                    from: this.FROM_EMAIL,
+                    to: [email],
+                    subject: body.subject,
+                    html: templateHtml,
+                });
+                if (error) {
+                    this.logger.error(`Failed to send newsletter to ${email}:`, error);
+                    failCount++;
+                } else {
+                    realSentCount++;
+                }
+            } catch (err) {
+                this.logger.error(`Exception sending newsletter to ${email}:`, err);
+                failCount++;
+            }
         }
 
         return {
