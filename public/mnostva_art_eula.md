@@ -18,14 +18,14 @@ By purchasing, downloading, accessing, installing, copying, or using any Asset, 
 ### 1.2 Digital Product / Final Product
 “**Product**” or “**Final Product**” means a finished, integrated digital work created or controlled by the Licensee (such as a video game, interactive software, mobile application, virtual or augmented reality experience, digital film, cinematic, animation, broadcast, architectural visualization, or digital marketing material) in which the Assets are incorporated as an inseparable, embedded component, and where raw source Asset files cannot be extracted, retrieved, or separated by end users in the ordinary course of use.
 
-### 1.3 Personal License (Single Seat)
-“**Personal License**” means a single-user license granted strictly to **one (1) natural person** (individual creator, solo developer, freelancer, or hobbyist). The Personal License permits that individual to use the Assets across unlimited personal, educational, commercial, and client digital Products. A Personal License is strictly tied to the individual purchaser and does not permit sharing, pooling, or hosting the source Assets for access by other team members, studios, or companies.
+### 1.3 Personal / Indie License (Up to 5 Seats)
+“**Personal / Indie License**” means a small-team license granted to an individual creator, solo developer, or independent development team consisting of **up to five (5) active collaborators** (e.g., a solo developer working with co-developers, an artist, or contracted specialists). The Personal / Indie License permits up to five authorized individuals to access, download, and work with the source Asset files across unlimited personal, educational, commercial, and client digital Products.
 
-### 1.4 Studio / Company License (Multi-Seat)
-“**Studio / Company License**” means a multi-user entity license granted to a commercial studio, company, corporation, partnership, educational institution, or team consisting of **two (2) or more collaborators**. A Studio / Company License permits the Licensee to store the Assets on secure internal systems and make them accessible to its authorized employees and contractors solely for the creation, development, testing, and marketing of Products owned and controlled by the Licensee.
+### 1.4 Studio / Company License (Multi-Seat / Enterprise)
+“**Studio / Company License**” means a multi-user entity license granted to a commercial studio, company, corporation, partnership, educational institution, or team consisting of **six (6) or more collaborators**. A Studio / Company License permits the Licensee to store the Assets on secure internal systems and make them accessible to an unlimited number of its authorized employees and contractors solely for the creation, development, testing, and marketing of Products owned and controlled by the Licensee.
 
 ### 1.5 Authorized Team Member
-“**Authorized Team Member**” means an internal employee or dedicated third-party contractor directly engaged by a Studio / Company Licensee to work on Products controlled by that Licensee.
+“**Authorized Team Member**” means an internal employee or dedicated third-party contractor directly engaged by the Licensee to work on Products controlled by that Licensee.
 
 ---
 
@@ -46,21 +46,22 @@ The Licensee may freely modify, adapt, retopologize, retexture, rig, or optimize
 
 Subject to full payment of the applicable fee and ongoing compliance with this Agreement, Mnostva Art grants the Licensee a **worldwide, non-exclusive, perpetual, royalty-free, non-transferable, and non-sublicensable** license to use the purchased Assets in accordance with the purchased tier:
 
-### 3.1 Personal License (Single-Seat / Solo Creators)
-A Personal License authorizes strictly **one (1) natural person** to:
-1. Download, install, and store the Assets on devices owned or exclusively controlled by the Licensee;
-2. Create reasonable local backup copies for personal archival purposes;
-3. Use the Assets in an unlimited number of commercial, indie, freelance, personal, and educational digital Products;
-4. Modify, adapt, animate, and incorporate the Assets into compiled, binary-format Products;
-5. Distribute, market, broadcast, monetize, and sell commercial Products containing the Assets;
-6. Use the Assets to perform contracted work for clients, provided the Assets are delivered strictly as part of a compiled, non-extractable Final Product.
+### 3.1 Personal / Indie License (Up to 5 Seats)
+A Personal / Indie License authorizes **up to five (5) designated individuals** on the Licensee's team to:
+1. Download, install, and store the Assets on devices owned or controlled by authorized team members;
+2. Store the Assets on a password-protected internal repository, cloud drive, or version-control system accessible exclusively by up to five (5) authorized project collaborators;
+3. Create reasonable local backup copies for archival purposes;
+4. Use the Assets in an unlimited number of commercial, indie, freelance, personal, and educational digital Products;
+5. Modify, adapt, animate, and incorporate the Assets into compiled, binary-format Products;
+6. Distribute, market, broadcast, monetize, and sell commercial Products containing the Assets;
+7. Use the Assets to perform contracted work for clients, provided the Assets are delivered strictly as part of a compiled, non-extractable Final Product.
 
-**Restriction:** The Personal License does not authorize simultaneous or shared access by other individuals. If two or more people need access to the raw Asset files, a Studio / Company License is required.
+**Restriction:** If more than five (5) individuals require access to the raw Asset files across your team or organization, a Studio / Company License is required.
 
-### 3.2 Studio / Company License (Multi-Seat / Studios & Teams)
-A Studio / Company License grants all rights of the Personal License, and additionally authorizes a legal entity or multi-person team to:
-1. Store the Assets in a secure, access-controlled internal repository, private server, cloud storage, or version-control system (e.g., Git, SVN, Perforce) accessible exclusively by Authorized Team Members;
-2. Allow internal employees and third-party contractors to download, access, and use the Assets solely for the creation and delivery of Products controlled by the Licensee;
+### 3.2 Studio / Company License (6+ Seats / Unlimited Entity-Wide)
+A Studio / Company License grants all rights of the Personal License, and additionally authorizes a legal entity or team of six (6) or more collaborators to:
+1. Store the Assets in a secure, access-controlled internal repository, private server, cloud storage, or version-control system (e.g., Git, SVN, Perforce) accessible by all Authorized Team Members;
+2. Allow an unlimited number of internal employees and third-party contractors to download, access, and use the Assets solely for the creation and delivery of Products controlled by the Licensee;
 3. Use the Assets across an unlimited number of commercial studio projects and client deliverables;
 4. Deploy the Assets in team-based production pipelines without restriction on the number of internal seats within the licensed legal entity.
 
@@ -70,7 +71,7 @@ A Studio / Company License grants all rights of the Personal License, and additi
 
 ## 4. Commercial Use & Monetization
 
-1. Commercial use and monetization are permitted under both Personal and Studio / Company Licenses.
+1. Commercial use and monetization are permitted under both Personal / Indie and Studio / Company Licenses.
 2. The Licensee may sell, distribute, monetize via microtransactions, subscriptions, advertisements, paid downloads, crowdfunding, or streaming any digital Product incorporating the Assets.
 3. No ongoing royalties, revenue-share percentages, or recurring licensing fees are owed to Mnostva Art from sales or revenues generated by your Products.
 4. There is no limit on the number of commercial digital Products you may publish under a valid license.
@@ -83,7 +84,7 @@ A Studio / Company License grants all rights of the Personal License, and additi
 The Licensee may use the Assets to create digital Products for third-party clients. If the client receives solely a compiled, rendered, or protected binary deliverable (e.g., an executable video game, a pre-rendered cinematic, an architectural walk-through video, or rendered marketing images), no additional license is required for the client.
 
 ### 5.2 Delivering Open Source / Project Files to Clients
-If a client contractually requires the delivery of editable 3D source files, raw asset packages, or open editable game engine projects (e.g., an editable Unreal Engine or Unity project file containing raw Mnostva Art assets), **the client itself must purchase an appropriate License** (Personal or Studio / Company) prior to receiving the editable source files. A freelancer's Personal License cannot be transferred or sublicensed to a client to grant that client independent asset ownership.
+If a client contractually requires the delivery of editable 3D source files, raw asset packages, or open editable game engine projects (e.g., an editable Unreal Engine or Unity project file containing raw Mnostva Art assets), **the client itself must purchase an appropriate License** (Personal / Indie or Studio / Company) prior to receiving the editable source files. A freelancer's or agency's license cannot be transferred or sublicensed to a client to grant that client independent asset ownership.
 
 ---
 
@@ -148,7 +149,7 @@ You may not use the Assets for any unlawful purpose, in violation of applicable 
 
 ## 10. Free Assets Policy
 
-Assets clearly designated as “Free Assets” on the Mnostva Art website or official store channels are provided under the terms of the Personal License, subject to the following clarifications:
+Assets clearly designated as “Free Assets” on the Mnostva Art website or official store channels are provided under the terms of the Personal / Indie License, subject to the following clarifications:
 1. Free Assets may be incorporated into both commercial and non-commercial compiled digital Products.
 2. Standalone redistribution of Free Assets (even if offered for free or bundled with other free materials) is strictly prohibited. You may not re-host or re-upload our free files to other forums, drives, or websites.
 3. Free Assets are subject to the same strict prohibitions regarding AI model training, commercial 3D printing, and standalone redistribution as paid Assets.
@@ -159,7 +160,7 @@ Assets clearly designated as “Free Assets” on the Mnostva Art website or off
 ## 11. Multiple Projects & No Automatic Upgrade
 
 1. **Multiple Projects:** A single valid license permits the Licensee to utilize the purchased Asset in an unlimited number of discrete digital Products (e.g., in multiple games, updates, sequels, or marketing campaigns).
-2. **No Repurchase on Team Growth:** Rights granted at the time of purchase remain valid indefinitely for that purchase. If a Licensee purchases a Personal License as a solo creator and later establishes a team or company, the Licensee is not required to repurchase the Asset for previously created Products, provided that raw source file access remains restricted to the original single individual. Any ongoing collaborative team access to source files requires upgrading to a Studio / Company License.
+2. **Team Growth Across Tiers:** Rights granted at the time of purchase remain valid indefinitely for that purchase. If a Licensee purchases a Personal / Indie License for a team of up to five (5) people and later expands beyond five collaborators accessing the source files, the Licensee must purchase an upgrade to the Studio / Company License for ongoing collaborative access to those Assets.
 
 ---
 

@@ -149,10 +149,10 @@ export const LegalPage: React.FC = () => {
                         Permissions & Rules
                       </th>
                       <th className="py-4 px-4 text-xs font-black text-blue-600 uppercase tracking-wider w-1/3 bg-blue-50/40 rounded-t-2xl">
-                        Personal License (Single-Seat)
+                        Personal / Indie License
                       </th>
                       <th className="py-4 px-4 text-xs font-black text-purple-600 uppercase tracking-wider w-1/3 bg-purple-50/40 rounded-t-2xl">
-                        Studio / Company License (Multi-Seat)
+                        Studio / Company License
                       </th>
                     </tr>
                   </thead>
@@ -222,7 +222,7 @@ export const LegalPage: React.FC = () => {
               <div>
                 <h3 className="text-xl font-black text-gray-900 mb-2">Need a Custom License?</h3>
                 <p className="text-xs text-gray-600 font-medium max-w-xl leading-relaxed">
-                  If you are planning mass physical manufacturing (toys, board games, 3D printing for sale), enterprise-wide custom terms, or AI dataset licensing, our legal team is ready to assist.
+                  If you are planning mass physical manufacturing (toys, board games, 3D printing for sale), enterprise-wide custom terms, or AI dataset licensing, contact us at: <strong className="text-gray-900">support@mnostva.art</strong>.
                 </p>
               </div>
               <a

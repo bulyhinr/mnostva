@@ -9,16 +9,16 @@ export interface ComparisonRow {
 export const COMPARISON_ROWS: ComparisonRow[] = [
   {
     permission: 'Who is it for?',
-    personal: 'Solo developers, freelance artists, hobbyists',
+    personal: 'Solo developers, duos, and small indie teams',
     personalStatus: 'yes',
-    studio: 'Studios, companies, teams of 2+ people',
+    studio: 'Studios, companies, agencies, teams of 6+ people',
     studioStatus: 'yes',
   },
   {
     permission: 'Allowed Seats (Access to source 3D files)',
-    personal: 'Strictly 1 person',
+    personal: 'Up to 5 people',
     personalStatus: 'yes',
-    studio: 'Unlimited within the licensed company',
+    studio: 'Unlimited seats within the licensed company',
     studioStatus: 'yes',
   },
   {
@@ -72,9 +72,9 @@ export const COMPARISON_ROWS: ComparisonRow[] = [
   },
   {
     permission: 'Team-wide Storage (Shared Git/Server/Cloud Drive)',
-    personal: 'Forbidden (Local device only)',
-    personalStatus: 'no',
-    studio: 'Permitted on secure private servers',
+    personal: 'Up to 5 authorized team members',
+    personalStatus: 'yes',
+    studio: 'Unlimited within the studio/company',
     studioStatus: 'yes',
   },
   {
@@ -118,23 +118,25 @@ export interface KeyPoint {
 export const KEY_POINTS: KeyPoint[] = [
   {
     id: 'personal',
-    badge: 'Single-Seat',
-    title: '1. Personal License',
+    badge: 'Up to 5 Seats',
+    title: '1. Personal / Indie License (Up to 5 Seats)',
     color: 'blue',
     items: [
-      'Made for solo indie developers, solo freelancers, and individual creators.',
+      'Made for solo indie developers, duos (e.g. programmer + 3D artist), and small indie teams of up to 5 people.',
+      'Up to 5 collaborators working together on your project can access the raw .blend, .fbx, or texture files.',
       'You can release as many commercial games, apps, or animations as you want and keep 100% of your profits with zero royalties.',
-      'Only you may install and access the raw .blend, .fbx, or texture files. You cannot share raw files with teammates.',
+      'No revenue caps or hidden fees.',
     ],
   },
   {
     id: 'studio',
-    badge: 'Multi-Seat',
-    title: '2. Studio / Company License',
+    badge: '6+ Seats / Enterprise',
+    title: '2. Studio / Company License (6+ Seats / Enterprise)',
     color: 'purple',
     items: [
-      'Made for teams, studios, companies, and agencies of 2 or more people.',
-      'You can host the assets on your private Git, SVN, Perforce, or cloud storage for all authorized studio artists and programmers.',
+      'Made for studios, companies, and agencies with teams of 6 or more people.',
+      'Grants unlimited seats within the licensed company — no need to calculate or buy multiple packs as your studio grows.',
+      'You can host the assets on your private studio Git, SVN, Perforce, or internal servers for all employees and contractors.',
       'Covers unlimited studio projects and client deliverables.',
     ],
   },
@@ -183,16 +185,16 @@ export const EULA_SECTIONS: EulaSection[] = [
           text: '“Product” or “Final Product” means a finished, integrated digital work created or controlled by the Licensee (such as a video game, interactive software, mobile application, virtual or augmented reality experience, digital film, cinematic, animation, broadcast, architectural visualization, or digital marketing material) in which the Assets are incorporated as an inseparable, embedded component, and where raw source Asset files cannot be extracted, retrieved, or separated by end users in the ordinary course of use.',
         },
         {
-          subtitle: '1.3 Personal License (Single Seat)',
-          text: '“Personal License” means a single-user license granted strictly to one (1) natural person (individual creator, solo developer, freelancer, or hobbyist). The Personal License permits that individual to use the Assets across unlimited personal, educational, commercial, and client digital Products. A Personal License is strictly tied to the individual purchaser and does not permit sharing, pooling, or hosting the source Assets for access by other team members, studios, or companies.',
+          subtitle: '1.3 Personal / Indie License (Up to 5 Seats)',
+          text: '“Personal / Indie License” means a small-team license granted to an individual creator, solo developer, or independent development team consisting of up to five (5) active collaborators (e.g., a solo developer working with co-developers, an artist, or contracted specialists). The Personal / Indie License permits up to five authorized individuals to access, download, and work with the source Asset files across unlimited personal, educational, commercial, and client digital Products.',
         },
         {
-          subtitle: '1.4 Studio / Company License (Multi-Seat)',
-          text: '“Studio / Company License” means a multi-user entity license granted to a commercial studio, company, corporation, partnership, educational institution, or team consisting of two (2) or more collaborators. A Studio / Company License permits the Licensee to store the Assets on secure internal systems and make them accessible to its authorized employees and contractors solely for the creation, development, testing, and marketing of Products owned and controlled by the Licensee.',
+          subtitle: '1.4 Studio / Company License (Multi-Seat / Enterprise)',
+          text: '“Studio / Company License” means a multi-user entity license granted to a commercial studio, company, corporation, partnership, educational institution, or team consisting of six (6) or more collaborators. A Studio / Company License permits the Licensee to store the Assets on secure internal systems and make them accessible to an unlimited number of its authorized employees and contractors solely for the creation, development, testing, and marketing of Products owned and controlled by the Licensee.',
         },
         {
           subtitle: '1.5 Authorized Team Member',
-          text: '“Authorized Team Member” means an internal employee or dedicated third-party contractor directly engaged by a Studio / Company Licensee to work on Products controlled by that Licensee.',
+          text: '“Authorized Team Member” means an internal employee or dedicated third-party contractor directly engaged by the Licensee to work on Products controlled by that Licensee.',
         },
       ],
     },
@@ -226,24 +228,25 @@ export const EULA_SECTIONS: EulaSection[] = [
       intro: 'Subject to full payment of the applicable fee and ongoing compliance with this Agreement, Mnostva Art grants the Licensee a worldwide, non-exclusive, perpetual, royalty-free, non-transferable, and non-sublicensable license to use the purchased Assets in accordance with the purchased tier:',
       subsections: [
         {
-          subtitle: '3.1 Personal License (Single-Seat / Solo Creators)',
-          text: 'A Personal License authorizes strictly one (1) natural person to:',
+          subtitle: '3.1 Personal / Indie License (Up to 5 Seats)',
+          text: 'A Personal / Indie License authorizes up to five (5) designated individuals on the Licensee\'s team to:',
           bullets: [
-            'Download, install, and store the Assets on devices owned or exclusively controlled by the Licensee;',
-            'Create reasonable local backup copies for personal archival purposes;',
+            'Download, install, and store the Assets on devices owned or controlled by authorized team members;',
+            'Store the Assets on a password-protected internal repository, cloud drive, or version-control system accessible exclusively by up to five (5) authorized project collaborators;',
+            'Create reasonable local backup copies for archival purposes;',
             'Use the Assets in an unlimited number of commercial, indie, freelance, personal, and educational digital Products;',
             'Modify, adapt, animate, and incorporate the Assets into compiled, binary-format Products;',
             'Distribute, market, broadcast, monetize, and sell commercial Products containing the Assets;',
             'Use the Assets to perform contracted work for clients, provided the Assets are delivered strictly as part of a compiled, non-extractable Final Product.',
-            'Restriction: The Personal License does not authorize simultaneous or shared access by other individuals. If two or more people need access to the raw Asset files, a Studio / Company License is required.',
+            'Restriction: If more than five (5) individuals require access to the raw Asset files across your team or organization, a Studio / Company License is required.',
           ],
         },
         {
-          subtitle: '3.2 Studio / Company License (Multi-Seat / Studios & Teams)',
-          text: 'A Studio / Company License grants all rights of the Personal License, and additionally authorizes a legal entity or multi-person team to:',
+          subtitle: '3.2 Studio / Company License (6+ Seats / Unlimited Entity-Wide)',
+          text: 'A Studio / Company License grants all rights of the Personal License, and additionally authorizes a legal entity or team of six (6) or more collaborators to:',
           bullets: [
-            'Store the Assets in a secure, access-controlled internal repository, private server, cloud storage, or version-control system (e.g., Git, SVN, Perforce) accessible exclusively by Authorized Team Members;',
-            'Allow internal employees and third-party contractors to download, access, and use the Assets solely for the creation and delivery of Products controlled by the Licensee;',
+            'Store the Assets in a secure, access-controlled internal repository, private server, cloud storage, or version-control system (e.g., Git, SVN, Perforce) accessible by all Authorized Team Members;',
+            'Allow an unlimited number of internal employees and third-party contractors to download, access, and use the Assets solely for the creation and delivery of Products controlled by the Licensee;',
             'Use the Assets across an unlimited number of commercial studio projects and client deliverables;',
             'Deploy the Assets in team-based production pipelines without restriction on the number of internal seats within the licensed legal entity.',
             'Restriction: Authorized Team Members and contractors receive no independent personal ownership or transferable license. Their access exists solely while working on the Licensee’s authorized Products. Upon completion of their engagement, contractors must permanently delete all raw Asset files from their personal hardware.',
@@ -258,7 +261,7 @@ export const EULA_SECTIONS: EulaSection[] = [
     title: 'Commercial Use & Monetization',
     content: {
       bullets: [
-        'Commercial use and monetization are permitted under both Personal and Studio / Company Licenses.',
+        'Commercial use and monetization are permitted under both Personal / Indie and Studio / Company Licenses.',
         'The Licensee may sell, distribute, monetize via microtransactions, subscriptions, advertisements, paid downloads, crowdfunding, or streaming any digital Product incorporating the Assets.',
         'No ongoing royalties, revenue-share percentages, or recurring licensing fees are owed to Mnostva Art from sales or revenues generated by your Products.',
         'There is no limit on the number of commercial digital Products you may publish under a valid license.',
@@ -277,7 +280,7 @@ export const EULA_SECTIONS: EulaSection[] = [
         },
         {
           subtitle: '5.2 Delivering Open Source / Project Files to Clients',
-          text: 'If a client contractually requires the delivery of editable 3D source files, raw asset packages, or open editable game engine projects (e.g., an editable Unreal Engine or Unity project file containing raw Mnostva Art assets), the client itself must purchase an appropriate License (Personal or Studio / Company) prior to receiving the editable source files. A freelancer\'s Personal License cannot be transferred or sublicensed to a client to grant that client independent asset ownership.',
+          text: 'If a client contractually requires the delivery of editable 3D source files, raw asset packages, or open editable game engine projects (e.g., an editable Unreal Engine or Unity project file containing raw Mnostva Art assets), the client itself must purchase an appropriate License (Personal / Indie or Studio / Company) prior to receiving the editable source files. A freelancer\'s or agency\'s license cannot be transferred or sublicensed to a client to grant that client independent asset ownership.',
         },
       ],
     },
@@ -369,7 +372,7 @@ export const EULA_SECTIONS: EulaSection[] = [
     id: 'free-assets',
     title: 'Free Assets Policy',
     content: {
-      intro: 'Assets clearly designated as “Free Assets” on the Mnostva Art website or official store channels are provided under the terms of the Personal License, subject to the following clarifications:',
+      intro: 'Assets clearly designated as “Free Assets” on the Mnostva Art website or official store channels are provided under the terms of the Personal / Indie License, subject to the following clarifications:',
       bullets: [
         'Free Assets may be incorporated into both commercial and non-commercial compiled digital Products.',
         'Standalone redistribution of Free Assets (even if offered for free or bundled with other free materials) is strictly prohibited. You may not re-host or re-upload our free files to other forums, drives, or websites.',
@@ -385,7 +388,7 @@ export const EULA_SECTIONS: EulaSection[] = [
     content: {
       bullets: [
         'Multiple Projects: A single valid license permits the Licensee to utilize the purchased Asset in an unlimited number of discrete digital Products (e.g., in multiple games, updates, sequels, or marketing campaigns).',
-        'No Repurchase on Team Growth: Rights granted at the time of purchase remain valid indefinitely for that purchase. If a Licensee purchases a Personal License as a solo creator and later establishes a team or company, the Licensee is not required to repurchase the Asset for previously created Products, provided that raw source file access remains restricted to the original single individual. Any ongoing collaborative team access to source files requires upgrading to a Studio / Company License.',
+        'Team Growth Across Tiers: Rights granted at the time of purchase remain valid indefinitely for that purchase. If a Licensee purchases a Personal / Indie License for a team of up to five (5) people and later expands beyond five collaborators accessing the source files, the Licensee must purchase an upgrade to the Studio / Company License for ongoing collaborative access to those Assets.',
       ],
     },
   },

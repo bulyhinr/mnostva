@@ -14,8 +14,8 @@ describe('LegalPage', () => {
 
     expect(screen.getByText('Legal & Licensing')).toBeInTheDocument();
     expect(screen.getByText('🎮 License Comparison at a Glance')).toBeInTheDocument();
-    expect(screen.getByText('Personal License (Single-Seat)')).toBeInTheDocument();
-    expect(screen.getByText('Studio / Company License (Multi-Seat)')).toBeInTheDocument();
+    expect(screen.getByText('Personal / Indie License')).toBeInTheDocument();
+    expect(screen.getByText('Studio / Company License')).toBeInTheDocument();
   });
 
   it('does not contain outdated $100,000 revenue cap references', () => {

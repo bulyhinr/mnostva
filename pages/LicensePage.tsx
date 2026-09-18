@@ -19,19 +19,19 @@ const sections = [
           <div className="bg-blue-50/50 p-6 rounded-2xl border-2 border-blue-100 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <h4 className="font-black text-blue-600 uppercase tracking-widest text-xs">
-                Personal License
+                Personal / Indie License
               </h4>
               <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black uppercase">
-                Single-Seat
+                Up to 5 Seats
               </span>
             </div>
             <p className="text-[11px] mb-3 text-gray-700">
-              For solo indie developers, freelance artists, and individual creators. Strictly <strong>one (1) natural person</strong> may access raw 3D files.
+              For solo indie developers, duos (e.g. programmer + 3D artist), and small indie teams of <strong>up to 5 people</strong>. Up to 5 collaborators may access raw 3D files.
             </p>
             <ul className="list-disc pl-4 space-y-1 text-[11px]">
               <li>Unlimited commercial games, apps & animations</li>
               <li>Keep 100% of your earnings (Zero revenue cap, zero royalties)</li>
-              <li>Local device installation & personal backups</li>
+              <li>Team storage on shared Git/server/cloud drive for up to 5 authorized members</li>
               <li>Delivering compiled game/video deliverables to clients</li>
             </ul>
           </div>
@@ -42,11 +42,11 @@ const sections = [
                 Studio / Company License
               </h4>
               <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 text-[10px] font-black uppercase">
-                Multi-Seat
+                6+ Seats / Enterprise
               </span>
             </div>
             <p className="text-[11px] mb-3 text-gray-700">
-              For studios, companies, and teams of <strong>two (2) or more collaborators</strong>.
+              For studios, companies, and agencies with teams of <strong>six (6) or more collaborators</strong>.
             </p>
             <ul className="list-disc pl-4 space-y-1 text-[11px]">
               <li>Unlimited seats across your entire studio/company</li>
@@ -87,7 +87,7 @@ const sections = [
     content: (
       <div className="space-y-4 text-gray-600 font-medium leading-relaxed text-sm">
         <p>
-          All assets in our <strong>Free</strong> category are provided under the Personal License terms, allowing creators of all backgrounds to build wonderful worlds:
+          All assets in our <strong>Free</strong> category are provided under the Personal / Indie License terms, allowing creators of all backgrounds to build wonderful worlds:
         </p>
         <ul className="list-disc pl-5 space-y-2 text-xs">
           <li>A perpetual, worldwide, non-exclusive license to use the assets</li>

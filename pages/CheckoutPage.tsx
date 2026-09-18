@@ -421,9 +421,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onSuccess, onBack, onNaviga
                         <span className="w-4 h-4 bg-gray-100 rounded-full flex items-center justify-center text-[10px] text-gray-400 cursor-help border border-gray-200 transition-colors group-hover:bg-[#8a7db3] group-hover:text-white group-hover:border-[#8a7db3]">ⓘ</span>
                         <div className="absolute left-0 bottom-full mb-3 w-64 p-4 bg-gray-900 text-white text-[11px] font-bold rounded-[1.5rem] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all pointer-events-none z-50 shadow-2xl translate-y-2 group-hover:translate-y-0">
                           <p className="text-pink-400 mb-1 uppercase tracking-widest text-[9px]">Regular Account</p>
-                          <p className="text-gray-300 leading-relaxed mb-3 font-medium">Standard License. For individuals, personal use and indie creators.</p>
+                          <p className="text-gray-300 leading-relaxed mb-3 font-medium">Personal / Indie License (up to 5 seats). For solo developers, duos, and small indie teams.</p>
                           <p className="text-[#8a7db3] mb-1 uppercase tracking-widest text-[9px]">Company Account</p>
-                          <p className="text-gray-300 leading-relaxed font-medium">Commercial License. For studios, companies and large scale products.</p>
+                          <p className="text-gray-300 leading-relaxed font-medium">Studio / Company License (6+ seats). Unlimited seats for studios, companies, and agencies.</p>
                         </div>
                       </div>
                     </label>

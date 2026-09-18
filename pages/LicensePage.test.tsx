@@ -13,10 +13,10 @@ describe('LicensePage', () => {
     );
 
     expect(screen.getByText('License Agreements')).toBeInTheDocument();
-    expect(screen.getByText('Personal License')).toBeInTheDocument();
+    expect(screen.getByText('Personal / Indie License')).toBeInTheDocument();
     expect(screen.getByText('Studio / Company License')).toBeInTheDocument();
-    expect(screen.getByText('Single-Seat')).toBeInTheDocument();
-    expect(screen.getByText('Multi-Seat')).toBeInTheDocument();
+    expect(screen.getByText('Up to 5 Seats')).toBeInTheDocument();
+    expect(screen.getByText('6+ Seats / Enterprise')).toBeInTheDocument();
   });
 
   it('does not contain outdated $100,000 revenue references', () => {

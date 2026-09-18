@@ -1,393 +1,383 @@
 ================================================================================
-                    MNOSTVA ART — END USER LICENSE AGREEMENT (EULA)
+MNOSTVA ART — END USER LICENSE AGREEMENT (EULA)
+Effective Date: September 1, 2026
+Last Updated: September 1, 2026
+Website: https://mnostva.art
+Contact: support@mnostva.art
 ================================================================================
 
-Effective Date: September 1, 2026
-Last Updated:   September 1, 2026
-Website:        https://mnostva.art
-Contact:        support@mnostva.art
+This End User License Agreement ("Agreement" or "EULA") is a legally binding 
+contract between Mnostva Art Studio ("Mnostva Art," "Licensor," "we," "us," or 
+"our") and the person or legal entity purchasing, downloading, accessing, or 
+using any digital asset made available by Mnostva Art ("Licensee," "you," or "your").
 
-This End User License Agreement (“Agreement” or “EULA”) is a legally binding
-contract between Mnostva Art Studio (“Mnostva Art”, “Licensor”, “we”, “us”, or
-“our”) and the person or legal entity purchasing, downloading, accessing, or
-using any digital asset made available by Mnostva Art (“Licensee”, “you”, or
-“your”).
-
-By purchasing, downloading, accessing, installing, copying, or using any Asset,
-you confirm that you have read, understand, and agree to be bound by this
-Agreement. If you do not agree to these terms, you must not purchase, download,
-access, install, or use any Asset.
+By purchasing, downloading, accessing, installing, copying, or using any Asset, 
+you confirm that you have read, understand, and agree to be bound by this Agreement. 
+If you do not agree to these terms, you must not purchase, download, access, 
+install, or use any Asset.
 
 --------------------------------------------------------------------------------
 1. DEFINITIONS
 --------------------------------------------------------------------------------
 
 1.1 Asset
-“Asset” means any digital content created and made available by Mnostva Art,
-including but not limited to 3D models, meshes, geometry, textures, materials,
-shaders, rigs, animations, environment kits, props, characters, prefabs,
-particle effects, source files (including .blend, .fbx, .obj, .gltf, or engine-
-specific packages), project files, and associated technical documentation.
+"Asset" means any digital content created and made available by Mnostva Art, 
+including but not limited to 3D models, meshes, geometry, textures, materials, 
+shaders, rigs, animations, environment kits, props, characters, prefabs, particle 
+effects, source files (including .blend, .fbx, .obj, .gltf, or engine-specific 
+packages), project files, and associated technical documentation.
 
 1.2 Digital Product / Final Product
-“Product” or “Final Product” means a finished, integrated digital work created
-or controlled by the Licensee (such as a video game, interactive software,
-mobile application, virtual or augmented reality experience, digital film,
-cinematic, animation, broadcast, architectural visualization, or digital
-marketing material) in which the Assets are incorporated as an inseparable,
-embedded component, and where raw source Asset files cannot be extracted,
-retrieved, or separated by end users in the ordinary course of use.
+"Product" or "Final Product" means a finished, integrated digital work created 
+or controlled by the Licensee (such as a video game, interactive software, mobile 
+application, virtual or augmented reality experience, digital film, cinematic, 
+animation, broadcast, architectural visualization, or digital marketing material) 
+in which the Assets are incorporated as an inseparable, embedded component, and 
+where raw source Asset files cannot be extracted, retrieved, or separated by end 
+users in the ordinary course of use.
 
-1.3 Personal License (Single Seat)
-“Personal License” means a single-user license granted strictly to one (1)
-natural person (individual creator, solo developer, freelancer, or hobbyist).
-The Personal License permits that individual to use the Assets across unlimited
-personal, educational, commercial, and client digital Products. A Personal
-License is strictly tied to the individual purchaser and does not permit
-sharing, pooling, or hosting the source Assets for access by other team
-members, studios, or companies.
+1.3 Personal / Indie License (Up to 5 Seats)
+"Personal / Indie License" means a small-team license granted to an individual 
+creator, solo developer, or independent development team consisting of up to five (5) 
+active collaborators (e.g., a solo developer working with co-developers, an artist, 
+or contracted specialists). The Personal / Indie License permits up to five authorized 
+individuals to access, download, and work with the source Asset files across unlimited 
+personal, educational, commercial, and client digital Products.
 
-1.4 Studio / Company License (Multi-Seat)
-“Studio / Company License” means a multi-user entity license granted to a
-commercial studio, company, corporation, partnership, educational institution,
-or team consisting of two (2) or more collaborators. A Studio / Company License
-permits the Licensee to store the Assets on secure internal systems and make
-them accessible to its authorized employees and contractors solely for the
-creation, development, testing, and marketing of Products owned and controlled
-by the Licensee.
+1.4 Studio / Company License (Multi-Seat / Enterprise)
+"Studio / Company License" means a multi-user entity license granted to a 
+commercial studio, company, corporation, partnership, educational institution, 
+or team consisting of six (6) or more collaborators. A Studio / Company License 
+permits the Licensee to store the Assets on secure internal systems and make them 
+accessible to an unlimited number of its authorized employees and contractors 
+solely for the creation, development, testing, and marketing of Products owned 
+and controlled by the Licensee.
 
 1.5 Authorized Team Member
-“Authorized Team Member” means an internal employee or dedicated third-party
-contractor directly engaged by a Studio / Company Licensee to work on Products
-controlled by that Licensee.
+"Authorized Team Member" means an internal employee or dedicated third-party 
+contractor directly engaged by the Licensee to work on Products controlled 
+by that Licensee.
 
 --------------------------------------------------------------------------------
 2. OWNERSHIP AND INTELLECTUAL PROPERTY
 --------------------------------------------------------------------------------
 
 2.1 Licensed, Not Sold
-All Assets are licensed, not sold. Purchasing an Asset does not transfer
-copyright, moral rights, patent rights, trademark rights, trade secrets, or any
-other intellectual property ownership to the Licensee.
+All Assets are licensed, not sold. Purchasing an Asset does not transfer copyright, 
+moral rights, patent rights, trademark rights, trade secrets, or any other 
+intellectual property ownership to the Licensee.
 
 2.2 Retention of Rights
-Mnostva Art retains all right, title, interest, and intellectual property rights
-in and to the Assets, including all source files, artistic representations,
-3D meshes, UV maps, textures, and any updates or revisions, except for the
-limited usage rights expressly granted under this Agreement.
+Mnostva Art retains all right, title, interest, and intellectual property rights 
+in and to the Assets, including all source files, artistic representations, 3D 
+meshes, UV maps, textures, and any updates or revisions, except for the limited 
+usage rights expressly granted under this Agreement.
 
 2.3 Modifications
-The Licensee may freely modify, adapt, retopologize, retexture, rig, or optimize
-the Assets for integration into their Products. Any modification or derivative
-work based on the Assets remains subject to Mnostva Art’s underlying copyright
-and does not grant the Licensee independent, transferable copyright ownership in
+The Licensee may freely modify, adapt, retopologize, retexture, rig, or optimize 
+the Assets for integration into their Products. Any modification or derivative 
+work based on the Assets remains subject to Mnostva Art's underlying copyright 
+and does not grant the Licensee independent, transferable copyright ownership in 
 the underlying 3D geometry or artistic design.
 
 --------------------------------------------------------------------------------
 3. LICENSE GRANT
 --------------------------------------------------------------------------------
 
-Subject to full payment of the applicable fee and ongoing compliance with this
-Agreement, Mnostva Art grants the Licensee a worldwide, non-exclusive,
-perpetual, royalty-free, non-transferable, and non-sublicensable license to use
-the purchased Assets in accordance with the purchased tier:
+Subject to full payment of the applicable fee and ongoing compliance with this 
+Agreement, Mnostva Art grants the Licensee a worldwide, non-exclusive, perpetual, 
+royalty-free, non-transferable, and non-sublicensable license to use the purchased 
+Assets in accordance with the purchased tier:
 
-3.1 Personal License (Single-Seat / Solo Creators)
-A Personal License authorizes strictly one (1) natural person to:
-  (a) Download, install, and store the Assets on devices owned or exclusively
-      controlled by the Licensee;
-  (b) Create reasonable local backup copies for personal archival purposes;
-  (c) Use the Assets in an unlimited number of commercial, indie, freelance,
-      personal, and educational digital Products;
-  (d) Modify, adapt, animate, and incorporate the Assets into compiled, binary-
-      format Products;
-  (e) Distribute, market, broadcast, monetize, and sell commercial Products
-      containing the Assets;
-  (f) Use the Assets to perform contracted work for clients, provided the
-      Assets are delivered strictly as part of a compiled, non-extractable
-      Final Product.
+3.1 Personal / Indie License (Up to 5 Seats)
+A Personal / Indie License authorizes up to five (5) designated individuals on 
+the Licensee's team to:
+1. Download, install, and store the Assets on devices owned or controlled by 
+   authorized team members;
+2. Store the Assets on a password-protected internal repository, cloud drive, 
+   or version-control system accessible exclusively by up to five (5) authorized 
+   project collaborators;
+3. Create reasonable local backup copies for archival purposes;
+4. Use the Assets in an unlimited number of commercial, indie, freelance, 
+   personal, and educational digital Products;
+5. Modify, adapt, animate, and incorporate the Assets into compiled, binary-format 
+   Products;
+6. Distribute, market, broadcast, monetize, and sell commercial Products 
+   containing the Assets;
+7. Use the Assets to perform contracted work for clients, provided the Assets 
+   are delivered strictly as part of a compiled, non-extractable Final Product.
 
-Restriction: The Personal License does not authorize simultaneous or shared
-access by other individuals. If two or more people need access to the raw
-Asset files, a Studio / Company License is required.
+Restriction: If more than five (5) individuals require access to the raw Asset files 
+across your team or organization, a Studio / Company License is required.
 
-3.2 Studio / Company License (Multi-Seat / Studios & Teams)
-A Studio / Company License grants all rights of the Personal License, and
-additionally authorizes a legal entity or multi-person team to:
-  (a) Store the Assets in a secure, access-controlled internal repository,
-      private server, cloud storage, or version-control system (e.g., Git, SVN,
-      Perforce) accessible exclusively by Authorized Team Members;
-  (b) Allow internal employees and third-party contractors to download, access,
-      and use the Assets solely for the creation and delivery of Products
-      controlled by the Licensee;
-  (c) Use the Assets across an unlimited number of commercial studio projects
-      and client deliverables;
-  (d) Deploy the Assets in team-based production pipelines without restriction
-      on the number of internal seats within the licensed legal entity.
+3.2 Studio / Company License (6+ Seats / Unlimited Entity-Wide)
+A Studio / Company License grants all rights of the Personal License, and 
+additionally authorizes a legal entity or team of six (6) or more collaborators to:
+1. Store the Assets in a secure, access-controlled internal repository, private 
+   server, cloud storage, or version-control system (e.g., Git, SVN, Perforce) 
+   accessible by all Authorized Team Members;
+2. Allow an unlimited number of internal employees and third-party contractors 
+   to download, access, and use the Assets solely for the creation and delivery 
+   of Products controlled by the Licensee;
+3. Use the Assets across an unlimited number of commercial studio projects and 
+   client deliverables;
+4. Deploy the Assets in team-based production pipelines without restriction on 
+   the number of internal seats within the licensed legal entity.
 
-Restriction: Authorized Team Members and contractors receive no independent
-personal ownership or transferable license. Their access exists solely while
-working on the Licensee’s authorized Products. Upon completion of their
-engagement, contractors must permanently delete all raw Asset files from their
-personal hardware.
+Restriction: Authorized Team Members and contractors receive no independent 
+personal ownership or transferable license. Their access exists solely while working 
+on the Licensee's authorized Products. Upon completion of their engagement, 
+contractors must permanently delete all raw Asset files from their personal hardware.
 
 --------------------------------------------------------------------------------
 4. COMMERCIAL USE & MONETIZATION
 --------------------------------------------------------------------------------
 
-1. Commercial use and monetization are permitted under both Personal and Studio /
-   Company Licenses.
-2. The Licensee may sell, distribute, monetize via microtransactions,
-   subscriptions, advertisements, paid downloads, crowdfunding, or streaming
+1. Commercial use and monetization are permitted under both Personal / Indie 
+   and Studio / Company Licenses.
+2. The Licensee may sell, distribute, monetize via microtransactions, 
+   subscriptions, advertisements, paid downloads, crowdfunding, or streaming 
    any digital Product incorporating the Assets.
-3. No ongoing royalties, revenue-share percentages, or recurring licensing fees
+3. No ongoing royalties, revenue-share percentages, or recurring licensing fees 
    are owed to Mnostva Art from sales or revenues generated by your Products.
-4. There is no limit on the number of commercial digital Products you may
-   publish under a valid license.
+4. There is no limit on the number of commercial digital Products you may publish 
+   under a valid license.
 
 --------------------------------------------------------------------------------
 5. CLIENT WORK AND FREELANCE SERVICES
 --------------------------------------------------------------------------------
 
 5.1 Delivering Final Products to Clients
-The Licensee may use the Assets to create digital Products for third-party
-clients. If the client receives solely a compiled, rendered, or protected binary
-deliverable (e.g., an executable video game, a pre-rendered cinematic, an
-architectural walk-through video, or rendered marketing images), no additional
-license is required for the client.
+The Licensee may use the Assets to create digital Products for third-party clients. 
+If the client receives solely a compiled, rendered, or protected binary deliverable 
+(e.g., an executable video game, a pre-rendered cinematic, an architectural 
+walk-through video, or rendered marketing images), no additional license is 
+required for the client.
 
 5.2 Delivering Open Source / Project Files to Clients
-If a client contractually requires the delivery of editable 3D source files,
-raw asset packages, or open editable game engine projects (e.g., an editable
-Unreal Engine or Unity project file containing raw Mnostva Art assets), the
-client itself must purchase an appropriate License (Personal or Studio /
-Company) prior to receiving the editable source files. A freelancer's Personal
-License cannot be transferred or sublicensed to a client to grant that client
+If a client contractually requires the delivery of editable 3D source files, 
+raw asset packages, or open editable game engine projects (e.g., an editable 
+Unreal Engine or Unity project file containing raw Mnostva Art assets), the 
+client itself must purchase an appropriate License (Personal / Indie or Studio / 
+Company) prior to receiving the editable source files. A freelancer's or agency's 
+license cannot be transferred or sublicensed to a client to grant that client 
 independent asset ownership.
 
 --------------------------------------------------------------------------------
 6. PERMITTED MODIFICATIONS
 --------------------------------------------------------------------------------
 
-1. You may freely edit meshes, modify UV layouts, customize materials and
-   shaders, retexture, rig, animate, optimize polycounts, combine Assets with
-   other third-party content, and produce derivative 3D variations for use
-   within your Products.
-2. Modified Assets remain subject to all terms and restrictions of this
-   Agreement.
-3. Modification does not grant you the right to sell, distribute, or license the
-   modified 3D model, mesh, or texture as a standalone digital asset, kitbash
-   set, template, or downloadable stock asset.
+1. You may freely edit meshes, modify UV layouts, customize materials and shaders, 
+   retexture, rig, animate, optimize polycounts, combine Assets with other 
+   third-party content, and produce derivative 3D variations for use within your Products.
+2. Modified Assets remain subject to all terms and restrictions of this Agreement.
+3. Modification does not grant you the right to sell, distribute, or license the 
+   modified 3D model, mesh, or texture as a standalone digital asset, kitbash set, 
+   template, or downloadable stock asset.
 
 --------------------------------------------------------------------------------
 7. STRICTLY PROHIBITED USES
 --------------------------------------------------------------------------------
 
-Except where expressly authorized in writing by Mnostva Art under a separate
+Except where expressly authorized in writing by Mnostva Art under a separate 
 Custom License Agreement, the Licensee MUST NOT:
 
 7.1 Standalone Resale or Redistribution
-Sell, resell, sublicense, rent, lease, donate, publish, upload, host, share, or
-otherwise make the Assets available in standalone format. This includes
-uploading Assets to 3D marketplaces, stock asset libraries, asset stores,
-public Git repositories, torrent networks, file-sharing platforms, cloud drives,
-or community communication channels (e.g., Discord, Telegram).
+Sell, resell, sublicense, rent, lease, donate, publish, upload, host, share, or 
+otherwise make the Assets available in standalone format. This includes uploading 
+Assets to 3D marketplaces, stock asset libraries, asset stores, public Git 
+repositories, torrent networks, file-sharing platforms, cloud drives, or community 
+communication channels (e.g., Discord, Telegram).
 
 7.2 Competing Digital Asset Products
-Use any Asset (in original or modified form) to create, market, or distribute a
-competing 3D model pack, environment kit, prop pack, stylized asset library,
-texture pack, brush set, shader library, or game template whose primary
-commercial value is the provision of 3D assets or source content to third
-parties.
+Use any Asset (in original or modified form) to create, market, or distribute a 
+competing 3D model pack, environment kit, prop pack, stylized asset library, 
+texture pack, brush set, shader library, or game template whose primary commercial 
+value is the provision of 3D assets or source content to third parties.
 
 7.3 Unprotected / Extractable Distribution
-Include the Assets in any software, game, application, or package where the
-raw 3D meshes, textures, or source files can be easily extracted, decompiled,
-or retrieved by end users in standard interchangeable 3D formats (such as .fbx,
-.obj, .gltf, .blend, .png). Assets distributed within game builds must be
-compiled, cooked, or packaged into protected engine binary archives (such as
+Include the Assets in any software, game, application, or package where the raw 
+3D meshes, textures, or source files can be easily extracted, decompiled, or 
+retrieved by end users in standard interchangeable 3D formats (such as .fbx, 
+.obj, .gltf, .blend, .png). Assets distributed within game builds must be 
+compiled, cooked, or packaged into protected engine binary archives (such as 
 Unreal .pak/.ucas, Unity .assets/AssetBundles, or encrypted archives).
 
 7.4 Open UGC Platforms & Virtual Worlds
-Upload the Assets to User-Generated Content (UGC) platforms, virtual worlds, or
-metaverse sandboxes (including but not limited to Roblox, VRChat, Fortnite UEFN,
-Decentraland, Core, or Garry’s Mod) in a manner that makes the Asset freely
-cloneable, exportable, or downloadable by other users into their private
-inventories, toolboxes, or local systems. Incorporating Assets into UGC games
-is permitted solely as a locked, non-cloneable, non-extractable part of an
-immutable published environment/experience.
+Upload the Assets to User-Generated Content (UGC) platforms, virtual worlds, 
+or metaverse sandboxes (including but not limited to Roblox, VRChat, Fortnite UEFN, 
+Decentraland, Core, or Garry’s Mod) in a manner that makes the Asset freely cloneable, 
+exportable, or downloadable by other users into their private inventories, 
+toolboxes, or local systems. Incorporating Assets into UGC games is permitted 
+solely as a locked, non-cloneable, non-extractable part of an immutable published 
+environment/experience.
 
 7.5 Commercial 3D Printing and Physical Goods
-3D printing of the Assets is permitted solely for personal, non-commercial,
-private display by the Licensee. You must not commercially manufacture, cast,
-mold, mass-produce, 3D-print for sale, or distribute physical goods, miniatures,
-toys, figurines, board game components, merchandise, or physical collectibles
-derived from the Assets. Any commercial physical production is strictly
-prohibited and requires a separate Custom License.
+3D printing of the Assets is permitted solely for personal, non-commercial, 
+private display by the Licensee. You must not commercially manufacture, cast, 
+mold, mass-produce, 3D-print for sale, or distribute physical goods, miniatures, 
+toys, figurines, board game components, merchandise, or physical collectibles 
+derived from the Assets. Any commercial physical production is strictly prohibited 
+and requires a separate Custom License.
 
 7.6 Generative AI, Machine Learning, and Dataset Training
-1. The Assets (and any derivatives) must not be used, directly or indirectly,
-   as training data, fine-tuning inputs, validation benchmarks, embeddings,
-   feature libraries, or reference material for any artificial intelligence,
-   machine learning, deep learning, neural network, or generative model
-   (including 3D generative AI, image-to-3D, text-to-3D, latent diffusion
-   models, or NeRF/Gaussian Splatting systems).
-2. Automated scraping, data extraction, systematic crawling, or ingestion of the
+1. The Assets (and any derivatives) must not be used, directly or indirectly, 
+   as training data, fine-tuning inputs, validation benchmarks, embeddings, 
+   feature libraries, or reference material for any artificial intelligence, 
+   machine learning, deep learning, neural network, or generative model (including 
+   3D generative AI, image-to-3D, text-to-3D, latent diffusion models, or 
+   NeRF/Gaussian Splatting systems).
+2. Automated scraping, data extraction, systematic crawling, or ingestion of the 
    Assets into any AI training pipeline is strictly prohibited.
-3. Statutory Text and Data Mining Reservation: Pursuant to Article 4(3) of
-   Directive (EU) 2019/790 of the European Parliament and of the Council on
-   copyright and related rights in the Digital Single Market, Mnostva Art
-   expressly reserves all rights regarding text and data mining (TDM) and
-   automated data extraction of its content and Assets.
+3. Statutory Text and Data Mining Reservation: Pursuant to Article 4(3) of 
+   Directive (EU) 2019/790 of the European Parliament and of the Council on 
+   copyright and related rights in the Digital Single Market, Mnostva Art expressly 
+   reserves all rights regarding text and data mining (TDM) and automated data 
+   extraction of its content and Assets.
 
 7.7 NFTs and Blockchain Tokenization
-You may not mint, tokenize, sell, or distribute any Asset, modified asset,
-render, or derivative work as a standalone Non-Fungible Token (NFT), tokenized
-digital collectible, or blockchain-based virtual item.
+You may not mint, tokenize, sell, or distribute any Asset, modified asset, render, 
+or derivative work as a standalone Non-Fungible Token (NFT), tokenized digital 
+collectible, or blockchain-based virtual item.
 
 7.8 Authorship Misrepresentation & Notice Removal
-You may not claim that you or any third party created, authored, or holds
-copyright in the original 3D artistic geometry, designs, or textures of the
-Assets, nor may you remove, alter, or obscure any copyright notices,
-watermarks, metadata, or proprietary markings provided with the Assets.
+You may not claim that you or any third party created, authored, or holds 
+copyright in the original 3D artistic geometry, designs, or textures of the Assets, 
+nor may you remove, alter, or obscure any copyright notices, watermarks, metadata, 
+or proprietary markings provided with the Assets.
 
 7.9 Unlawful and Harmful Purposes
-You may not use the Assets for any unlawful purpose, in violation of
-applicable laws, or in any defamatory, hateful, or infringing context.
+You may not use the Assets for any unlawful purpose, in violation of applicable 
+laws, or in any defamatory, hateful, or infringing context.
 
 --------------------------------------------------------------------------------
 8. RENDERS, CINEMATICS, AND VISUAL MEDIA
 --------------------------------------------------------------------------------
 
-1. The Licensee is fully authorized to render 2D images, video animations,
-   cinematics, promotional trailers, gameplay recordings, screenshots, virtual
+1. The Licensee is fully authorized to render 2D images, video animations, 
+   cinematics, promotional trailers, gameplay recordings, screenshots, virtual 
    production sequences, and advertising materials incorporating the Assets.
-2. Rendered audiovisual outputs may be commercially distributed, monetized, and
-   broadcast across any media channel (including YouTube, Twitch, television,
+2. Rendered audiovisual outputs may be commercially distributed, monetized, and 
+   broadcast across any media channel (including YouTube, Twitch, television, 
    digital streaming, and print advertising).
-3. The Licensee may not sell or license standalone 2D renders as stock imagery,
-   stock textures, or stock footage where the primary purpose of the product is
+3. The Licensee may not sell or license standalone 2D renders as stock imagery, 
+   stock textures, or stock footage where the primary purpose of the product is 
    to provide the visual asset itself for third-party reuse.
 
 --------------------------------------------------------------------------------
 9. GAME ENGINES AND SOFTWARE COMPATIBILITY
 --------------------------------------------------------------------------------
 
-1. The Assets may be imported and utilized in any compatible digital content
-   creation (DCC) software and game engines, including but not limited to Unity,
-   Unreal Engine, Godot, Blender, Autodesk Maya, 3ds Max, Cinema 4D, and
-   proprietary in-house engines.
+1. The Assets may be imported and utilized in any compatible digital content 
+   creation (DCC) software and game engines, including but not limited to Unity, 
+   Unreal Engine, Godot, Blender, Autodesk Maya, 3ds Max, Cinema 4D, and proprietary 
+   in-house engines.
 2. Use is not restricted to any specific engine version or operating system.
-3. Mnostva Art does not warrant that Assets will remain compatible with future
+3. Mnostva Art does not warrant that Assets will remain compatible with future 
    unreleased versions of third-party software or engines.
 
 --------------------------------------------------------------------------------
 10. FREE ASSETS POLICY
 --------------------------------------------------------------------------------
 
-Assets clearly designated as “Free Assets” on the Mnostva Art website or
-official store channels are provided under the terms of the Personal License,
+Assets clearly designated as "Free Assets" on the Mnostva Art website or official 
+store channels are provided under the terms of the Personal / Indie License, 
 subject to the following clarifications:
-1. Free Assets may be incorporated into both commercial and non-commercial
+1. Free Assets may be incorporated into both commercial and non-commercial 
    compiled digital Products.
-2. Standalone redistribution of Free Assets (even if offered for free or
-   bundled with other free materials) is strictly prohibited. You may not
-   re-host or re-upload our free files to other forums, drives, or websites.
-3. Free Assets are subject to the same strict prohibitions regarding AI model
-   training, commercial 3D printing, and standalone redistribution as paid
-   Assets.
-4. Mnostva Art reserves the right to modify or withdraw Free Assets from
+2. Standalone redistribution of Free Assets (even if offered for free or bundled 
+   with other free materials) is strictly prohibited. You may not re-host or 
+   re-upload our free files to other forums, drives, or websites.
+3. Free Assets are subject to the same strict prohibitions regarding AI model 
+   training, commercial 3D printing, and standalone redistribution as paid Assets.
+4. Mnostva Art reserves the right to modify or withdraw Free Assets from 
    distribution at its sole discretion.
 
 --------------------------------------------------------------------------------
 11. MULTIPLE PROJECTS & NO AUTOMATIC UPGRADE
 --------------------------------------------------------------------------------
 
-1. Multiple Projects: A single valid license permits the Licensee to utilize the
-   purchased Asset in an unlimited number of discrete digital Products (e.g., in
+1. Multiple Projects: A single valid license permits the Licensee to utilize the 
+   purchased Asset in an unlimited number of discrete digital Products (e.g., in 
    multiple games, updates, sequels, or marketing campaigns).
-2. No Repurchase on Team Growth: Rights granted at the time of purchase remain
-   valid indefinitely for that purchase. If a Licensee purchases a Personal
-   License as a solo creator and later establishes a team or company, the
-   Licensee is not required to repurchase the Asset for previously created
-   Products, provided that raw source file access remains restricted to the
-   original single individual. Any ongoing collaborative team access to source
-   files requires upgrading to a Studio / Company License.
+2. Team Growth Across Tiers: Rights granted at the time of purchase remain valid 
+   indefinitely for that purchase. If a Licensee purchases a Personal / Indie License 
+   for a team of up to five (5) people and later expands beyond five collaborators 
+   accessing the source files, the Licensee must purchase an upgrade to the Studio / 
+   Company License for ongoing collaborative access to those Assets.
 
 --------------------------------------------------------------------------------
 12. DIGITAL DELIVERY, ACCESS, AND CONSUMER RIGHTS (EU / PORTUGAL)
 --------------------------------------------------------------------------------
 
 12.1 Digital Delivery
-Assets are delivered electronically via digital download links or user account
-dashboards immediately upon confirmed payment. Mnostva Art does not guarantee
-permanent server availability for re-downloading files indefinitely; Licensees
-are strongly advised to maintain secure local archival backups of purchased
-files.
+Assets are delivered electronically via digital download links or user account 
+dashboards immediately upon confirmed payment. Mnostva Art does not guarantee 
+permanent server availability for re-downloading files indefinitely; Licensees 
+are strongly advised to maintain secure local archival backups of purchased files.
 
 12.2 Right of Withdrawal Waiver (EU Consumers)
-If you are an individual consumer residing in the European Union, you expressly
-acknowledge that under applicable consumer protection legislation (including
-Portuguese Decree-Law no. 24/2014, transposing EU Directive 2011/83/EU on
-Consumer Rights), the statutory 14-day right of withdrawal from the contract
-ceases once the supply of digital content has begun with your prior express
-consent and acknowledgment that you thereby lose your right of withdrawal.
+If you are an individual consumer residing in the European Union, you expressly 
+acknowledge that under applicable consumer protection legislation (including 
+Portuguese Decree-Law no. 24/2014, transposing EU Directive 2011/83/EU on Consumer 
+Rights), the statutory 14-day right of withdrawal from the contract ceases once 
+the supply of digital content has begun with your prior express consent and 
+acknowledgment that you thereby lose your right of withdrawal.
 
 12.3 Refunds
-Due to the digital and intangible nature of downloadable software, all sales are
-final once downloaded or accessed, except where mandated by mandatory statutory
-consumer protection laws (e.g., where an Asset possesses a demonstrable,
-irreparable technical defect that renders it fundamentally inconsistent with its
-advertised description and our support team cannot rectify the issue within a
+Due to the digital and intangible nature of downloadable software, all sales are 
+final once downloaded or accessed, except where mandated by mandatory statutory 
+consumer protection laws (e.g., where an Asset possesses a demonstrable, 
+irreparable technical defect that renders it fundamentally inconsistent with its 
+advertised description and our support team cannot rectify the issue within a 
 reasonable timeframe).
 
 12.4 Chargebacks and Reversed Payments
-If a payment for an Asset is disputed, charged back, reversed, or refunded, the
-license granted for that Asset is immediately and automatically terminated. The
-Licensee must immediately delete all copies of the affected Asset and cease
+If a payment for an Asset is disputed, charged back, reversed, or refunded, the 
+license granted for that Asset is immediately and automatically terminated. The 
+Licensee must immediately delete all copies of the affected Asset and cease 
 incorporating it into any current or future Products.
 
 --------------------------------------------------------------------------------
 13. WARRANTIES AND DISCLAIMER
 --------------------------------------------------------------------------------
 
-1. “As Is” Disclaimer: To the maximum extent permitted by applicable law, the
-   Assets are provided on an “AS IS” and “AS AVAILABLE” basis, with all faults
+1. "As Is" Disclaimer: To the maximum extent permitted by applicable law, the 
+   Assets are provided on an "AS IS" and "AS AVAILABLE" basis, with all faults 
    and without warranty of any kind.
-2. Mnostva Art disclaims all warranties, express, implied, statutory, or
-   otherwise, including but not limited to implied warranties of
-   merchantability, fitness for a particular purpose, non-infringement, quiet
-   enjoyment, and system integration.
-3. Mnostva Art does not warrant that the operation of the Assets will be
-   uninterrupted, error-free, compatible with all hardware and software
-   configurations, or that defects will be corrected.
+2. Mnostva Art disclaims all warranties, express, implied, statutory, or otherwise, 
+   including but not limited to implied warranties of merchantability, fitness 
+   for a particular purpose, non-infringement, quiet enjoyment, and system integration.
+3. Mnostva Art does not warrant that the operation of the Assets will be uninterrupted, 
+   error-free, compatible with all hardware and software configurations, or that 
+   defects will be corrected.
 
 --------------------------------------------------------------------------------
 14. LIMITATION OF LIABILITY
 --------------------------------------------------------------------------------
 
-1. To the maximum extent permitted by applicable law, in no event shall Mnostva
-   Art, its creator, employees, contractors, or affiliates be liable for any
-   indirect, incidental, special, consequential, punitive, or exemplary damages,
-   including but not limited to loss of profits, lost revenue, loss of goodwill,
-   data corruption, business interruption, or computer failure, arising out of
-   or in connection with the use or inability to use the Assets.
-2. In all circumstances, Mnostva Art’s aggregate cumulative liability arising
-   out of or related to this Agreement or the Assets, whether in contract, tort
-   (including negligence), or otherwise, shall be strictly limited to the amount
+1. To the maximum extent permitted by applicable law, in no event shall Mnostva Art, 
+   its creator, employees, contractors, or affiliates be liable for any indirect, 
+   incidental, special, consequential, punitive, or exemplary damages, including 
+   but not limited to loss of profits, lost revenue, loss of goodwill, data corruption, 
+   business interruption, or computer failure, arising out of or in connection 
+   with the use or inability to use the Assets.
+2. In all circumstances, Mnostva Art's aggregate cumulative liability arising out 
+   of or related to this Agreement or the Assets, whether in contract, tort 
+   (including negligence), or otherwise, shall be strictly limited to the amount 
    actually paid by the Licensee for the specific Asset giving rise to the claim.
-3. Nothing in this Agreement excludes or limits liability that cannot lawfully
-   be excluded under mandatory applicable consumer protection law.
+3. Nothing in this Agreement excludes or limits liability that cannot lawfully be 
+   excluded under mandatory applicable consumer protection law.
 
 --------------------------------------------------------------------------------
 15. INDEMNIFICATION
 --------------------------------------------------------------------------------
 
-To the extent permitted by applicable law, the Licensee agrees to defend,
-indemnify, and hold harmless Mnostva Art, its owner, agents, and representatives
-from and against any third-party claims, liabilities, losses, damages, costs,
-and legal fees arising out of or resulting from the Licensee’s material breach
-of this Agreement, unauthorized redistribution of the Assets, or unlawful use
+To the extent permitted by applicable law, the Licensee agrees to defend, 
+indemnify, and hold harmless Mnostva Art, its owner, agents, and representatives 
+from and against any third-party claims, liabilities, losses, damages, costs, 
+and legal fees arising out of or resulting from the Licensee's material breach 
+of this Agreement, unauthorized redistribution of the Assets, or unlawful use 
 of Products created using the Assets.
 
 --------------------------------------------------------------------------------
@@ -395,40 +385,38 @@ of Products created using the Assets.
 --------------------------------------------------------------------------------
 
 16.1 Termination for Cause
-This Agreement and the licenses granted hereunder will terminate automatically
-without notice if the Licensee fails to comply with any material term or
-condition of this Agreement.
+This Agreement and the licenses granted hereunder will terminate automatically 
+without notice if the Licensee fails to comply with any material term or condition 
+of this Agreement.
 
 16.2 Post-Termination Obligations
-Upon termination for breach, the Licensee must immediately:
-  (a) Cease all access, use, and distribution of the Assets;
-  (b) Permanently delete and destroy all standalone copies of the Assets stored
-      on devices, cloud accounts, repositories, and servers under the Licensee’s
-      control;
-  (c) Take reasonable steps to prevent further unauthorized dissemination.
+Upon termination for breach, the Licensee must immediately cease all access, 
+use, and distribution of the Assets; permanently delete and destroy all standalone 
+copies stored on devices, cloud accounts, repositories, and servers under the 
+Licensee's control; and take reasonable steps to prevent further unauthorized 
+dissemination.
 
 16.3 Surviving Products
-Provided that the Licensee’s breach did not involve the unlawful distribution of
-the Product itself, digital Products that were lawfully compiled, published, and
-distributed to end users prior to termination may remain in circulation,
+Provided that the Licensee's breach did not involve the unlawful distribution 
+of the Product itself, digital Products that were lawfully compiled, published, 
+and distributed to end users prior to termination may remain in circulation, 
 provided the raw Assets cannot be extracted.
 
 --------------------------------------------------------------------------------
 17. CUSTOM & EXTENDED LICENSES
 --------------------------------------------------------------------------------
 
-If you wish to use the Assets in any manner outside the scope of this standard
+If you wish to use the Assets in any manner outside the scope of this standard 
 EULA, including:
-  • Commercial 3D printing, toy manufacturing, or physical merchandise
-    production;
-  • AI / Machine Learning model training, dataset inclusion, or synthetic data
-    generation;
-  • Film, television, or broadcast IP franchise licensing;
-  • Inclusion in open UGC toolkits, modding software, or building kits;
-  • Custom corporate enterprise indemnification;
+- Commercial 3D printing, toy manufacturing, or physical merchandise production;
+- AI / Machine Learning model training, dataset inclusion, or synthetic data 
+  generation;
+- Film, television, or broadcast IP franchise licensing;
+- Inclusion in open UGC toolkits, modding software, or building kits;
+- Custom corporate enterprise indemnification;
 
-You must obtain a written, bilaterally executed Custom License Agreement from
-Mnostva Art. Inquiries must be submitted to: support@mnostva.art. Standard checkout
+You must obtain a written, bilaterally executed Custom License Agreement from 
+Mnostva Art. Inquiries must be submitted to support@mnostva.art. Standard checkout 
 purchases do not convey any extended or physical rights.
 
 --------------------------------------------------------------------------------
@@ -436,52 +424,52 @@ purchases do not convey any extended or physical rights.
 --------------------------------------------------------------------------------
 
 18.1 Governing Law
-This Agreement is governed by and construed in accordance with the laws of
-Portugal, without giving effect to any conflict of law principles that would
-result in the application of the laws of another jurisdiction. The United
-Nations Convention on Contracts for the International Sale of Goods (CISG) is
+This Agreement is governed by and construed in accordance with the laws of 
+Portugal, without giving effect to any conflict of law principles that would 
+result in the application of the laws of another jurisdiction. The United 
+Nations Convention on Contracts for the International Sale of Goods (CISG) is 
 expressly excluded.
 
 18.2 B2B Jurisdiction
-For business-to-business transactions, the parties submit to the exclusive
-jurisdiction of the competent courts of Lisbon, Portugal, to resolve any
+For business-to-business transactions, the parties submit to the exclusive 
+jurisdiction of the competent courts of Lisbon, Portugal, to resolve any 
 dispute, controversy, or claim arising out of or relating to this Agreement.
 
 18.3 B2C Consumer Protection
-For transactions with individual consumers, this choice of law does not deprive
-the consumer of the protection afforded to them by mandatory provisions of the
-law of the country where the consumer has their habitual residence, nor does it
+For transactions with individual consumers, this choice of law does not deprive 
+the consumer of the protection afforded to them by mandatory provisions of the 
+law of the country where the consumer has their habitual residence, nor does it 
 restrict statutory consumer rights regarding venue.
 
 18.4 Good Faith Negotiation
-Before commencing formal legal proceedings, the parties agree to make a bona
-fide attempt to resolve any dispute through amicable, direct communication for
-at least thirty (30) days.
+Before commencing formal legal proceedings, the parties agree to make a bona fide 
+attempt to resolve any dispute through amicable, direct communication for at least 
+thirty (30) days.
 
 --------------------------------------------------------------------------------
 19. MISCELLANEOUS
 --------------------------------------------------------------------------------
 
 19.1 Entire Agreement
-This Agreement, together with the specific product listing page and applicable
-checkout terms, constitutes the sole and entire agreement between the parties
-regarding the Assets and supersedes all prior understandings, representations,
+This Agreement, together with the specific product listing page and applicable 
+checkout terms, constitutes the sole and entire agreement between the parties 
+regarding the Assets and supersedes all prior understandings, representations, 
 and communications.
 
 19.2 Severability
-If any provision of this Agreement is held to be invalid, unlawful, or
-unenforceable, the remaining provisions shall remain in full force and effect,
-and the invalid provision shall be enforced to the maximum extent permissible
+If any provision of this Agreement is held to be invalid, unlawful, or 
+unenforceable, the remaining provisions shall remain in full force and effect, 
+and the invalid provision shall be enforced to the maximum extent permissible 
 under applicable law to reflect the original commercial intent.
 
 19.3 No Waiver
-No failure or delay by Mnostva Art in exercising any right, power, or remedy
+No failure or delay by Mnostva Art in exercising any right, power, or remedy 
 under this Agreement shall operate as a waiver thereof.
 
 19.4 Assignment
-The Licensee may not assign, transfer, or sublicense this Agreement or any
-rights granted hereunder without Mnostva Art’s prior written consent. A corporate
-restructuring or merger does not invalidate a Studio / Company License, provided
+The Licensee may not assign, transfer, or sublicense this Agreement or any rights 
+granted hereunder without Mnostva Art's prior written consent. A corporate 
+restructuring or merger does not invalidate a Studio / Company License, provided 
 the Assets continue to be used strictly within the scope of this Agreement.
 
 --------------------------------------------------------------------------------
@@ -489,10 +477,7 @@ the Assets continue to be used strictly within the scope of this Agreement.
 --------------------------------------------------------------------------------
 
 For licensing questions, permissions, custom licensing, or legal notices:
-  • Legal & Licensing Inquiries: support@mnostva.art
-  • Copyright & DMCA Takedown Notices: support@mnostva.art
-  • Official Website: https://mnostva.art
-
-================================================================================
-                © 2026 Mnostva Art Studio. All rights reserved.
+- Legal & Licensing Inquiries: support@mnostva.art
+- Copyright & DMCA Takedown Notices: support@mnostva.art
+- Official Website: https://mnostva.art
 ================================================================================
