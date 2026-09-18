@@ -199,6 +199,12 @@ const AppContent: React.FC = () => {
           <a href="https://www.youtube.com/@mnostva3d" target="_blank" className="hover:text-pink-500 transition-colors font-bold">YouTube</a>
 
           <button
+            onClick={() => navigate('/license')}
+            className="hover:text-pink-500 transition-colors font-bold"
+          >
+            Licenses
+          </button>
+          <button
             onClick={() => navigate('/legal')}
             className="hover:text-pink-500 transition-colors font-bold"
           >
