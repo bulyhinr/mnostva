@@ -49,8 +49,12 @@ import { SitemapController } from './sitemap.controller';
         url: configService.get('DATABASE_URL'),
         entities: [User, Product, Order, OrderItem, DownloadLog, Discount, Review, WishlistItem, Coupon],
         synchronize: true, // Temporarily enabled to fix prod DB schemas
-
         logging: configService.get('NODE_ENV') !== 'production',
+        extra: {
+          connectionTimeoutMillis: 5000,
+          idleTimeoutMillis: 30000,
+          max: 15,
+        },
       }),
     }),
 

@@ -324,6 +324,37 @@ const AdminPage: React.FC = () => {
         throw lastError || new Error('Failed to upload chunk after maximum retries.');
     };
 
+    const fetchWithRetry = async (
+        url: string,
+        options: RequestInit,
+        maxRetries = 4,
+        baseDelay = 1000
+    ): Promise<Response> => {
+        let lastError: any = null;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const res = await fetch(url, options);
+                // Retry on server-side gateway or rate limit errors (500, 502, 503, 504, 429)
+                if ((res.status >= 500 || res.status === 429) && attempt < maxRetries) {
+                    console.warn(`Request to ${url} returned ${res.status}. Retrying (attempt ${attempt}/${maxRetries})...`);
+                    const delay = Math.min(baseDelay * Math.pow(1.5, attempt), 5000);
+                    await new Promise((resolve) => setTimeout(resolve, delay));
+                    continue;
+                }
+                return res;
+            } catch (err) {
+                lastError = err;
+                console.warn(`Fetch to ${url} failed with network error:`, err, `Retrying (attempt ${attempt}/${maxRetries})...`);
+                if (attempt < maxRetries) {
+                    const delay = Math.min(baseDelay * Math.pow(1.5, attempt), 5000);
+                    await new Promise((resolve) => setTimeout(resolve, delay));
+                }
+            }
+        }
+        if (lastError) throw lastError;
+        throw new Error(`Request to ${url} failed after ${maxRetries} retries`);
+    };
+
     const uploadFile = async (file: File, isPublic: boolean): Promise<string> => {
         const token = authService.getAccessToken();
         let contentType = file.type;
@@ -345,7 +376,7 @@ const AdminPage: React.FC = () => {
             // Standard Single-part PUT Upload
             try {
                 // 1. Get signed upload URL
-                const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-upload`, {
+                const res = await fetchWithRetry(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-upload`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -401,7 +432,7 @@ const AdminPage: React.FC = () => {
 
             try {
                 // 1. Initiate Multipart
-                const initRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/initiate-multipart`, {
+                const initRes = await fetchWithRetry(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/initiate-multipart`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -423,8 +454,8 @@ const AdminPage: React.FC = () => {
                     const end = Math.min(start + CHUNK_SIZE, file.size);
                     const chunk = file.slice(start, end);
 
-                    // Get signed URL for this part
-                    const urlRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-multipart-url`, {
+                    // Get signed URL for this part with retries
+                    const urlRes = await fetchWithRetry(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/generate-multipart-url`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -454,7 +485,7 @@ const AdminPage: React.FC = () => {
                 }
 
                 // 2. Complete Multipart
-                const completeRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/complete-multipart`, {
+                const completeRes = await fetchWithRetry(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/storage/complete-multipart`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
