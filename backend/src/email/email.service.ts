@@ -28,15 +28,18 @@ export class EmailService {
             this.resend = new Resend(apiKey);
         }
         this.FROM_EMAIL = this.configService.get<string>('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
-        this.FRONTEND_URL = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:5173';
+        this.FRONTEND_URL = this.configService.get<string>('FRONTEND_URL') || 'https://mnostva.art';
     }
 
     private getFrontendUrl(): string {
         const url = this.FRONTEND_URL;
-        if (url.includes('localhost:3000') || url.includes('localhost:5173')) {
-            return 'http://localhost:3002';
+        if (!url || url.includes('localhost') || url.includes('127.0.0.1')) {
+            if (this.configService.get<string>('EMAIL_USE_LOCALHOST') === 'true') {
+                return 'http://localhost:3000';
+            }
+            return 'https://mnostva.art';
         }
-        return url;
+        return url.replace(/\/$/, '');
     }
 
     async sendWelcomeEmail(email: string, name: string) {
@@ -255,11 +258,15 @@ export class EmailService {
         if (body.featuredProductId) {
             const product = await this.productsRepository.findOne({ where: { id: body.featuredProductId } });
             if (product) {
-                const r2PublicUrl = this.configService.get<string>('R2_PUBLIC_URL');
+                const r2PublicUrl = this.configService.get<string>('R2_PUBLIC_URL')?.replace(/\/$/, '');
+                const baseUrl = this.getFrontendUrl();
+                const normalizedKey = product.previewImageKey
+                    ? (product.previewImageKey.startsWith('public/') ? product.previewImageKey : `public/${product.previewImageKey}`)
+                    : '';
                 const imageUrl = product.previewImageKey
-                    ? (r2PublicUrl && product.previewImageKey.startsWith('public/')
-                        ? `${r2PublicUrl}/${product.previewImageKey}`
-                        : `${this.getFrontendUrl().replace(':3002', ':3001')}/api/storage/public/${product.previewImageKey}`)
+                    ? (r2PublicUrl
+                        ? `${r2PublicUrl}/${normalizedKey}`
+                        : `${baseUrl}/api/storage/public/${product.previewImageKey}`)
                     : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800';
 
                 // Check active discount
@@ -285,19 +292,39 @@ export class EmailService {
                     originalPrice,
                     discountPercentage,
                     imageUrl,
-                    frontendUrl: `${this.getFrontendUrl()}/product/${product.id}`
+                    frontendUrl: `${baseUrl}/product/${product.id}`
                 };
             }
         }
 
-        // 2. Generate HTML layout
+        // 2. Sanitize and prepare broadcast links
+        const baseUrl = this.getFrontendUrl();
+        let sanitizedCtaLink = body.ctaLink;
+        if (sanitizedCtaLink) {
+            sanitizedCtaLink = sanitizedCtaLink.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/gi, baseUrl);
+            if (sanitizedCtaLink.startsWith('/')) {
+                sanitizedCtaLink = `${baseUrl}${sanitizedCtaLink}`;
+            }
+        }
+
+        let sanitizedImageUrl = body.imageUrl;
+        if (sanitizedImageUrl) {
+            sanitizedImageUrl = sanitizedImageUrl.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/gi, baseUrl);
+        }
+
+        let sanitizedBody = body.body;
+        if (sanitizedBody) {
+            sanitizedBody = sanitizedBody.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/gi, baseUrl);
+        }
+
+        // 3. Generate HTML layout
         const templateHtml = getBroadcastTemplate({
             subject: body.subject,
-            body: body.body,
-            imageUrl: body.imageUrl,
+            body: sanitizedBody,
+            imageUrl: sanitizedImageUrl,
             featuredProduct: featuredProductData,
             ctaText: body.ctaText,
-            ctaLink: body.ctaLink,
+            ctaLink: sanitizedCtaLink,
             templateType: body.templateType
         });
 

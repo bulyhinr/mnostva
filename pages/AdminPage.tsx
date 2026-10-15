@@ -38,7 +38,7 @@ const AdminPage: React.FC = () => {
         imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
         featuredProductId: '',
         ctaText: 'Explore Collection',
-        ctaLink: 'http://localhost:3002/marketplace',
+        ctaLink: 'https://mnostva.art/marketplace',
         templateType: 'new_release' as 'promo' | 'announcement' | 'new_release',
         testEmailOnly: true,
         testRecipient: '',
@@ -1579,7 +1579,7 @@ const AdminPage: React.FC = () => {
                                             value={newsletter.ctaLink}
                                             onChange={(e) => setNewsletter({ ...newsletter, ctaLink: e.target.value })}
                                             className="w-full bg-gray-50/50 border-2 border-gray-100 focus:border-[#8a7db3] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none transition-all shadow-sm"
-                                            placeholder="http://localhost:3002/marketplace"
+                                            placeholder="https://mnostva.art/marketplace"
                                         />
                                     </div>
                                 </div>
@@ -1768,7 +1768,7 @@ const AdminPage: React.FC = () => {
 
                                 {/* Email Footer */}
                                 <div className="text-center py-6 border-t border-gray-100 bg-[#fafafa] rounded-b-2xl mt-8 text-[9px] text-gray-400 font-bold shrink-0">
-                                    <p className="mb-1">© 2021 Mnostva Art Marketplace. All rights reserved.</p>
+                                    <p className="mb-1">© {new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
                                     <p>You are receiving this because you registered at mnostva.art.</p>
                                 </div>
                             </div>

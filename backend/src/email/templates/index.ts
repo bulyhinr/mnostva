@@ -1,4 +1,28 @@
-export const getWelcomeTemplate = (name: string, frontendUrl: string) => `
+/**
+ * Helper to ensure links inside emails never resolve to localhost or 127.0.0.1.
+ * External email recipients (Gmail, Apple Mail, etc.) cannot resolve localhost.
+ */
+const sanitizeBaseUrl = (url?: string): string => {
+  if (!url || typeof url !== 'string') return 'https://mnostva.art';
+  const trimmed = url.trim().replace(/\/$/, '');
+  if (!trimmed || trimmed.includes('localhost') || trimmed.includes('127.0.0.1')) {
+    return 'https://mnostva.art';
+  }
+  return trimmed;
+};
+
+const sanitizeLink = (url?: string, defaultBase = 'https://mnostva.art'): string => {
+  if (!url || typeof url !== 'string') return defaultBase;
+  const trimmed = url.trim();
+  if (trimmed.startsWith('/')) {
+    return `${defaultBase}${trimmed}`;
+  }
+  return trimmed.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/gi, defaultBase);
+};
+
+export const getWelcomeTemplate = (name: string, frontendUrl?: string) => {
+  const baseUrl = sanitizeBaseUrl(frontendUrl);
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,7 +48,7 @@ export const getWelcomeTemplate = (name: string, frontendUrl: string) => `
       <p>Whether you're building a game, creating a virtual world, or just exploring, we've got the assets you need to bring your vision to life.</p>
       
       <div style="text-align: center;">
-        <a href="${frontendUrl}/marketplace" class="button">Explore the Marketplace 🎨</a>
+        <a href="${baseUrl}/marketplace" class="button">Explore the Marketplace 🎨</a>
       </div>
 
       <p>If you have any questions or need help with your projects, feel free to contact us at <a href="mailto:support@mnostva.art" style="color: #8a7db3; text-decoration: underline;">support@mnostva.art</a>.</p>
@@ -32,29 +56,33 @@ export const getWelcomeTemplate = (name: string, frontendUrl: string) => `
       <p>- The Mnostva Team</p>
     </div>
     <div class="footer">
-      <p>© 2021 Mnostva Art Marketplace. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
     </div>
   </div>
 </body>
 </html>
 `;
+};
 
-export const getOrderConfirmationTemplate = (order: any, frontendUrl: string) => {
-  const itemsList = order.items.map((item: any) => {
-    const hasDiscount = item.originalPrice && item.originalPrice > item.price;
-    const priceDisplay = hasDiscount 
-      ? `<span style="text-decoration: line-through; color: #a1a1aa; font-weight: normal; margin-right: 5px;">$${(item.originalPrice / 100).toFixed(2)}</span>$${(item.price / 100).toFixed(2)} <span style="color: #db2777; font-weight: bold; font-size: 11px;">(-${item.discountPercentage}%)</span>`
-      : `$${(item.price / 100).toFixed(2)}`;
+export const getOrderConfirmationTemplate = (order: any, frontendUrl?: string) => {
+  const baseUrl = sanitizeBaseUrl(frontendUrl);
+  const itemsList = order.items && order.items.length
+    ? order.items.map((item: any) => {
+        const hasDiscount = item.originalPrice && item.originalPrice > item.price;
+        const priceDisplay = hasDiscount 
+          ? `<span style="text-decoration: line-through; color: #a1a1aa; font-weight: normal; margin-right: 5px;">$${(item.originalPrice / 100).toFixed(2)}</span>$${(item.price / 100).toFixed(2)} <span style="color: #db2777; font-weight: bold; font-size: 11px;">(-${item.discountPercentage}%)</span>`
+          : `$${(item.price / 100).toFixed(2)}`;
 
-    return `
-      <div style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
-        <div style="flex-grow: 1;">
-          <h4 style="margin: 0; color: #333;">${item.product?.title || item.product?.name || 'Stylized Asset Pack'}</h4>
-          <p style="margin: 5px 0 0; font-size: 12px; color: #666;">${priceDisplay}</p>
-        </div>
-      </div>
-    `;
-  }).join('');
+        return `
+          <div style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+            <div style="flex-grow: 1;">
+              <h4 style="margin: 0; color: #333;">${item.product?.title || item.product?.name || 'Stylized Asset Pack'}</h4>
+              <p style="margin: 5px 0 0; font-size: 12px; color: #666;">${priceDisplay}</p>
+            </div>
+          </div>
+        `;
+      }).join('')
+    : '<p style="color: #666;">No items found in this order.</p>';
 
   return `
 <!DOCTYPE html>
@@ -80,7 +108,7 @@ export const getOrderConfirmationTemplate = (order: any, frontendUrl: string) =>
     </div>
     <div class="content">
       <h1>Order Confirmed! 🎉</h1>
-      <p>Great news! Your order #${order.id.slice(0, 8)} has been successfully processed.</p>
+      <p>Great news! Your order #${order.id ? order.id.slice(0, 8) : 'Confirmed'} has been successfully processed.</p>
       <p>You can now access your purchased assets directly from your dashboard.</p>
       
       <div class="order-summary">
@@ -92,17 +120,17 @@ export const getOrderConfirmationTemplate = (order: any, frontendUrl: string) =>
         </div>
         ` : ''}
         <div class="total">
-          Total: $${(order.totalAmount / 100).toFixed(2)}
+          Total: $${((order.totalAmount || 0) / 100).toFixed(2)}
         </div>
       </div>
 
       <div style="text-align: center;">
-        <a href="${frontendUrl}/profile?tab=purchases" class="button">Access My Downloads 📦</a>
+        <a href="${baseUrl}/profile?tab=purchases" class="button">Access My Downloads 📦</a>
       </div>
 
       ${order.receiptUrl ? `
       <div style="text-align: center; margin-top: 10px;">
-        <a href="${order.receiptUrl}" target="_blank" style="color: #8a7db3; text-decoration: underline; font-size: 14px;">View / Download Invoice</a>
+        <a href="${sanitizeLink(order.receiptUrl, baseUrl)}" target="_blank" style="color: #8a7db3; text-decoration: underline; font-size: 14px;">View / Download Invoice</a>
       </div>
       ` : ''}
 
@@ -111,7 +139,7 @@ export const getOrderConfirmationTemplate = (order: any, frontendUrl: string) =>
       <p>- The Mnostva Team</p>
     </div>
     <div class="footer">
-      <p>© 2021 Mnostva Art Marketplace. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -119,7 +147,9 @@ export const getOrderConfirmationTemplate = (order: any, frontendUrl: string) =>
 `;
 };
 
-export const getPasswordResetTemplate = (token: string, frontendUrl: string) => `
+export const getPasswordResetTemplate = (token: string, frontendUrl?: string) => {
+  const baseUrl = sanitizeBaseUrl(frontendUrl);
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -145,7 +175,7 @@ export const getPasswordResetTemplate = (token: string, frontendUrl: string) => 
       <p>Click the button below to choose a new password. This link is valid for 1 hour.</p>
       
       <div style="text-align: center;">
-        <a href="${frontendUrl}/login?reset_token=${token}" class="button">Reset Password</a>
+        <a href="${baseUrl}/login?reset_token=${token}" class="button">Reset Password</a>
       </div>
 
       <p>If you didn't request this, you can safely ignore this email. Your password will remain unchanged.</p>
@@ -156,14 +186,17 @@ export const getPasswordResetTemplate = (token: string, frontendUrl: string) => 
       <p>- The Mnostva Team</p>
     </div>
     <div class="footer">
-      <p>© 2021 Mnostva Art Marketplace. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
     </div>
   </div>
 </body>
 </html>
 `;
+};
 
-export const getFeedbackReminderTemplate = (name: string, productName: string, frontendUrl: string) => `
+export const getFeedbackReminderTemplate = (name: string, productName: string, frontendUrl?: string) => {
+  const baseUrl = sanitizeBaseUrl(frontendUrl);
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -191,36 +224,40 @@ export const getFeedbackReminderTemplate = (name: string, productName: string, f
       <p>Your feedback is incredibly valuable to us and helps our community grow. If you have a minute, we'd love it if you could leave a review for this asset pack.</p>
       
       <div style="text-align: center;">
-        <a href="${frontendUrl}/profile?tab=purchases" class="button">Leave a Review ⭐️</a>
+        <a href="${baseUrl}/profile?tab=purchases" class="button">Leave a Review ⭐️</a>
       </div>
 
       <p>Happy Creating!</p>
       <p>- The Mnostva Team</p>
     </div>
     <div class="footer">
-      <p>© 2021 Mnostva Art Marketplace. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
     </div>
   </div>
 </body>
 </html>
 `;
+};
 
-export const getPaymentReminderTemplate = (name: string, order: any, frontendUrl: string) => {
-  const itemsList = order.items.map((item: any) => {
-    const hasDiscount = item.originalPrice && item.originalPrice > item.price;
-    const priceDisplay = hasDiscount 
-      ? `<span style="text-decoration: line-through; color: #a1a1aa; font-weight: normal; margin-right: 5px;">$${(item.originalPrice / 100).toFixed(2)}</span>$${(item.price / 100).toFixed(2)} <span style="color: #db2777; font-weight: bold; font-size: 11px;">(-${item.discountPercentage}%)</span>`
-      : `$${(item.price / 100).toFixed(2)}`;
+export const getPaymentReminderTemplate = (name: string, order: any, frontendUrl?: string) => {
+  const baseUrl = sanitizeBaseUrl(frontendUrl);
+  const itemsList = order.items && order.items.length
+    ? order.items.map((item: any) => {
+        const hasDiscount = item.originalPrice && item.originalPrice > item.price;
+        const priceDisplay = hasDiscount 
+          ? `<span style="text-decoration: line-through; color: #a1a1aa; font-weight: normal; margin-right: 5px;">$${(item.originalPrice / 100).toFixed(2)}</span>$${(item.price / 100).toFixed(2)} <span style="color: #db2777; font-weight: bold; font-size: 11px;">(-${item.discountPercentage}%)</span>`
+          : `$${(item.price / 100).toFixed(2)}`;
 
-    return `
-      <div style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
-        <div style="flex-grow: 1;">
-          <h4 style="margin: 0; color: #333;">${item.product?.title || item.product?.name || 'Stylized Asset Pack'}</h4>
-          <p style="margin: 5px 0 0; font-size: 12px; color: #666;">${priceDisplay}</p>
-        </div>
-      </div>
-    `;
-  }).join('');
+        return `
+          <div style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+            <div style="flex-grow: 1;">
+              <h4 style="margin: 0; color: #333;">${item.product?.title || item.product?.name || 'Stylized Asset Pack'}</h4>
+              <p style="margin: 5px 0 0; font-size: 12px; color: #666;">${priceDisplay}</p>
+            </div>
+          </div>
+        `;
+      }).join('')
+    : '<p style="color: #666;">No items found in this order.</p>';
 
   return `
 <!DOCTYPE html>
@@ -251,7 +288,7 @@ export const getPaymentReminderTemplate = (name: string, order: any, frontendUrl
       <p>Don't worry, we've saved your items! Complete your payment now to download them instantly and bring your creative projects to life:</p>
       
       <div style="text-align: center;">
-        <a href="${frontendUrl}/profile" class="button" style="background-color: #db2777; color: white;">Complete My Order 💳</a>
+        <a href="${baseUrl}/profile" class="button" style="background-color: #db2777; color: white;">Complete My Order 💳</a>
       </div>
 
       <div class="order-summary">
@@ -263,7 +300,7 @@ export const getPaymentReminderTemplate = (name: string, order: any, frontendUrl
         </div>
         ` : ''}
         <div class="total">
-          Total: $${(order.totalAmount / 100).toFixed(2)}
+          Total: $${((order.totalAmount || 0) / 100).toFixed(2)}
         </div>
       </div>
 
@@ -272,7 +309,7 @@ export const getPaymentReminderTemplate = (name: string, order: any, frontendUrl
       <p>- The Mnostva Team</p>
     </div>
     <div class="footer">
-      <p>© 2021 Mnostva Art Marketplace. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -309,12 +346,14 @@ export const getBroadcastTemplate = (options: {
     badgeText = 'NEW RELEASE 🚀';
   }
 
-  // Convert newlines in body to <br />
-  const formattedBody = body.replace(/\n/g, '<br />');
+  // Sanitize links and text against localhost
+  const cleanBody = body.replace(/https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/gi, 'https://mnostva.art');
+  const formattedBody = cleanBody.replace(/\n/g, '<br />');
 
   // Hero banner HTML
-  const heroImageHtml = imageUrl 
-    ? `<div style="margin-bottom: 25px;"><img src="${imageUrl}" alt="Banner" style="width: 100%; max-height: 280px; object-fit: cover; border-radius: 15px; border: 1px solid #eee;" /></div>`
+  const cleanHeroImageUrl = imageUrl ? sanitizeLink(imageUrl) : '';
+  const heroImageHtml = cleanHeroImageUrl 
+    ? `<div style="margin-bottom: 25px;"><img src="${cleanHeroImageUrl}" alt="Banner" style="width: 100%; max-height: 280px; object-fit: cover; border-radius: 15px; border: 1px solid #eee;" /></div>`
     : '';
 
   // Featured product HTML
@@ -325,13 +364,16 @@ export const getBroadcastTemplate = (options: {
       ? `<span style="text-decoration: line-through; color: #a1a1aa; font-weight: normal; margin-right: 5px; font-size: 13px;">$${(featuredProduct.originalPrice! / 100).toFixed(2)}</span>$${(featuredProduct.price / 100).toFixed(2)} <span style="color: #db2777; font-weight: bold; font-size: 11px; background-color: #fce7f3; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">-${featuredProduct.discountPercentage!}% OFF</span>`
       : `$${(featuredProduct.price / 100).toFixed(2)}`;
 
+    const cleanProductUrl = sanitizeLink(featuredProduct.frontendUrl);
+    const cleanProductImg = sanitizeLink(featuredProduct.imageUrl);
+
     featuredProductHtml = `
       <div style="background: #ffffff; border: 2px solid #f3f4f6; border-radius: 20px; padding: 20px; margin: 30px 0; text-align: left; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
         <div style="font-size: 9px; font-weight: 900; letter-spacing: 1.5px; color: ${themeColor}; text-transform: uppercase; margin-bottom: 12px;">Featured Stylized Asset Pack</div>
         
         <!-- Stack image and details vertically using standard block layouts for 100% email client compatibility -->
         <div style="display: block; width: 100%; text-align: center; margin-bottom: 15px;">
-          <img src="${featuredProduct.imageUrl}" alt="${featuredProduct.name}" style="width: 100%; max-width: 100%; height: auto; border-radius: 12px; display: block;" />
+          <img src="${cleanProductImg}" alt="${featuredProduct.name}" style="width: 100%; max-width: 100%; height: auto; border-radius: 12px; display: block;" />
         </div>
         
         <div style="display: block; width: 100%;">
@@ -340,7 +382,7 @@ export const getBroadcastTemplate = (options: {
           <div style="font-weight: 900; font-size: 16px; color: #111827; margin: 8px 0; display: block;">${priceDisplay}</div>
           
           <div style="margin-top: 18px; display: block; text-align: center;">
-            <a href="${featuredProduct.frontendUrl}" style="display: inline-block; text-align: center; padding: 12px 35px; background-color: ${themeColor}; color: white; text-decoration: none; border-radius: 50px; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px ${themeColor}33;">View on Marketplace 🎨</a>
+            <a href="${cleanProductUrl}" style="display: inline-block; text-align: center; padding: 12px 35px; background-color: ${themeColor}; color: white; text-decoration: none; border-radius: 50px; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px ${themeColor}33;">View on Marketplace 🎨</a>
           </div>
         </div>
       </div>
@@ -348,10 +390,11 @@ export const getBroadcastTemplate = (options: {
   }
 
   // CTA Button HTML
-  const ctaButtonHtml = (ctaText && ctaLink)
+  const resolvedCtaLink = ctaLink ? sanitizeLink(ctaLink) : '';
+  const ctaButtonHtml = (ctaText && resolvedCtaLink)
     ? `
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${ctaLink}" style="display: inline-block; padding: 15px 35px; background-color: ${themeColor}; color: white; text-decoration: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; box-shadow: 0 6px 20px ${themeColor}44;">${ctaText}</a>
+        <a href="${resolvedCtaLink}" style="display: inline-block; padding: 15px 35px; background-color: ${themeColor}; color: white; text-decoration: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; box-shadow: 0 6px 20px ${themeColor}44;">${ctaText}</a>
       </div>
     `
     : '';
@@ -402,7 +445,7 @@ export const getBroadcastTemplate = (options: {
       </div>
     </div>
     <div class="footer">
-      <p style="margin: 0 0 5px 0;">© 2021 Mnostva Art Marketplace. All rights reserved.</p>
+      <p style="margin: 0 0 5px 0;">© ${new Date().getFullYear()} Mnostva Art Marketplace. All rights reserved.</p>
       <p style="margin: 0; font-size: 10px;">You are receiving this because you registered at <a href="https://mnostva.art" style="color: ${themeColor}; text-decoration: underline;">mnostva.art</a>.</p>
     </div>
   </div>
@@ -457,7 +500,7 @@ export const getAdminPurchaseAlertTemplate = (order: any) => {
       <h2 style="margin-top: 0; color: #111;">A customer just purchased assets! 🚀</h2>
       
       <div class="details">
-        <p style="margin: 0 0 8px 0;"><strong>Order ID:</strong> #${order.id}</p>
+        <p style="margin: 0 0 8px 0;"><strong>Order ID:</strong> #${order.id || 'N/A'}</p>
         <p style="margin: 0 0 8px 0;"><strong>Customer Name:</strong> ${order.user?.name || 'Guest'}</p>
         <p style="margin: 0 0 8px 0;"><strong>Customer Email:</strong> ${order.user?.email || 'N/A'}</p>
         <p style="margin: 0;"><strong>Payment Method:</strong> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'N/A'}</p>
@@ -468,11 +511,11 @@ export const getAdminPurchaseAlertTemplate = (order: any) => {
         ${itemsList}
         ${order.couponCode ? `
         <div style="text-align: right; font-size: 13px; color: #db2777; font-weight: bold; margin-top: 10px;">
-          Coupon Applied: ${order.couponCode} (-$${(order.couponDiscount / 100).toFixed(2)})
+          Coupon Applied: ${order.couponCode} (-$${((order.couponDiscount || 0) / 100).toFixed(2)})
         </div>
         ` : ''}
         <div class="total" style="color: #db2777;">
-          Total Amount: $${(order.totalAmount / 100).toFixed(2)}
+          Total Amount: $${((order.totalAmount || 0) / 100).toFixed(2)}
         </div>
       </div>
 
@@ -488,7 +531,8 @@ export const getAdminPurchaseAlertTemplate = (order: any) => {
 };
 
 export const getAdminReviewAlertTemplate = (review: any, productTitle: string, userEmail: string) => {
-  const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+  const rating = Number(review.rating) || 5;
+  const stars = '★'.repeat(Math.max(0, Math.min(5, rating))) + '☆'.repeat(Math.max(0, 5 - Math.min(5, rating)));
 
   return `
 <!DOCTYPE html>
@@ -522,7 +566,7 @@ export const getAdminReviewAlertTemplate = (review: any, productTitle: string, u
       </div>
 
       <div class="review-card">
-        <div class="stars">${stars} (${review.rating} / 5)</div>
+        <div class="stars">${stars} (${rating} / 5)</div>
         <p style="margin: 10px 0 0 0; color: #444; font-style: italic; font-size: 14px; line-height: 1.6;">
           "${(review.comment || 'No comment text provided.').replace(/\n/g, '<br />')}"
         </p>
@@ -537,4 +581,4 @@ export const getAdminReviewAlertTemplate = (review: any, productTitle: string, u
 </body>
 </html>
   `;
-};;
+};

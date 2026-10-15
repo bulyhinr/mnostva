@@ -6,6 +6,14 @@ import { Logger } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Product } from '../products/entities/product.entity';
+import {
+    getWelcomeTemplate,
+    getOrderConfirmationTemplate,
+    getPasswordResetTemplate,
+    getFeedbackReminderTemplate,
+    getPaymentReminderTemplate,
+    getBroadcastTemplate
+} from './templates';
 
 jest.mock('resend');
 
@@ -145,6 +153,69 @@ describe('EmailService', () => {
             (service as any).resend = undefined;
             await service.sendOrderConfirmation('test@test.com', mockOrder);
             // Shouldn't throw
+        });
+    });
+
+    describe('Email Templates & Localhost Sanitization', () => {
+        it('getWelcomeTemplate should replace localhost with https://mnostva.art', () => {
+            const html = getWelcomeTemplate('Alex', 'http://localhost:3002');
+            expect(html).not.toContain('localhost');
+            expect(html).not.toContain('127.0.0.1');
+            expect(html).toContain('href="https://mnostva.art/marketplace"');
+        });
+
+        it('getOrderConfirmationTemplate should replace localhost with https://mnostva.art', () => {
+            const html = getOrderConfirmationTemplate({ id: 'ord-12345678', items: [], totalAmount: 1000 }, 'http://localhost:3000');
+            expect(html).not.toContain('localhost');
+            expect(html).not.toContain('127.0.0.1');
+            expect(html).toContain('href="https://mnostva.art/profile?tab=purchases"');
+        });
+
+        it('getPasswordResetTemplate should replace localhost with https://mnostva.art', () => {
+            const html = getPasswordResetTemplate('secret-token', 'http://localhost:5173');
+            expect(html).not.toContain('localhost');
+            expect(html).not.toContain('127.0.0.1');
+            expect(html).toContain('href="https://mnostva.art/login?reset_token=secret-token"');
+        });
+
+        it('getFeedbackReminderTemplate should replace localhost with https://mnostva.art', () => {
+            const html = getFeedbackReminderTemplate('Alex', 'Sci-Fi Pack', 'http://localhost:3002');
+            expect(html).not.toContain('localhost');
+            expect(html).not.toContain('127.0.0.1');
+            expect(html).toContain('href="https://mnostva.art/profile?tab=purchases"');
+        });
+
+        it('getPaymentReminderTemplate should replace localhost with https://mnostva.art', () => {
+            const html = getPaymentReminderTemplate('Alex', { items: [], totalAmount: 2000 }, 'http://localhost:3002');
+            expect(html).not.toContain('localhost');
+            expect(html).not.toContain('127.0.0.1');
+            expect(html).toContain('href="https://mnostva.art/profile"');
+        });
+
+        it('getBroadcastTemplate should sanitize localhost in CTA link, image and body', () => {
+            const html = getBroadcastTemplate({
+                subject: 'Big Sale',
+                body: 'Visit our site at http://localhost:3002 for more info!',
+                imageUrl: 'http://localhost:3002/banner.jpg',
+                ctaText: 'Shop Now',
+                ctaLink: 'http://localhost:3002/marketplace',
+                featuredProduct: {
+                    name: 'Test Pack',
+                    category: 'Props',
+                    price: 1500,
+                    imageUrl: 'http://localhost:3001/api/storage/public/test.jpg',
+                    frontendUrl: 'http://localhost:3002/product/prod-1'
+                },
+                templateType: 'promo'
+            });
+
+            expect(html).not.toContain('localhost');
+            expect(html).not.toContain('127.0.0.1');
+            expect(html).toContain('href="https://mnostva.art/marketplace"');
+            expect(html).toContain('href="https://mnostva.art/product/prod-1"');
+            expect(html).toContain('src="https://mnostva.art/banner.jpg"');
+            expect(html).toContain('src="https://mnostva.art/api/storage/public/test.jpg"');
+            expect(html).toContain('Visit our site at https://mnostva.art for more info!');
         });
     });
 });
