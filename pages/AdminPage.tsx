@@ -366,7 +366,18 @@ const AdminPage: React.FC = () => {
         }
 
         const MULTIPART_MIN_SIZE = 10 * 1024 * 1024; // 10MB
-        const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB (S3/R2 requires parts to be at least 5MB)
+        // S3/R2 requires each part to be at least 5MB.
+        // For large files (>100MB), scale chunk size so total chunks stays around 100-250 parts,
+        // avoiding thousands of slow sequential requests, socket exhaustion and ensuring reliable uploads.
+        const calculateChunkSize = (size: number): number => {
+            const fiveMb = 5 * 1024 * 1024;
+            if (size <= 50 * 1024 * 1024) return fiveMb; // 5MB for files up to 50MB
+            if (size <= 500 * 1024 * 1024) return 10 * 1024 * 1024; // 10MB for up to 500MB
+            // For files > 500MB, target ~200 chunks, aligned to 5MB, with min 20MB
+            const targetChunk = Math.ceil(size / 200);
+            return Math.max(20 * 1024 * 1024, Math.ceil(targetChunk / fiveMb) * fiveMb);
+        };
+        const CHUNK_SIZE = calculateChunkSize(file.size);
         const MAX_RETRIES = 5;
 
         setUploadingFileName(file.name);

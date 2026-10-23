@@ -45,7 +45,7 @@ export class StorageService {
         });
     }
 
-    async generateDownloadUrl(key: string, expiresInSeconds = 600): Promise<string> {
+    async generateDownloadUrl(key: string, expiresInSeconds = 7200, downloadFileName?: string): Promise<string> {
         try {
             // Check if file exists
             try {
@@ -58,10 +58,17 @@ export class StorageService {
                 throw new NotFoundException('File not found in storage');
             }
 
-            const command = new GetObjectCommand({
+            const commandInput: any = {
                 Bucket: this.bucketName,
                 Key: key,
-            });
+            };
+
+            if (downloadFileName) {
+                const safeAscii = downloadFileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+                commandInput.ResponseContentDisposition = `attachment; filename="${safeAscii}"; filename*=UTF-8''${encodeURIComponent(downloadFileName)}`;
+            }
+
+            const command = new GetObjectCommand(commandInput);
 
             // Force signed URL even for public files. This ensures reliability regardless of bucket privacy settings.
             // Also fixes issues where public domain might be misconfigured or blocked.
@@ -132,17 +139,30 @@ export class StorageService {
 
     async completeMultipartUpload(key: string, uploadId: string): Promise<void> {
         try {
-            // Fetch uploaded parts from R2 to get their ETags securely (bypasses browser CORS constraints)
-            const listCommand = new ListPartsCommand({
-                Bucket: this.bucketName,
-                Key: key,
-                UploadId: uploadId,
-            });
-            const listResponse = await this.s3Client.send(listCommand);
-            const parts = (listResponse.Parts || []).map(p => ({
-                PartNumber: p.PartNumber,
-                ETag: p.ETag,
-            }));
+            // Fetch uploaded parts from R2 to get their ETags securely (bypasses browser CORS constraints).
+            // NOTE: ListPartsCommand returns up to 1,000 parts per page. We paginate using PartNumberMarker
+            // so large files (>1000 parts) are never truncated!
+            let isTruncated = true;
+            let partNumberMarker: string | undefined = undefined;
+            const parts: { PartNumber?: number; ETag?: string }[] = [];
+
+            while (isTruncated) {
+                const listCommand: ListPartsCommand = new ListPartsCommand({
+                    Bucket: this.bucketName,
+                    Key: key,
+                    UploadId: uploadId,
+                    PartNumberMarker: partNumberMarker,
+                });
+                const listResponse = await this.s3Client.send(listCommand);
+                for (const p of listResponse.Parts || []) {
+                    parts.push({
+                        PartNumber: p.PartNumber,
+                        ETag: p.ETag,
+                    });
+                }
+                isTruncated = listResponse.IsTruncated || false;
+                partNumberMarker = listResponse.NextPartNumberMarker?.toString();
+            }
 
             if (parts.length === 0) {
                 throw new Error('No uploaded parts found to complete multipart upload.');

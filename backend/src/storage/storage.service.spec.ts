@@ -142,6 +142,22 @@ describe('StorageService', () => {
       await expect(service.completeMultipartUpload('key', 'uploadId')).resolves.not.toThrow();
     });
 
+    it('should successfully complete the upload across multiple paginated pages of parts', async () => {
+      (service as any).s3Client.send
+        .mockResolvedValueOnce({
+          Parts: [{ PartNumber: 1, ETag: 'etag-1' }],
+          IsTruncated: true,
+          NextPartNumberMarker: 1,
+        }) // page 1
+        .mockResolvedValueOnce({
+          Parts: [{ PartNumber: 2, ETag: 'etag-2' }],
+          IsTruncated: false,
+        }) // page 2
+        .mockResolvedValueOnce({}); // for CompleteMultipartUploadCommand
+
+      await expect(service.completeMultipartUpload('key', 'uploadId')).resolves.not.toThrow();
+    });
+
     it('should throw Error/InternalServerErrorException if no parts found', async () => {
       (service as any).s3Client.send.mockResolvedValueOnce({ Parts: [] });
       const loggerSpy = jest.spyOn((service as any).logger, 'error').mockImplementation();

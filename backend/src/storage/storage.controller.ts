@@ -201,7 +201,8 @@ export class StorageController {
         // Check if user has downloaded this product before logging the current download
         const hasDownloadedBefore = await this.downloadsService.hasDownloadedBefore(userId, productId);
 
-        const signedUrl = await this.storageService.generateDownloadUrl(fileKey);
+        const downloadFileName = product.fileName || `${product.title ? product.title.replace(/[^a-zA-Z0-9_-]/g, '_') : 'asset'}.zip`;
+        const signedUrl = await this.storageService.generateDownloadUrl(fileKey, 7200, downloadFileName);
 
         // Log download
         try {
@@ -231,6 +232,6 @@ export class StorageController {
             }
         }
 
-        return { downloadUrl: signedUrl, expiresAt: new Date(Date.now() + 600 * 1000) };
+        return { downloadUrl: signedUrl, expiresAt: new Date(Date.now() + 7200 * 1000) };
     }
 }
